@@ -19,7 +19,7 @@ Rôles (`accounts.User.Role`) : `APPRENANT`, `MENTOR`, `FORMATEUR`, `RECRUTEUR`,
 
 ## Stack
 
-Python 3.12 (virtualenv), Django 5.2 LTS, PostgreSQL 16 via Docker (SQLite si `DATABASE_URL` est absent), Celery + Redis, templates Django + Bootstrap 5.3 + HTMX 2 + Chart.js en fichiers locaux (`static/vendor/`, aucun CDN), django-environ, whitenoise, gunicorn, Pillow, reportlab + qrcode, scikit-learn + joblib, pydantic, httpx. Dev : pytest, pytest-django, pytest-cov, coverage, factory-boy, ruff. Visio : Jitsi Meet en iframe. Paiement : passerelle simulée, aucune donnée de carte. Pas de DRF, pas de SPA : quelques `JsonResponse` suffisent.
+Python 3.12 (virtualenv), Django 5.2 LTS (`Django==5.2.18`), PostgreSQL 16 via Docker (SQLite si `DATABASE_URL` est absent), Celery + Redis, templates Django + Bootstrap 5.3 + HTMX 2 + Chart.js en fichiers locaux (`static/vendor/`, aucun CDN), django-environ, whitenoise, gunicorn, Pillow, reportlab + qrcode, scikit-learn + joblib, pydantic, httpx. Dev : pytest, pytest-django, pytest-cov, coverage, factory-boy, ruff. Visio : Jitsi Meet en iframe. Paiement : passerelle simulée, aucune donnée de carte. Pas de DRF, pas de SPA : quelques `JsonResponse` suffisent.
 
 Settings : `config/settings/{base,dev,test,prod}.py`. `manage.py` utilise `dev`, sauf `manage.py test` qui utilise `test` (comme pytest). `wsgi.py` et `asgi.py` utilisent `prod`.
 
