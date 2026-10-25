@@ -102,7 +102,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 # Les classes Bootstrap s'appellent « danger », pas « error ».
 MESSAGE_TAGS = {message_constants.ERROR: "danger"}
 
-REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/0")
+REDIS_URL = env("REDIS_URL", default="redis://127.0.0.1:6379/0")
 
 CELERY_BROKER_URL = REDIS_URL
 # Le résultat d'une tâche est stocké dans le modèle métier (AIJob…), pas dans Celery.
