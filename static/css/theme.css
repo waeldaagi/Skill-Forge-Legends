@@ -1,0 +1,423 @@
+/* Thème SkillForge : jetons de la charte, surcharge des variables Bootstrap, accessibilité.
+   Chaque paire texte/fond utilisée ici est vérifiée dans docs/accessibilite.md. */
+
+@font-face {
+  font-family: "Montserrat";
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/montserrat-latin-600-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Montserrat";
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/montserrat-latin-700-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Open Sans";
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/open-sans-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Open Sans";
+  font-weight: 600;
+  font-display: swap;
+  src: url("../fonts/open-sans-latin-600-normal.woff2") format("woff2");
+}
+
+:root {
+  --sf-navy: #0b1026;
+  --sf-violet: #6d28d9;
+  --sf-violet-dark: #5b21b6;
+  --sf-violet-subtle: #ede9fe;
+  --sf-orange: #f97316;
+  --sf-orange-light: #fdba74;
+  --sf-text: #1f2937;
+  --sf-muted: #475569;
+  --sf-bg: #f8fafc;
+  --sf-surface: #ffffff;
+  --sf-border: #e2e8f0;
+  --sf-input-border: #64748b;
+  --sf-on-dark: #e2e8f0;
+  --sf-success: #15803d;
+  --sf-success-subtle: #dcfce7;
+  --sf-danger: #b91c1c;
+  --sf-danger-subtle: #fee2e2;
+  --sf-warning-text: #92400e;
+  --sf-warning-subtle: #fef3c7;
+  --sf-radius: 6px;
+  --sf-font-heading: "Montserrat", "Segoe UI", Arial, sans-serif;
+  --sf-font-body: "Open Sans", "Segoe UI", Arial, sans-serif;
+
+  /* Bootstrap : aucune trace du bleu par défaut. */
+  --bs-primary: var(--sf-violet);
+  --bs-primary-rgb: 109, 40, 217;
+  --bs-primary-text-emphasis: var(--sf-violet-dark);
+  --bs-primary-bg-subtle: var(--sf-violet-subtle);
+  --bs-primary-border-subtle: #c4b5fd;
+  --bs-info-rgb: 109, 40, 217;
+  --bs-info-text-emphasis: var(--sf-violet-dark);
+  --bs-info-bg-subtle: var(--sf-violet-subtle);
+  --bs-info-border-subtle: #c4b5fd;
+  --bs-success-text-emphasis: var(--sf-success);
+  --bs-success-bg-subtle: var(--sf-success-subtle);
+  --bs-danger-text-emphasis: var(--sf-danger);
+  --bs-danger-bg-subtle: var(--sf-danger-subtle);
+  --bs-warning-text-emphasis: var(--sf-warning-text);
+  --bs-warning-bg-subtle: var(--sf-warning-subtle);
+  --bs-body-font-family: var(--sf-font-body);
+  --bs-body-font-size: 1rem;
+  --bs-body-line-height: 1.5;
+  --bs-body-color: var(--sf-text);
+  --bs-body-bg: var(--sf-bg);
+  --bs-secondary-color: var(--sf-muted);
+  --bs-link-color: var(--sf-violet);
+  --bs-link-color-rgb: 109, 40, 217;
+  --bs-link-hover-color: var(--sf-violet-dark);
+  --bs-link-hover-color-rgb: 91, 33, 182;
+  --bs-border-color: var(--sf-border);
+  --bs-border-radius: var(--sf-radius);
+  --bs-border-radius-sm: var(--sf-radius);
+  --bs-border-radius-lg: var(--sf-radius);
+  --bs-focus-ring-color: rgba(109, 40, 217, 0.35);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--sf-font-heading);
+  font-weight: 700;
+  color: var(--sf-text);
+}
+h1 { font-size: 1.75rem; }
+h2 { font-size: 1.375rem; }
+h3 { font-size: 1.125rem; }
+h4, h5, h6 { font-size: 1rem; }
+
+@media (min-width: 768px) {
+  h1 { font-size: 2.25rem; }
+  h2 { font-size: 1.75rem; }
+  h3 { font-size: 1.375rem; }
+  h4 { font-size: 1.125rem; }
+}
+
+/* Focus visible : 3 px, violet sur fond clair, orange clair sur fond bleu nuit. */
+:focus-visible {
+  outline: 3px solid var(--sf-violet);
+  outline-offset: 2px;
+}
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible,
+.form-check-input:focus-visible,
+.nav-link:focus-visible,
+.navbar-toggler:focus-visible {
+  outline: 3px solid var(--sf-violet);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+.sf-header :focus-visible,
+.sf-footer :focus-visible,
+.sf-header .nav-link:focus-visible,
+.sf-header .btn:focus-visible,
+.sf-header .navbar-toggler:focus-visible {
+  outline-color: var(--sf-orange-light);
+}
+
+.sf-skip-link {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  z-index: 1100;
+  padding: 8px 16px;
+  border-radius: var(--sf-radius);
+  background: var(--sf-violet);
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+}
+.sf-skip-link:focus {
+  top: 16px;
+  color: #fff;
+}
+
+/* En-tête et pied de page bleu nuit. */
+.sf-header {
+  background: var(--sf-navy);
+}
+.sf-header .navbar {
+  --bs-navbar-color: var(--sf-on-dark);
+  --bs-navbar-hover-color: #fff;
+  --bs-navbar-active-color: #fff;
+  --bs-navbar-brand-color: #fff;
+  --bs-navbar-brand-hover-color: #fff;
+  --bs-navbar-toggler-border-color: var(--sf-on-dark);
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.sf-header .nav-link[aria-current="page"] {
+  color: #fff;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+.sf-brand {
+  font-family: var(--sf-font-heading);
+  font-weight: 700;
+  font-size: 1.375rem;
+}
+.sf-brand__accent {
+  color: var(--sf-orange);
+}
+.sf-user {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  color: var(--sf-on-dark);
+}
+.sf-user__role {
+  padding: 4px 8px;
+  border: 1px solid var(--sf-on-dark);
+  border-radius: var(--sf-radius);
+  font-size: 0.875rem;
+}
+.sf-btn-on-dark {
+  --bs-btn-color: #fff;
+  --bs-btn-border-color: var(--sf-on-dark);
+  --bs-btn-hover-color: var(--sf-navy);
+  --bs-btn-hover-bg: #fff;
+  --bs-btn-hover-border-color: #fff;
+  --bs-btn-active-color: var(--sf-navy);
+  --bs-btn-active-bg: var(--sf-on-dark);
+}
+
+.sf-main {
+  flex: 1 0 auto;
+  padding-top: 32px;
+  padding-bottom: 48px;
+}
+
+.sf-footer {
+  padding: 24px 0;
+  background: var(--sf-navy);
+  color: var(--sf-on-dark);
+  font-size: 0.875rem;
+}
+.sf-footer a {
+  color: #fff;
+}
+
+/* Boutons : violet pour l'action principale, orange (texte bleu nuit) pour l'accent rare. */
+.btn-primary {
+  --bs-btn-bg: var(--sf-violet);
+  --bs-btn-border-color: var(--sf-violet);
+  --bs-btn-hover-bg: var(--sf-violet-dark);
+  --bs-btn-hover-border-color: var(--sf-violet-dark);
+  --bs-btn-active-bg: var(--sf-violet-dark);
+  --bs-btn-active-border-color: var(--sf-violet-dark);
+  --bs-btn-disabled-bg: var(--sf-violet);
+  --bs-btn-disabled-border-color: var(--sf-violet);
+}
+.btn-outline-primary {
+  --bs-btn-color: var(--sf-violet);
+  --bs-btn-border-color: var(--sf-violet);
+  --bs-btn-hover-bg: var(--sf-violet);
+  --bs-btn-hover-border-color: var(--sf-violet);
+  --bs-btn-active-bg: var(--sf-violet-dark);
+  --bs-btn-active-border-color: var(--sf-violet-dark);
+}
+.btn-accent {
+  --bs-btn-color: var(--sf-navy);
+  --bs-btn-bg: var(--sf-orange);
+  --bs-btn-border-color: var(--sf-orange);
+  --bs-btn-hover-color: var(--sf-navy);
+  --bs-btn-hover-bg: var(--sf-orange-light);
+  --bs-btn-hover-border-color: var(--sf-orange-light);
+  --bs-btn-active-color: var(--sf-navy);
+  --bs-btn-active-bg: var(--sf-orange-light);
+  font-weight: 600;
+}
+.btn-danger {
+  --bs-btn-bg: var(--sf-danger);
+  --bs-btn-border-color: var(--sf-danger);
+  --bs-btn-hover-bg: #991b1b;
+  --bs-btn-hover-border-color: #991b1b;
+}
+
+/* Composants dont Bootstrap compile le bleu en dur. */
+.form-control,
+.form-select,
+.form-check-input {
+  border-color: var(--sf-input-border);
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--sf-violet);
+}
+.form-check-input:checked {
+  background-color: var(--sf-violet);
+  border-color: var(--sf-violet);
+}
+.form-control[aria-invalid="true"],
+.form-select[aria-invalid="true"] {
+  border-color: var(--sf-danger);
+}
+.invalid-feedback {
+  color: var(--sf-danger);
+}
+.sf-required {
+  color: var(--sf-muted);
+  font-weight: 400;
+  font-size: 0.875rem;
+}
+.pagination {
+  --bs-pagination-color: var(--sf-violet);
+  --bs-pagination-hover-color: var(--sf-violet-dark);
+  --bs-pagination-active-bg: var(--sf-violet);
+  --bs-pagination-active-border-color: var(--sf-violet);
+}
+.nav-pills {
+  --bs-nav-pills-link-active-bg: var(--sf-violet);
+}
+.progress {
+  --bs-progress-bar-bg: var(--sf-violet);
+}
+.dropdown-menu {
+  --bs-dropdown-link-active-bg: var(--sf-violet);
+}
+.list-group {
+  --bs-list-group-active-bg: var(--sf-violet);
+  --bs-list-group-active-border-color: var(--sf-violet);
+}
+
+/* Cartes : bordure, pas d'ombre. */
+.card {
+  --bs-card-border-color: var(--sf-border);
+  box-shadow: none;
+}
+
+.text-muted,
+.text-body-secondary {
+  color: var(--sf-muted) !important;
+}
+
+/* Messages Django. */
+.sf-messages .alert:last-child {
+  margin-bottom: 24px;
+}
+
+/* Statut d'un traitement IA (core/partials/ai_status.html). */
+.sf-ai-status {
+  padding: 12px 16px;
+  border: 1px solid var(--sf-border);
+  border-radius: var(--sf-radius);
+  background: var(--sf-surface);
+}
+.sf-ai-status p {
+  margin: 0;
+}
+.sf-ai-status__pending {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sf-ai-status__error {
+  color: var(--sf-danger);
+}
+.sf-ai-status__done {
+  color: var(--sf-success);
+}
+
+/* Pages d'erreur. */
+.sf-error {
+  max-width: 640px;
+}
+.sf-error__code {
+  margin-bottom: 4px;
+  color: var(--sf-muted);
+  font-weight: 600;
+}
+
+/* Formulaires étroits (connexion…). */
+.sf-narrow {
+  max-width: 480px;
+}
+
+/* Accueil. */
+.sf-intro {
+  max-width: 760px;
+  margin-bottom: 48px;
+}
+.sf-intro__lead {
+  font-size: 1.125rem;
+  color: var(--sf-muted);
+}
+.sf-steps {
+  display: grid;
+  gap: 16px;
+  margin: 0 0 48px;
+  padding: 0;
+  list-style: none;
+  counter-reset: sf-step;
+}
+.sf-steps li {
+  padding: 16px 24px;
+  border: 1px solid var(--sf-border);
+  border-left: 4px solid var(--sf-violet);
+  border-radius: var(--sf-radius);
+  background: var(--sf-surface);
+  counter-increment: sf-step;
+}
+.sf-steps h3::before {
+  content: counter(sf-step) ". ";
+  color: var(--sf-violet);
+}
+.sf-steps p {
+  margin: 0;
+}
+@media (min-width: 992px) {
+  .sf-steps {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+.sf-actors {
+  display: grid;
+  gap: 12px 32px;
+  margin: 0;
+}
+.sf-actors dt {
+  font-family: var(--sf-font-heading);
+  font-weight: 600;
+}
+.sf-actors dd {
+  margin: 0 0 12px;
+  color: var(--sf-muted);
+}
+@media (min-width: 768px) {
+  .sf-actors {
+    grid-template-columns: 200px 1fr;
+  }
+  .sf-actors dd {
+    margin: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .spinner-border {
+    animation: none;
+  }
+}

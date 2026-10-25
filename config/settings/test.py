@@ -15,6 +15,9 @@ CELERY_TASK_EAGER_PROPAGATES = True
 # Jamais d'appel réel à une API d'IA dans les tests.
 AI_PROVIDER = "mock"
 
+# Pas de collectstatic en test : WhiteNoise cherche les fichiers à la demande.
+WHITENOISE_AUTOREFRESH = True
+
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},

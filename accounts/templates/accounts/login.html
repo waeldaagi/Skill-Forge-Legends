@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Connexion · SkillForge{% endblock %}
+
+{% block content %}
+<div class="sf-narrow">
+  <h1>Connexion</h1>
+  <form method="post" action="{% url 'accounts:login' %}">
+    {% csrf_token %}
+    {{ form }}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button type="submit" class="btn btn-primary">Se connecter</button>
+  </form>
+</div>
+{% endblock %}
