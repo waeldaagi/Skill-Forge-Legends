@@ -109,8 +109,15 @@ CELERY_BROKER_URL = REDIS_URL
 CELERY_TASK_IGNORE_RESULT = True
 CELERY_TASK_ALWAYS_EAGER = env.bool("CELERY_TASK_ALWAYS_EAGER", default=False)
 CELERY_TIMEZONE = TIME_ZONE
+CELERY_BEAT_SCHEDULE = {
+    "expire-subscriptions-daily": {
+        "task": "payments.tasks.expire_subscriptions_task",
+        "schedule": 86400,
+    },
+}
 
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="SkillForge <no-reply@skillforge.tn>")
+DEMO_PASSWORD = env("DEMO_PASSWORD", default="")
 
 # Mot de passe commun des comptes créés par « seed_demo » ; jamais de valeur par défaut.
 DEMO_PASSWORD = env("DEMO_PASSWORD", default="")

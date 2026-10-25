@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Offres{% endblock %}
+{% block content %}
+<main id="contenu" class="container py-4"><h1>Choisir une offre</h1>
+<p>Les paiements sont simulés : aucune donnée bancaire n’est demandée.</p>
+<div class="row g-4">{% for plan in plans %}<article class="col-md-4"><div class="card h-100 p-3">
+<h2 class="h3">{{ plan.name }}</h2><p class="fs-4">{{ plan.price }} TND</p><p>{{ plan.duration_days }} jours</p><p>{{ plan.benefits|linebreaksbr }}</p>
+{% if user.is_authenticated %}{% if plan.active_subscription_id %}<form method="post" action="{% url 'payments:cancel' plan.active_subscription_id %}">{% csrf_token %}<button class="btn btn-outline-danger">Annuler</button></form><p class="text-success mt-2">Abonnement actif</p>{% else %}<form method="post" action="{% url 'payments:checkout' plan.slug %}">{% csrf_token %}<button class="btn btn-primary">Payer (mode démo)</button></form>{% endif %}{% else %}<a class="btn btn-primary" href="{% url 'accounts:login' %}?next={{ request.path }}">Se connecter</a>{% endif %}
+</div></article>{% empty %}<p>Aucune offre active pour le moment.</p>{% endfor %}</div></main>
+{% endblock %}

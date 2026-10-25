@@ -32,6 +32,9 @@
           </ul>
           {% if user.is_authenticated %}
             <div class="sf-user">
+              <a class="nav-link" href="{% url 'payments:plans' %}" aria-label="Voir les abonnements" title="Abonnements">
+                <i class="bi bi-credit-card-2-front" aria-hidden="true"></i>
+              </a>
               <span>{{ user }}</span>
               <span class="sf-user__role">{{ user.get_role_display }}</span>
               <form method="post" action="{% url 'accounts:logout' %}">
