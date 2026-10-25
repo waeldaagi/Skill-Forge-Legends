@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.validators import FileExtensionValidator
 from django.db import models
 
+from core.validators import validate_upload_size
+
 from .services import assign_role_group
 
 
@@ -26,7 +28,7 @@ class User(AbstractUser):
         "avatar",
         upload_to="avatars/",
         blank=True,
-        validators=[FileExtensionValidator(["jpg", "jpeg", "png", "webp"])],
+        validators=[FileExtensionValidator(["jpg", "jpeg", "png", "webp"]), validate_upload_size],
     )
     bio = models.TextField("biographie", blank=True, max_length=1000)
     phone = models.CharField("téléphone", blank=True, max_length=30)
@@ -96,7 +98,7 @@ class Etablissement(models.Model):
         "logo",
         upload_to="institutions/",
         blank=True,
-        validators=[FileExtensionValidator(["jpg", "jpeg", "png", "webp"])],
+        validators=[FileExtensionValidator(["jpg", "jpeg", "png", "webp"]), validate_upload_size],
     )
     invite_code = models.CharField("code d'invitation", max_length=16, unique=True, editable=False)
     manager = models.OneToOneField(

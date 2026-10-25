@@ -3,7 +3,7 @@
 {% block content %}
 <h1>Rejoindre un établissement</h1>
 <p>Demandez le code à votre établissement avant de continuer.</p>
-<form method="post" novalidate>
+<form method="post">
   {% csrf_token %}
   {{ form }}
   <button class="btn sf-btn-primary" type="submit">Rejoindre l’établissement</button>

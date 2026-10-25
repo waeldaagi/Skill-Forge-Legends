@@ -2,7 +2,7 @@
 {% block title %}Modifier mon profil · SkillForge{% endblock %}
 {% block content %}
 <h1>Modifier mon profil</h1>
-<form method="post" enctype="multipart/form-data" novalidate>
+<form method="post" enctype="multipart/form-data">
   {% csrf_token %}
   {{ form }}
   <button class="btn sf-btn-primary" type="submit">Enregistrer mon profil</button>

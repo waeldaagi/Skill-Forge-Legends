@@ -11,6 +11,8 @@ class RegistrationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Sans adresse e-mail, la réinitialisation du mot de passe serait impossible.
+        self.fields["email"].required = True
         self.fields["role"].choices = [
             choice
             for choice in User.Role.choices

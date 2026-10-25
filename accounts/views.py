@@ -5,6 +5,8 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, FormView, UpdateView
 
+from core.permissions import RoleRequiredMixin
+
 from .forms import JoinInstitutionForm, ProfileForm, RegistrationForm
 from .models import User
 
@@ -52,7 +54,9 @@ class PublicProfileView(DetailView):
         return User.objects.filter(is_public_profile=True, is_active=True)
 
 
-class JoinInstitutionView(LoginRequiredMixin, FormView):
+class JoinInstitutionView(RoleRequiredMixin, FormView):
+    # Le code d'invitation rattache un apprenant à son école ; les autres rôles n'en ont pas.
+    allowed_roles = (User.Role.APPRENANT,)
     form_class = JoinInstitutionForm
     template_name = "accounts/join_institution.html"
     success_url = reverse_lazy("accounts:profile")

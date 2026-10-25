@@ -6,7 +6,7 @@
 <div class="sf-narrow">
   <h1>Créer un compte</h1>
   <p>Choisissez le rôle qui correspond à votre usage de SkillForge.</p>
-  <form method="post" novalidate>
+  <form method="post">
     {% csrf_token %}
     {{ form }}
     <button class="btn sf-btn-primary" type="submit">Créer mon compte</button>
