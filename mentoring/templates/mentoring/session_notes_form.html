@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }} · SkillForge{% endblock %}
+
+{% block content %}
+<div class="sf-narrow">
+  <h1>{{ page_title }}</h1>
+  <p>{{ session.topic }} · {{ session.learner }} · {{ session.slot.period }}</p>
+  <form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <div class="sf-actions">
+      <button type="submit" class="btn btn-primary">{{ submit_label }}</button>
+      <a class="btn btn-outline-primary" href="{% url 'mentoring:session_detail' session.pk %}">Revenir à la session</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

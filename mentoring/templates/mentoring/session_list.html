@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Mes sessions · SkillForge{% endblock %}
+
+{% block content %}
+<h1>Mes sessions</h1>
+
+<form method="get" class="sf-filters" aria-label="Filtrer les sessions">
+  {{ filter_form }}
+  <button type="submit" class="btn btn-outline-primary">Filtrer</button>
+</form>
+
+{% if sessions %}
+  <div class="sf-table-wrapper">
+    <table class="table align-middle">
+      <caption class="visually-hidden">Vos sessions de mentorat</caption>
+      <thead>
+        <tr>
+          <th scope="col">Date et heure</th>
+          <th scope="col">Sujet</th>
+          <th scope="col">Avec</th>
+          <th scope="col">Statut</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for session in sessions %}
+          <tr>
+            <td>{{ session.slot.period }}</td>
+            <td><a href="{% url 'mentoring:session_detail' session.pk %}">{{ session.topic }}</a></td>
+            <td>{% if session.learner_id == user.pk %}{{ session.slot.mentor }}{% else %}{{ session.learner }}{% endif %}</td>
+            <td>{% include "mentoring/partials/session_status.html" %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "core/partials/pagination.html" %}
+{% elif is_learner %}
+  <p>Aucune session dans cette sélection. <a href="{% url 'mentoring:mentor_directory' %}">Trouvez un mentor</a> et réservez l'un de ses créneaux.</p>
+{% else %}
+  <p>Aucune session dans cette sélection. Les demandes des apprenants apparaîtront ici dès qu'ils réserveront l'un de <a href="{% url 'mentoring:slot_list' %}">vos créneaux</a>.</p>
+{% endif %}
+{% endblock %}

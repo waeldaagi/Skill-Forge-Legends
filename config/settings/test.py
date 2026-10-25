@@ -24,5 +24,10 @@ STORAGES = {
     "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
 }
 
-# Sortie des tests lisible : seuls les avertissements et les erreurs s'affichent.
-LOGGING = {**LOGGING, "root": {"handlers": ["console"], "level": "WARNING"}}  # noqa: F405
+# Sortie des tests lisible : seuls les avertissements et les erreurs s'affichent. Les 403 et 404
+# voulus par les tests de permissions ne sont pas journalisés ; une erreur 500 le reste.
+LOGGING = {  # noqa: F405
+    **LOGGING,  # noqa: F405
+    "root": {"handlers": ["console"], "level": "WARNING"},
+    "loggers": {"django.request": {"level": "ERROR"}},
+}

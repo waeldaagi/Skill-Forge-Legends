@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Réserver une session · SkillForge{% endblock %}
+
+{% block content %}
+<div class="sf-narrow">
+  <h1>Réserver une session</h1>
+  <dl class="sf-details">
+    <dt>Mentor</dt>
+    <dd>{{ slot.mentor }}</dd>
+    <dt>Date et heure</dt>
+    <dd>{{ slot.period }}</dd>
+  </dl>
+  <form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit" class="btn btn-primary">Envoyer la demande</button>
+  </form>
+</div>
+{% endblock %}

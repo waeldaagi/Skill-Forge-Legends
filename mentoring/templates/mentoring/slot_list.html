@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Mes créneaux · SkillForge{% endblock %}
+
+{% block content %}
+<div class="sf-page-header">
+  <h1>Mes créneaux</h1>
+  <a class="btn btn-primary" href="{% url 'mentoring:slot_create' %}">Ajouter un créneau</a>
+</div>
+
+{% if not has_profile %}
+  <div class="alert alert-warning">
+    Les apprenants ne vous trouvent pas encore dans l'annuaire.
+    <a href="{% url 'mentoring:profile_edit' %}">Complétez votre profil de mentor</a>.
+  </div>
+{% endif %}
+
+<form method="get" class="sf-filters" aria-label="Filtrer les créneaux">
+  {{ filter_form }}
+  <button type="submit" class="btn btn-outline-primary">Filtrer</button>
+</form>
+
+{% if slots %}
+  <div class="sf-table-wrapper">
+    <table class="table align-middle">
+      <caption class="visually-hidden">Vos créneaux de disponibilité</caption>
+      <thead>
+        <tr>
+          <th scope="col">Date et heure</th>
+          <th scope="col">État</th>
+          <th scope="col"><span class="visually-hidden">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for slot in slots %}
+          <tr>
+            <td>{{ slot.period }}</td>
+            <td>{% if slot.is_booked %}Réservé{% else %}Libre{% endif %}</td>
+            <td class="text-end">
+              {% if not slot.is_booked %}
+                <a class="btn btn-sm btn-outline-primary" href="{% url 'mentoring:slot_update' slot.pk %}">Modifier<span class="visually-hidden"> le créneau du {{ slot.period }}</span></a>
+                <a class="btn btn-sm btn-outline-danger" href="{% url 'mentoring:slot_delete' slot.pk %}">Supprimer<span class="visually-hidden"> le créneau du {{ slot.period }}</span></a>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "core/partials/pagination.html" %}
+{% else %}
+  <p>Aucun créneau dans cette sélection. Ajoutez un créneau pour que les apprenants puissent réserver une session avec vous.</p>
+{% endif %}
+{% endblock %}

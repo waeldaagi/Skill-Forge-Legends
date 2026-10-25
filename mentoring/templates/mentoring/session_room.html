@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Salle de visio · {{ session.topic }} · SkillForge{% endblock %}
+
+{% block content %}
+<div class="sf-page-header">
+  <h1>Salle de visio&nbsp;: {{ session.topic }}</h1>
+  <a href="{{ detail_url }}">Revenir à la session</a>
+</div>
+<p class="text-muted">
+  {{ session.slot.period }}. Si la visio ne s'affiche pas,
+  <a href="{{ session.jitsi_url }}" target="_blank" rel="noopener">ouvrez la salle dans un nouvel onglet<span class="visually-hidden"> (nouvelle fenêtre)</span></a>.
+</p>
+<div class="sf-room">
+  <iframe src="{{ session.jitsi_url }}"
+          title="Visioconférence Jitsi de la session « {{ session.topic }} »"
+          allow="camera; microphone; fullscreen; display-capture"></iframe>
+</div>
+{% endblock %}

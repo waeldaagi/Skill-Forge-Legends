@@ -90,6 +90,11 @@ Seuils : 4,5:1 pour le texte courant, 3:1 pour un texte de 24 px et plus et pour
 | `#B91C1C` erreur | `#FFFFFF` surface | Message d'erreur sous un champ | 6,47 | Conforme |
 | `#B91C1C` erreur | `#FEE2E2` fond erreur | Alerte d'erreur | 5,30 | Conforme |
 | `#FFFFFF` blanc | `#B91C1C` erreur | Bouton de suppression | 6,47 | Conforme |
+| `#B91C1C` erreur | `#FFFFFF` surface | Bouton contour « Supprimer », « Refuser », « Annuler » | 6,47 | Conforme |
+| `#92400E` avertissement | `#FEF3C7` | Statut « Demandée » | 6,37 | Conforme |
+| `#15803D` succès | `#DCFCE7` | Statut « Confirmée » | 4,57 | Conforme, marge faible |
+| `#1F2937` texte | `#F1F5F9` | Statut « Terminée » | 13,40 | Conforme |
+| `#B91C1C` erreur | `#FEE2E2` | Statuts « Annulée » et « Refusée » | 5,30 | Conforme |
 | `#92400E` avertissement | `#FEF3C7` fond avertissement | Alerte d'avertissement | 6,37 | Conforme |
 | `#6D28D9` violet | `#EDE9FE` fond violet clair | Alerte d'information | 5,98 | Conforme |
 
