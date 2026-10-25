@@ -41,7 +41,7 @@ class GeminiProviderTests(TestCase):
             self.call()
 
         url, sent = post.call_args.args[0], post.call_args.kwargs
-        self.assertTrue(url.endswith("/models/gemini-3.5-flash-lite:generateContent"))
+        self.assertTrue(url.endswith("/models/gemini-3.8-flash:generateContent"))
         self.assertEqual(sent["headers"], {"x-goog-api-key": "cle-de-test"})
         self.assertEqual(sent["json"]["generationConfig"], {"responseMimeType": "application/json"})
         self.assertIn(INJECTION_GUARD, sent["json"]["systemInstruction"]["parts"][0]["text"])
@@ -53,7 +53,7 @@ class GeminiProviderTests(TestCase):
 
         self.assertEqual(output.label, "OK")
         log = AICallLog.objects.get()
-        self.assertEqual((log.provider, log.model_name), ("gemini", "gemini-3.5-flash-lite"))
+        self.assertEqual((log.provider, log.model_name), ("gemini", "gemini-3.8-flash"))
 
     @override_settings(AI_MODEL="gemini-3.8-flash")
     def test_model_can_be_changed_in_the_settings(self):
