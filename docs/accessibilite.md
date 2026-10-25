@@ -118,6 +118,7 @@ Seuils : 4,5:1 pour le texte courant, 3:1 pour un texte de 24 px et plus et pour
 | `#B91C1C` erreur | `#FEE2E2` fond erreur | Alerte d'erreur | 5,30 | Conforme |
 | `#FFFFFF` blanc | `#B91C1C` erreur | Bouton de suppression | 6,47 | Conforme |
 | `#B91C1C` erreur | `#FFFFFF` surface | Bouton contour « Supprimer », « Refuser », « Annuler » | 6,47 | Conforme |
+| `#475569` secondaire | `#F8FAFC` fond de page | Bouton contour secondaire (`btn-outline-secondary`, au lieu du gris Bootstrap à 4,48) | 7,24 | Conforme |
 | `#92400E` avertissement | `#FEF3C7` | Statut « Demandée » | 6,37 | Conforme |
 | `#15803D` succès | `#DCFCE7` | Statut « Confirmée » | 4,57 | Conforme, marge faible |
 | `#1F2937` texte | `#F1F5F9` | Statut « Terminée » | 13,40 | Conforme |

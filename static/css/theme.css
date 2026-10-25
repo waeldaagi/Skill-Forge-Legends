@@ -261,6 +261,17 @@ h4, h5, h6 { font-size: 1rem; }
   --bs-btn-hover-bg: #991b1b;
   --bs-btn-hover-border-color: #991b1b;
 }
+/* Le gris Bootstrap (#6c757d) donne 4,48:1 sur le fond de page : sous le seuil AA. */
+.btn-outline-secondary {
+  --bs-btn-color: var(--sf-muted);
+  --bs-btn-border-color: var(--sf-muted);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--sf-muted);
+  --bs-btn-hover-border-color: var(--sf-muted);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--sf-text);
+  --bs-btn-active-border-color: var(--sf-text);
+}
 .btn-outline-danger {
   --bs-btn-color: var(--sf-danger);
   --bs-btn-border-color: var(--sf-danger);
