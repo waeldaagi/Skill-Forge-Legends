@@ -52,16 +52,31 @@ def fallback(job):
 
 
 def mock_output(prompt):
+    questions = [
+        {
+            "statement": "Quel élément décrit les données d'une application Django ?",
+            "choices": ["Un modèle", "Une URL", "Un gabarit", "Une migration"],
+            "correct_index": 0,
+            "explanation": "Le modèle décrit les données et leurs règles.",
+            "evidence": "Le contenu du chapitre porte sur les modèles Django.",
+        },
+        {
+            "statement": "Quel fichier associe une URL Django à une vue ?",
+            "choices": ["urls.py", "models.py", "admin.py", "forms.py"],
+            "correct_index": 0,
+            "explanation": "Le fichier urls.py déclare les routes et les vues correspondantes.",
+            "evidence": "Le contenu du chapitre présente le routage Django.",
+        },
+        {
+            "statement": "Quel mécanisme Django applique les changements de structure de la base ?",
+            "choices": ["Une migration", "Un gabarit", "Une permission", "Un formulaire"],
+            "correct_index": 0,
+            "explanation": "Les migrations synchronisent la structure de la base avec les modèles.",
+            "evidence": "Le contenu du chapitre présente les migrations Django.",
+        },
+    ]
     return {
-        "questions": [
-            {
-                "statement": "Quel élément décrit les données d'une application Django ?",
-                "choices": ["Un modèle", "Une URL", "Un gabarit", "Une migration"],
-                "correct_index": 0,
-                "explanation": "Le modèle décrit les données et leurs règles.",
-                "evidence": "Le contenu du chapitre porte sur les modèles Django.",
-            }
-        ]
+        "questions": questions,
     }
 
 

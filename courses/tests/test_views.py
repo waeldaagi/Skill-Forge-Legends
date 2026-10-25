@@ -88,8 +88,12 @@ class CourseCatalogueTests(TestCase):
         self.assertRedirects(response, reverse("courses:quiz_manage", kwargs={"pk": quiz.pk}))
         self.assertTrue(quiz.is_ai_generated)
         self.assertFalse(quiz.is_published)
-        self.assertEqual(quiz.questions.count(), 1)
-        self.assertEqual(quiz.questions.first().choices.count(), 4)
+        self.assertEqual(quiz.questions.count(), 3)
+        self.assertEqual(
+            quiz.questions.values_list("statement", flat=True).distinct().count(),
+            3,
+        )
+        self.assertTrue(all(question.choices.count() == 4 for question in quiz.questions.all()))
 
     def test_course_image_is_visible_in_catalogue_and_detail(self):
         course = CourseFactory(
