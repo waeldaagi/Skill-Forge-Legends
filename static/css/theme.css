@@ -581,7 +581,19 @@ h4, h5, h6 { font-size: 1rem; }
   gap: 12px;
   margin-bottom: 24px;
 }
+/* Barre native <progress> : annoncée par les lecteurs d'écran sans attribut ARIA. */
+.sf-progress {
+  display: block;
+  width: 100%;
+  height: 0.75rem;
+  margin-bottom: 16px;
+  accent-color: var(--sf-violet);
+}
+
 .sf-table-wrapper {
+  /* position: relative : les textes .visually-hidden (position absolue) des cellules restent
+     dans la zone défilante au lieu d'élargir toute la page sur mobile. */
+  position: relative;
   overflow-x: auto;
   margin-bottom: 24px;
 }

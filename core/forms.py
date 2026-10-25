@@ -1,4 +1,5 @@
 from django import forms
+from django.db import models
 from django.forms.boundfield import BoundField
 from django.forms.renderers import TemplatesSetting
 
@@ -32,3 +33,13 @@ class SkillForgeFormRenderer(TemplatesSetting):
     form_template_name = "core/forms/form.html"
     field_template_name = "core/forms/field.html"
     bound_field_class = SkillForgeBoundField
+
+
+def https_url_formfield(model_field, **kwargs):
+    """``formfield_callback`` des ModelForm : une URL saisie sans protocole devient https://.
+
+    Django 6.0 passera à https par défaut ; le déclarer évite l'avertissement de dépréciation.
+    """
+    if isinstance(model_field, models.URLField):
+        kwargs.setdefault("assume_scheme", "https")
+    return model_field.formfield(**kwargs)
