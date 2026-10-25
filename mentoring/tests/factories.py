@@ -18,7 +18,7 @@ class MentorProfileFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = MentorProfile
 
-    mentor = factory.SubFactory(UserFactory, role=User.Role.MENTOR)
+    mentor = factory.SubFactory(UserFactory, role=User.Role.MENTOR, is_verified=True)
     title = factory.Iterator(
         [
             "Développeur back-end Django",
@@ -33,7 +33,7 @@ class AvailabilitySlotFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = AvailabilitySlot
 
-    mentor = factory.SubFactory(UserFactory, role=User.Role.MENTOR)
+    mentor = factory.SubFactory(UserFactory, role=User.Role.MENTOR, is_verified=True)
     start = factory.LazyFunction(lambda: in_days(3))
     end = factory.LazyAttribute(lambda slot: slot.start + timedelta(hours=1))
 

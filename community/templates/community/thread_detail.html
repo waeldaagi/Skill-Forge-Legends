@@ -13,7 +13,11 @@
       <span class="sf-status sf-status--approuve">Résolu</span>
     {% endif %}
   </div>
-  <p class="sf-post__meta">{{ thread.author }} · {{ thread.created_at|date:"j F Y" }}</p>
+  <p class="sf-post__meta">
+    {{ thread.author }} · {{ thread.created_at|date:"j F Y" }}
+    {% if thread.course %} · Cours&nbsp;: <a href="{{ thread.course.get_absolute_url }}">{{ thread.course }}</a>{% endif %}
+    {% if thread.tags.all %} · {{ thread.tags.all|join:", " }}{% endif %}
+  </p>
 
   {% if is_author and not thread.is_published %}
     {% include "community/partials/author_moderation.html" with post=thread %}

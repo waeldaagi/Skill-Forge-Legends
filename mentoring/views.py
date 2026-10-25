@@ -58,6 +58,17 @@ class MentorProfileEditView(RoleRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
+class VerifiedMentorRequiredMixin:
+    """Après RoleRequiredMixin : un mentor non vérifié ne publie ni ne modifie de créneau."""
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            services.ensure_can_publish(request.user)
+        except services.MentorNotVerified as exc:
+            raise PermissionDenied(str(exc)) from exc
+        return super().dispatch(request, *args, **kwargs)
+
+
 class SlotListView(RoleRequiredMixin, ListView):
     allowed_roles = (Role.MENTOR,)
     template_name = "mentoring/slot_list.html"
@@ -83,11 +94,12 @@ class SlotListView(RoleRequiredMixin, ListView):
         return super().get_context_data(
             filter_form=self.filter_form,
             has_profile=MentorProfile.objects.filter(mentor=self.request.user).exists(),
+            is_verified=self.request.user.is_verified,
             **kwargs,
         )
 
 
-class SlotCreateView(RoleRequiredMixin, CreateView):
+class SlotCreateView(RoleRequiredMixin, VerifiedMentorRequiredMixin, CreateView):
     allowed_roles = (Role.MENTOR,)
     form_class = AvailabilitySlotForm
     template_name = "mentoring/slot_form.html"
@@ -117,7 +129,7 @@ class EditableSlotMixin(RoleRequiredMixin, OwnerRequiredMixin):
         return slot
 
 
-class SlotUpdateView(EditableSlotMixin, UpdateView):
+class SlotUpdateView(EditableSlotMixin, VerifiedMentorRequiredMixin, UpdateView):
     form_class = AvailabilitySlotForm
     template_name = "mentoring/slot_form.html"
 
@@ -156,6 +168,8 @@ class MentorDirectoryView(RoleRequiredMixin, ListView):
                 | Q(mentor__first_name__icontains=query)
                 | Q(mentor__last_name__icontains=query)
             )
+        if expertise := filters.get("expertise"):
+            profiles = profiles.filter(expertises=expertise)
         if filters.get("disponible"):
             profiles = profiles.filter(next_free_slot__isnull=False)
         return profiles
@@ -190,10 +204,14 @@ class SlotBookView(RoleRequiredMixin, FormView):
         )
 
     def get(self, request, *args, **kwargs):
-        if self.slot.is_booked or self.slot.start <= timezone.now():
+        slot = self.slot
+        if slot.is_booked or slot.start <= timezone.now() or not slot.mentor.is_verified:
             messages.error(request, "Ce créneau n'est plus disponible. Choisissez-en un autre.")
             return redirect("mentoring:mentor_directory")
         return super().get(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        return {**super().get_form_kwargs(), "learner": self.request.user}
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(slot=self.slot, **kwargs)
@@ -218,9 +236,9 @@ class ParticipantSessionMixin(RoleRequiredMixin):
 
     def get_queryset(self):
         user = self.request.user
-        return MentoringSession.objects.select_related("slot__mentor", "learner", "review").filter(
-            Q(learner=user) | Q(slot__mentor=user)
-        )
+        return MentoringSession.objects.select_related(
+            "slot__mentor", "learner", "review", "course"
+        ).filter(Q(learner=user) | Q(slot__mentor=user))
 
 
 class SessionListView(ParticipantSessionMixin, ListView):

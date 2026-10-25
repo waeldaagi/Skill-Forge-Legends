@@ -62,7 +62,7 @@ Créés par `python manage.py seed_demo`. Mot de passe : la valeur de `DEMO_PASS
 |---|---|---|
 | Apprenant | `yasmine.trabelsi` | Annuaire des mentors, réservation, sessions, forum |
 | Mentor | `skander.jaziri` | Créneaux, demande à confirmer, salle de visio, file de modération |
-| Formateur | `mariem.gharbi` | Forum (cours et quiz en Phase 1) |
+| Formateur | `mariem.gharbi` | Cours « Django : du modèle au déploiement », quiz et génération par l'IA, forum |
 | Recruteur | `oussema.mejri` | Espace recruteur (Phase 3) |
 | Administrateur | `ines.hammami` | Admin Django, file de modération |
 | Établissement | `khalil.chaabane` | Tableau de bord (Phase 4) |
@@ -93,7 +93,7 @@ coverage run manage.py test && coverage report && coverage html
 
 `manage.py test` et `pytest` utilisent les mêmes réglages (`config.settings.test`) : Celery synchrone, fournisseur d'IA `mock`, aucun appel réseau.
 
-État au 25/10/2026 (Phase 2) : 276 tests, couverture de 98 %. Détail par app : `docs/tests.md`. La CI GitHub Actions refuse une couverture inférieure à 75 %.
+État au 25/10/2026 (Phases 0 à 2 intégrées) : 411 tests, couverture de 98 %. Détail par app : `docs/tests.md`. La CI GitHub Actions refuse une couverture inférieure à 75 %.
 
 ## Déploiement
 

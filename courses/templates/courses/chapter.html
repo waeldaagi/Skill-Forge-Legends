@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}{{ chapter.title }} · {{ chapter.course.title }}{% endblock %}
+{% block content %}
+<p><a href="{{ chapter.course.get_absolute_url }}">Retour au cours</a></p>
+<h1>{{ chapter.title }}</h1>
+{% if is_owner %}
+<div class="d-flex flex-wrap gap-2 mb-3">
+  <a class="btn btn-outline-primary" href="{% url 'courses:chapter_update' chapter.pk %}">Modifier le chapitre</a>
+  <a class="btn btn-outline-primary" href="{% url 'courses:resource_create' chapter.pk %}">Ajouter une ressource</a>
+</div>
+{% endif %}
+<div>{{ chapter.content|linebreaks }}</div>
+{% if chapter.video_url %}
+  {% with embed_url=chapter.video_embed_url %}
+    {% if embed_url %}
+      <div class="ratio ratio-16x9 mb-3">
+        <iframe src="{{ embed_url }}" title="Vidéo du chapitre {{ chapter.title }}" allow="fullscreen; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      </div>
+    {% else %}
+      <p><a href="{{ chapter.video_url }}" rel="noopener" target="_blank">Regarder la vidéo du chapitre (nouvel onglet)</a></p>
+    {% endif %}
+  {% endwith %}
+{% endif %}
+<h2>Ressources</h2>
+{% if chapter.resources.all %}
+<ul>
+  {% for resource in chapter.resources.all %}
+    <li class="mb-2">
+      {% if resource.file %}
+        <a href="{{ resource.file.url }}" download>{{ resource.title }}</a>
+      {% else %}
+        <a href="{{ resource.url }}" rel="noopener" target="_blank">{{ resource.title }}<span class="visually-hidden"> (nouvel onglet)</span></a>
+      {% endif %}
+      {% if is_owner %}
+        <a class="btn btn-sm btn-outline-secondary ms-2" href="{% url 'courses:resource_update' resource.pk %}">Modifier<span class="visually-hidden"> la ressource {{ resource.title }}</span></a>
+        <a class="btn btn-sm btn-outline-danger ms-2" href="{% url 'courses:resource_delete' resource.pk %}">Supprimer<span class="visually-hidden"> la ressource {{ resource.title }}</span></a>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Aucune ressource n’est encore disponible pour ce chapitre.</p>
+{% endif %}
+{% if is_learner %}
+<form method="post" action="{% url 'courses:complete_chapter' chapter.pk %}">
+  {% csrf_token %}<button class="btn sf-btn-primary" type="submit">Marquer ce chapitre comme terminé</button>
+</form>
+{% endif %}
+{% endblock %}

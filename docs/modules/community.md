@@ -1,6 +1,6 @@
 # Module `community` : forum d'entraide et modération automatique
 
-Responsable : Wael Daagi. État au 25/10/2026 : Phase 2, branche `feature/community`.
+Responsable : Wael Daagi. État au 25/10/2026 : Phase 2, intégrée avec la Phase 1 (branche `integration/phases-0-1-2`).
 
 ## 1. Objectif et acteurs
 
@@ -42,6 +42,8 @@ classDiagram
     ModeratedContent <|-- Reply
     Thread "1" -- "*" Reply : replies
     Reply "1" -- "*" Vote : votes
+    Thread "*" -- "0..1" Course : course
+    Thread "*" -- "*" Skill : tags
     Thread "0..1" -- "*" Report
     Reply "0..1" -- "*" Report
 ```
@@ -55,7 +57,7 @@ Contraintes :
 | Un vote par utilisateur et par réponse | `UniqueConstraint` `one_vote_per_user_and_reply` |
 | Confiance de l'IA entre 0 et 1 | validators |
 
-**Dépendances en attente de la Phase 1 (Taha).** Le cahier des charges prévoit un lien optionnel vers un cours et des tags (`Skill`), avec les filtres correspondants. Ils seront ajoutés quand `courses.Course` et `accounts.Skill` seront dans `develop`.
+**Liens avec la Phase 1.** Un sujet peut citer un cours publié (`courses.Course`) et porter des tags (`accounts.Skill`). La liste du forum se filtre par cours et par tag.
 
 ## 3. URLs et rôles
 
@@ -115,12 +117,12 @@ Rapport complet : `docs/ia/moderation.md`.
 
 ## 7. Tests et accessibilité
 
-74 tests au 25/10/2026 :
+82 tests au 25/10/2026 :
 
 - modèles (8) : contraintes de signalement, de réponse acceptée et de vote ;
 - modération IA (12), avec le fournisseur `mock` : publication d'un message propre, spam masqué, message masqué pendant la vérification, échec de l'IA qui laisse le message en file humaine, modification qui relance une vérification, seuil de 0,6, injection de prompt ;
 - services (19) : visibilité, ordre, votes, réponse acceptée, signalements, décisions des modérateurs ;
-- vues (23), dont le vote HTMX et un contrôle du nombre de requêtes de la liste ;
+- vues (31), dont le vote HTMX, les filtres par cours et par tag, une réponse publiée pendant une panne de Redis (pas d'erreur 500, file humaine) et un contrôle du nombre de requêtes de la liste ;
 - matrice d'accès (5 tests, 19 URL × 7 profils : six rôles et l'anonyme) ;
 - commande d'évaluation (4) et données de démo (3).
 

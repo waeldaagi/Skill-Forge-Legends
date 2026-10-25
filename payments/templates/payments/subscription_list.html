@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Mes abonnements{% endblock %}
+{% block content %}
+<main id="contenu" class="container py-4"><h1>Mes abonnements</h1>
+{% for subscription in subscriptions %}<article class="card p-3 mb-3"><h2 class="h3">{{ subscription.plan.name }}</h2><p>{{ subscription.get_status_display }} — jusqu’au {{ subscription.ends_at|date:"d/m/Y" }}</p>{% if subscription.status == "ACTIVE" %}<form method="post" action="{% url 'payments:cancel' subscription.pk %}">{% csrf_token %}<button class="btn btn-outline-danger">Annuler</button></form>{% endif %}</article>{% empty %}<p>Vous n’avez pas encore d’abonnement.</p>{% endfor %}</main>
+{% endblock %}

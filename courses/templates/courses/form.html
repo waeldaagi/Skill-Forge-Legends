@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title|default:"Enregistrer" }} · SkillForge{% endblock %}
+{% block content %}
+<h1>{{ page_title|default:"Enregistrer" }}</h1>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form }}
+  <div class="d-flex flex-wrap gap-2 mt-3">
+    <button class="btn sf-btn-primary" type="submit">{{ submit_label|default:"Enregistrer" }}</button>
+    {% if cancel_url %}
+      <a class="btn btn-outline-secondary" href="{{ cancel_url }}">Annuler</a>
+    {% endif %}
+  </div>
+</form>
+{% endblock %}

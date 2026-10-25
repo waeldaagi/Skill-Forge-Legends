@@ -45,6 +45,10 @@ class ThreadListView(ForumAccessMixin, ListView):
         threads = services.visible_threads(self.request.user)
         if query := filters.get("q"):
             threads = threads.filter(Q(title__icontains=query) | Q(content__icontains=query))
+        if course := filters.get("course"):
+            threads = threads.filter(course=course)
+        if tag := filters.get("tag"):
+            threads = threads.filter(tags=tag)
         if filters.get("resolu") == "oui":
             threads = threads.filter(is_resolved=True)
         elif filters.get("resolu") == "non":

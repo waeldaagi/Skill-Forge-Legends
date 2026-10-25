@@ -4,6 +4,7 @@ from django.apps import apps
 from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
+from django.db import transaction
 from django.utils.module_loading import import_string
 
 from accounts.models import User
@@ -22,9 +23,11 @@ DEMO_ACCOUNTS = {
 class Command(BaseCommand):
     help = (
         "Crée un compte de démo par rôle, puis les données de démo de chaque module. "
-        "Peut être relancée : rien n'est dupliqué."
+        "Peut être relancée : rien n'est dupliqué ni supprimé."
     )
 
+    # Tout ou rien : un module dont les données échouent n'en laisse aucune à moitié créée.
+    @transaction.atomic
     def handle(self, *args, **options):
         if not settings.DEMO_PASSWORD:
             raise CommandError(
