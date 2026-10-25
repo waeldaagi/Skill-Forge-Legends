@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ course.title }} · SkillForge{% endblock %}
+{% block content %}
+<h1>{{ course.title }}</h1>
+<p>{{ course.description }}</p>
+<p>Formateur : {{ course.trainer.get_full_name|default:course.trainer.username }}</p>
+{% if user.is_authenticated %}
+<form method="post" action="{% url 'courses:enroll' course.slug %}">
+  {% csrf_token %}<button class="btn sf-btn-primary" type="submit">S’inscrire à ce cours</button>
+</form>
+{% endif %}
+<h2 class="h3 mt-4">Chapitres</h2>
+<ol>
+{% for chapter in course.chapters.all %}
+  <li><a href="{% url 'courses:chapter' chapter.pk %}">{{ chapter.title }}</a></li>
+{% empty %}<li>Les chapitres seront bientôt disponibles.</li>{% endfor %}
+</ol>
+{% endblock %}

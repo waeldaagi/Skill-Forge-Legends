@@ -1,0 +1,175 @@
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import Http404
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView, View
+
+from accounts.models import User
+from core.permissions import RoleRequiredMixin
+
+from .forms import ChapterForm, CourseFilterForm, CourseForm, ResourceForm
+from .models import Chapter, Course, Resource
+from .services import (
+    enroll_learner,
+    mark_chapter_completed,
+    user_can_access_course,
+)
+
+
+class CourseListView(ListView):
+    model = Course
+    template_name = "courses/list.html"
+    context_object_name = "courses"
+    paginate_by = 9
+
+    def get_queryset(self):
+        queryset = Course.objects.filter(status=Course.Status.PUBLISHED).select_related(
+            "category", "trainer"
+        )
+        form = CourseFilterForm(self.request.GET)
+        if form.is_valid():
+            if form.cleaned_data["query"]:
+                queryset = queryset.filter(title__icontains=form.cleaned_data["query"])
+            if form.cleaned_data["category"]:
+                queryset = queryset.filter(category=form.cleaned_data["category"])
+            if form.cleaned_data["level"]:
+                queryset = queryset.filter(level=form.cleaned_data["level"])
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["filter_form"] = CourseFilterForm(self.request.GET)
+        return context
+
+
+class CourseDetailView(DetailView):
+    model = Course
+    template_name = "courses/detail.html"
+    context_object_name = "course"
+
+    def get_queryset(self):
+        return (
+            Course.objects.filter(status=Course.Status.PUBLISHED)
+            .select_related("category", "trainer")
+            .prefetch_related("chapters")
+        )
+
+
+class EnrollView(LoginRequiredMixin, View):
+    def post(self, request, slug):
+        course = get_object_or_404(Course, slug=slug, status=Course.Status.PUBLISHED)
+        if request.user.role != User.Role.APPRENANT:
+            raise Http404
+        if not user_can_access_course(request.user, course):
+            messages.error(request, "Ce cours premium nécessite un abonnement actif.")
+            return redirect(course)
+        enroll_learner(request.user, course)
+        messages.success(request, "Votre inscription au cours est confirmée.")
+        return redirect(course)
+
+
+class ChapterDetailView(LoginRequiredMixin, DetailView):
+    model = Chapter
+    template_name = "courses/chapter.html"
+    context_object_name = "chapter"
+
+    def get_queryset(self):
+        return Chapter.objects.filter(course__status=Course.Status.PUBLISHED).select_related(
+            "course"
+        )
+
+    def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
+        if response.status_code == 200 and not user_can_access_course(
+            request.user, self.object.course
+        ):
+            raise Http404
+        return response
+
+
+class CompleteChapterView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        chapter = get_object_or_404(Chapter, pk=pk, course__status=Course.Status.PUBLISHED)
+        if not user_can_access_course(request.user, chapter.course):
+            raise Http404
+        mark_chapter_completed(request.user, chapter)
+        messages.success(request, "Chapitre marqué comme terminé.")
+        return redirect("courses:detail", slug=chapter.course.slug)
+
+
+class TrainerCourseMixin(RoleRequiredMixin):
+    allowed_roles = (User.Role.FORMATEUR,)
+
+    def get_queryset(self):
+        return Course.objects.filter(trainer=self.request.user)
+
+
+class TrainerCourseCreateView(TrainerCourseMixin, CreateView):
+    model = Course
+    form_class = CourseForm
+    template_name = "courses/form.html"
+
+    def form_valid(self, form):
+        form.instance.trainer = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("courses:update", kwargs={"slug": self.object.slug})
+
+
+class TrainerCourseUpdateView(TrainerCourseMixin, UpdateView):
+    form_class = CourseForm
+    template_name = "courses/form.html"
+
+    def get_success_url(self):
+        return reverse("courses:update", kwargs={"slug": self.object.slug})
+
+
+class TrainerCourseDeleteView(TrainerCourseMixin, DeleteView):
+    template_name = "courses/confirm_delete.html"
+    success_url = reverse_lazy("courses:list")
+
+
+class TrainerChapterCreateView(RoleRequiredMixin, CreateView):
+    model = Chapter
+    form_class = ChapterForm
+    template_name = "courses/form.html"
+    allowed_roles = (User.Role.FORMATEUR,)
+
+    def get_queryset(self):
+        return Chapter.objects.filter(course__trainer=self.request.user)
+
+    def dispatch(self, request, *args, **kwargs):
+        self.course = get_object_or_404(Course, pk=kwargs["course_pk"], trainer=request.user)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.course = self.course
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return self.course.get_absolute_url()
+
+
+class TrainerResourceCreateView(RoleRequiredMixin, CreateView):
+    model = Resource
+    form_class = ResourceForm
+    template_name = "courses/form.html"
+    allowed_roles = (User.Role.FORMATEUR,)
+
+    def get_queryset(self):
+        return Resource.objects.filter(chapter__course__trainer=self.request.user)
+
+    def dispatch(self, request, *args, **kwargs):
+        self.chapter = get_object_or_404(
+            Chapter, pk=kwargs["chapter_pk"], course__trainer=request.user
+        )
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.chapter = self.chapter
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return self.chapter.course.get_absolute_url()

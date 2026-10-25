@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Supprimer un cours · SkillForge{% endblock %}
+{% block content %}
+<h1>Supprimer ce cours</h1>
+<p>Cette action supprimera le cours et ses chapitres. Voulez-vous continuer&nbsp;?</p>
+<form method="post">{% csrf_token %}<button class="btn btn-danger" type="submit">Supprimer le cours</button></form>
+{% endblock %}

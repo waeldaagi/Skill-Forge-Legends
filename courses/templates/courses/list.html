@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Catalogue des cours · SkillForge{% endblock %}
+{% block content %}
+<h1>Catalogue des cours</h1>
+<form method="get" class="row g-3 mb-4">
+  {{ filter_form }}
+  <div class="col-auto"><button class="btn sf-btn-primary" type="submit">Rechercher des cours</button></div>
+</form>
+<div class="row g-4">
+{% for course in courses %}
+  <article class="col-md-6 col-lg-4">
+    <div class="card h-100">
+      <div class="card-body">
+        <p class="text-muted mb-2">{{ course.category }} · {{ course.get_level_display }}</p>
+        <h2 class="h4"><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></h2>
+        <p>{{ course.description|truncatewords:25 }}</p>
+        {% if course.is_premium %}<span class="badge text-bg-warning">Premium</span>{% endif %}
+      </div>
+    </div>
+  </article>
+{% empty %}
+  <p>Aucun cours ne correspond à votre recherche.</p>
+{% endfor %}
+</div>
+{% endblock %}

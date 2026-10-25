@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ chapter.title }} · {{ chapter.course.title }}{% endblock %}
+{% block content %}
+<p><a href="{{ chapter.course.get_absolute_url }}">Retour au cours</a></p>
+<h1>{{ chapter.title }}</h1>
+<div>{{ chapter.content|linebreaks }}</div>
+{% if chapter.video_url %}<iframe src="{{ chapter.video_url }}" title="Vidéo du chapitre {{ chapter.title }}" allowfullscreen></iframe>{% endif %}
+<form method="post" action="{% url 'courses:complete_chapter' chapter.pk %}">
+  {% csrf_token %}<button class="btn sf-btn-primary" type="submit">Marquer ce chapitre comme terminé</button>
+</form>
+{% endblock %}
