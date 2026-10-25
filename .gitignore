@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+
+# Django
+.env
+*.sqlite3
+media/
+staticfiles/
+
+# Tests et qualité
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.ruff_cache/
+
+# Modèles ML générés (train_dropout_model)
+*.joblib
+
+# Celery beat
+celerybeat-schedule*
+
+# Éditeurs et systèmes
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Claude Code : réglages propres à chaque poste
+.claude/settings.local.json
