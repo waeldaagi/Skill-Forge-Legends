@@ -38,6 +38,20 @@ class CourseCatalogueTests(TestCase):
         self.assertEqual(quiz.questions.get().choices.count(), 4)
         self.assertTrue(quiz.questions.get().choices.get(text="Un modèle").is_correct)
 
+    def test_question_form_displays_an_explicit_save_button(self):
+        trainer = UserFactory(role=User.Role.FORMATEUR)
+        course = CourseFactory(trainer=trainer)
+        chapter = ChapterFactory(course=course)
+        quiz = Quiz.objects.create(chapter=chapter, title="Quiz Django")
+        self.client.force_login(trainer)
+
+        response = self.client.get(
+            reverse("courses:question_create", kwargs={"quiz_pk": quiz.pk})
+        )
+
+        self.assertContains(response, "Enregistrer la question")
+        self.assertContains(response, "name=\"choice_1\"")
+
     def test_trainer_can_publish_only_a_complete_quiz(self):
         trainer = UserFactory(role=User.Role.FORMATEUR)
         course = CourseFactory(trainer=trainer)

@@ -175,6 +175,13 @@ class TrainerQuestionCreateView(RoleRequiredMixin, CreateView):
     template_name = "courses/form.html"
     allowed_roles = (User.Role.FORMATEUR,)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Ajouter une question"
+        context["submit_label"] = "Enregistrer la question"
+        context["cancel_url"] = reverse("courses:quiz_manage", kwargs={"pk": self.quiz.pk})
+        return context
+
     def dispatch(self, request, *args, **kwargs):
         self.quiz = get_object_or_404(
             Quiz, pk=kwargs["quiz_pk"], chapter__course__trainer=request.user
@@ -194,6 +201,13 @@ class TrainerQuestionUpdateView(RoleRequiredMixin, UpdateView):
     form_class = QuestionForm
     template_name = "courses/form.html"
     allowed_roles = (User.Role.FORMATEUR,)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Modifier la question"
+        context["submit_label"] = "Enregistrer les modifications"
+        context["cancel_url"] = reverse("courses:quiz_manage", kwargs={"pk": self.object.quiz.pk})
+        return context
 
     def get_queryset(self):
         return Question.objects.filter(quiz__chapter__course__trainer=self.request.user)
@@ -271,6 +285,12 @@ class TrainerCourseCreateView(TrainerCourseMixin, CreateView):
     form_class = CourseForm
     template_name = "courses/form.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Créer un cours"
+        context["submit_label"] = "Enregistrer le cours"
+        return context
+
     def form_valid(self, form):
         form.instance.trainer = self.request.user
         return super().form_valid(form)
@@ -282,6 +302,12 @@ class TrainerCourseCreateView(TrainerCourseMixin, CreateView):
 class TrainerCourseUpdateView(TrainerCourseMixin, UpdateView):
     form_class = CourseForm
     template_name = "courses/form.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Modifier le cours"
+        context["submit_label"] = "Enregistrer les modifications"
+        return context
 
     def get_success_url(self):
         return reverse("courses:update", kwargs={"slug": self.object.slug})
@@ -297,6 +323,13 @@ class TrainerChapterCreateView(RoleRequiredMixin, CreateView):
     form_class = ChapterForm
     template_name = "courses/form.html"
     allowed_roles = (User.Role.FORMATEUR,)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Ajouter un chapitre"
+        context["submit_label"] = "Enregistrer le chapitre"
+        context["cancel_url"] = self.course.get_absolute_url()
+        return context
 
     def get_queryset(self):
         return Chapter.objects.filter(course__trainer=self.request.user)
@@ -318,6 +351,13 @@ class TrainerResourceCreateView(RoleRequiredMixin, CreateView):
     form_class = ResourceForm
     template_name = "courses/form.html"
     allowed_roles = (User.Role.FORMATEUR,)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_title"] = "Ajouter une ressource"
+        context["submit_label"] = "Enregistrer la ressource"
+        context["cancel_url"] = reverse("courses:chapter", kwargs={"pk": self.chapter.pk})
+        return context
 
     def get_queryset(self):
         return Resource.objects.filter(chapter__course__trainer=self.request.user)
