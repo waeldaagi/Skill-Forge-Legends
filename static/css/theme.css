@@ -421,3 +421,123 @@ h4, h5, h6 { font-size: 1rem; }
     animation: none;
   }
 }
+
+/* Composants communs aux pages des modules. */
+.sf-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.sf-page-header h1 {
+  margin: 0;
+}
+.sf-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px solid var(--sf-border);
+  border-radius: var(--sf-radius);
+  background: var(--sf-surface);
+}
+.sf-filters .mb-3 {
+  margin-bottom: 0 !important;
+}
+.sf-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.sf-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 24px;
+  border: 1px solid var(--sf-border);
+  border-radius: var(--sf-radius);
+  background: var(--sf-surface);
+}
+.sf-card h2 {
+  margin: 0;
+  font-size: 1.125rem;
+}
+.sf-card p {
+  margin: 0;
+}
+.sf-card .btn {
+  align-self: flex-start;
+  margin-top: auto;
+}
+.sf-details {
+  display: grid;
+  gap: 4px 24px;
+  margin-bottom: 24px;
+}
+.sf-details dt {
+  font-weight: 600;
+}
+.sf-details dd {
+  margin: 0 0 12px;
+  white-space: pre-line;
+}
+@media (min-width: 768px) {
+  .sf-details {
+    grid-template-columns: 220px 1fr;
+  }
+  .sf-details dd {
+    margin: 0;
+  }
+}
+.sf-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.sf-table-wrapper {
+  overflow-x: auto;
+  margin-bottom: 24px;
+}
+.sf-table-wrapper .table {
+  margin-bottom: 0;
+}
+
+/* Statuts : texte foncé sur fond clair, jamais la couleur seule (le libellé est toujours écrit). */
+.sf-status {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: var(--sf-radius);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--sf-text);
+  background: #f1f5f9;
+}
+.sf-status--demandee {
+  color: var(--sf-warning-text);
+  background: var(--sf-warning-subtle);
+}
+.sf-status--confirmee {
+  color: var(--sf-success);
+  background: var(--sf-success-subtle);
+}
+.sf-status--annulee,
+.sf-status--refusee {
+  color: var(--sf-danger);
+  background: var(--sf-danger-subtle);
+}
+
+/* Salle de visio (mentorat). */
+.sf-room iframe {
+  display: block;
+  width: 100%;
+  height: 70vh;
+  min-height: 480px;
+  border: 1px solid var(--sf-border);
+  border-radius: var(--sf-radius);
+}
