@@ -4,6 +4,7 @@ from django.apps import AppConfig
 class MentoringConfig(AppConfig):
     name = "mentoring"
     verbose_name = "Mentorat en direct"
+    demo_seeder = "mentoring.demo.seed"
 
     # Lus par le context processor de navigation et par « setup_roles » (voir accounts/apps.py).
     role_navigation = {
