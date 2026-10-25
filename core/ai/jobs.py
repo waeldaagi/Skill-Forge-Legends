@@ -4,6 +4,7 @@ from functools import partial
 from celery import shared_task
 from django.db import transaction
 
+from core.dispatch import enqueue
 from core.models import AIJob
 
 from .exceptions import AIServiceError
@@ -14,6 +15,7 @@ logger = logging.getLogger(__name__)
 # Un appel initial puis deux relances au maximum, uniquement sur une erreur passagère.
 MAX_NETWORK_RETRIES = 2
 UNEXPECTED_ERROR_MESSAGE = "Le traitement automatique s'est arrêté sur une erreur inattendue."
+QUEUE_DOWN_MESSAGE = "Le traitement en arrière-plan est indisponible pour le moment."
 
 
 def run_ai_job(feature, user, target=None, payload=None):
@@ -23,8 +25,15 @@ def run_ai_job(feature, user, target=None, payload=None):
     """
     get_feature(feature)  # Une fonctionnalité non enregistrée échoue ici, pas dans le worker.
     job = AIJob.objects.create(feature=feature, user=user, target=target, payload=payload or {})
-    transaction.on_commit(partial(execute_ai_job.delay, str(job.pk)))
+    transaction.on_commit(partial(_dispatch, job.pk))
     return job
+
+
+def _dispatch(job_id):
+    # Redis arrêté : le job échoue tout de suite et le repli métier s'applique (file humaine).
+    if not enqueue(execute_ai_job, str(job_id)):
+        job = AIJob.objects.get(pk=job_id)
+        _fail(job, get_feature(job.feature), QUEUE_DOWN_MESSAGE)
 
 
 @shared_task(bind=True, max_retries=MAX_NETWORK_RETRIES)
