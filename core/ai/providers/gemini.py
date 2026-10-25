@@ -4,7 +4,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 API_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 # AI_MODEL permet de choisir un modèle disponible dans le compte Gemini configuré.
-DEFAULT_MODEL = "gemini-2.5-flash-lite"
+DEFAULT_MODEL = "gemini-2.5-flash"
 
 
 class GeminiProvider:
