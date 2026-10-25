@@ -112,6 +112,9 @@ CELERY_TIMEZONE = TIME_ZONE
 
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="SkillForge <no-reply@skillforge.tn>")
 
+# Mot de passe commun des comptes créés par « seed_demo » ; jamais de valeur par défaut.
+DEMO_PASSWORD = env("DEMO_PASSWORD", default="")
+
 AI_PROVIDER = env("AI_PROVIDER", default="mock")
 AI_API_KEY = env("AI_API_KEY", default="")
 AI_MODEL = env("AI_MODEL", default="")

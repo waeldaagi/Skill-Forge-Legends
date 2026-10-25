@@ -1,0 +1,14 @@
+{% load pagination %}
+{% if page_obj.has_other_pages %}
+  <nav class="sf-pagination" aria-label="Pagination">
+    <ul class="pagination">
+      {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="{% page_query page_obj.previous_page_number %}">Page précédente</a></li>
+      {% endif %}
+      <li class="page-item active"><span class="page-link" aria-current="page">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span></li>
+      {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="{% page_query page_obj.next_page_number %}">Page suivante</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+{% endif %}

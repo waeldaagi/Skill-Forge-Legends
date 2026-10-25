@@ -78,13 +78,14 @@ Le module `core` n'a pas de fonctionnalité IA propre. Il fournit le socle utili
 
 ## 7. Tests
 
-85 tests au 25/10/2026, couverture globale de 96 % (`pytest --cov`). Pour `core` :
+89 tests au 25/10/2026, couverture globale de 97 % (`pytest --cov`), détail dans `docs/tests.md`. Pour `core` :
 
 - fournisseur Gemini : clé dans l'en-tête, JSON imposé, modèle configurable, erreur 503, réponse bloquée, clé absente ;
 - client IA : réponse valide, journalisation, timeout, erreurs 401 et 503, service injoignable, JSON invalide puis corrigé, JSON invalide deux fois, fournisseur inconnu, consigne anti-injection présente ;
 - tâches IA : succès, échec avec repli, deux relances puis échec, erreur passagère puis succès, erreur inattendue, fonctionnalité non enregistrée ;
 - vue de statut : propriétaire, autre utilisateur (404), anonyme (redirection), code 286 en fin de traitement ;
 - permissions : chaque mixin, avec chaque rôle autorisé et refusé ;
+- admin : journal des appels IA en lecture seule, lisible par un administrateur grâce à son groupe ;
 - pages d'erreur, échec CSRF, formulaires accessibles, accueil et navigation par rôle, `/health/`, e-mails.
 
 ## 8. Questions probables du jury
