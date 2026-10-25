@@ -4,12 +4,83 @@ from django.urls import reverse
 
 from accounts.models import User
 from accounts.tests.factories import UserFactory
-from courses.models import Resource
+from courses.models import Choice, Question, Quiz, Resource
 
 from .factories import ChapterFactory, CourseFactory
 
 
 class CourseCatalogueTests(TestCase):
+    def test_trainer_can_create_question_with_four_choices(self):
+        trainer = UserFactory(role=User.Role.FORMATEUR)
+        course = CourseFactory(trainer=trainer)
+        chapter = ChapterFactory(course=course)
+        quiz = Quiz.objects.create(chapter=chapter, title="Quiz Django")
+        self.client.force_login(trainer)
+
+        response = self.client.post(
+            reverse("courses:question_create", kwargs={"quiz_pk": quiz.pk}),
+            {
+                "statement": "Quel objet décrit les données ?",
+                "explanation": "Le modèle décrit les données.",
+                "evidence": "Le chapitre présente les modèles.",
+                "order": 1,
+                "choice_1": "Un modèle",
+                "choice_2": "Une URL",
+                "choice_3": "Un gabarit",
+                "choice_4": "Une vue",
+                "correct_choice": 1,
+            },
+        )
+
+        self.assertRedirects(response, reverse("courses:quiz_manage", kwargs={"pk": quiz.pk}))
+        self.assertEqual(quiz.questions.get().choices.count(), 4)
+        self.assertTrue(quiz.questions.get().choices.get(text="Un modèle").is_correct)
+
+    def test_trainer_can_publish_only_a_complete_quiz(self):
+        trainer = UserFactory(role=User.Role.FORMATEUR)
+        course = CourseFactory(trainer=trainer)
+        chapter = ChapterFactory(course=course)
+        quiz = Quiz.objects.create(chapter=chapter, title="Quiz Django")
+        question = Question.objects.create(
+            quiz=quiz,
+            statement="Question",
+            explanation="Explication",
+            evidence="Preuve",
+            order=1,
+        )
+        Choice.objects.bulk_create(
+            [
+                Choice(question=question, text=f"Choix {index}", is_correct=index == 1)
+                for index in range(1, 5)
+            ]
+        )
+        self.client.force_login(trainer)
+
+        response = self.client.post(reverse("courses:quiz_publish", kwargs={"pk": quiz.pk}))
+
+        self.assertRedirects(response, reverse("courses:quiz_manage", kwargs={"pk": quiz.pk}))
+        quiz.refresh_from_db()
+        self.assertTrue(quiz.is_published)
+
+    def test_trainer_can_generate_a_draft_quiz_with_mock_ai(self):
+        trainer = UserFactory(role=User.Role.FORMATEUR)
+        course = CourseFactory(trainer=trainer)
+        chapter = ChapterFactory(course=course)
+        quiz = Quiz.objects.create(chapter=chapter, title="Quiz généré")
+        self.client.force_login(trainer)
+
+        with self.captureOnCommitCallbacks(execute=True):
+            response = self.client.post(
+                reverse("courses:quiz_generate", kwargs={"pk": quiz.pk})
+            )
+
+        quiz.refresh_from_db()
+        self.assertRedirects(response, reverse("courses:quiz_manage", kwargs={"pk": quiz.pk}))
+        self.assertTrue(quiz.is_ai_generated)
+        self.assertFalse(quiz.is_published)
+        self.assertEqual(quiz.questions.count(), 1)
+        self.assertEqual(quiz.questions.first().choices.count(), 4)
+
     def test_course_image_is_visible_in_catalogue_and_detail(self):
         course = CourseFactory(
             title="Django illustré",

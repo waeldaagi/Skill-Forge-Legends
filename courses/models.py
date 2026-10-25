@@ -176,6 +176,12 @@ class Quiz(models.Model):
     def __str__(self):
         return f"{self.chapter.title} · {self.title}"
 
+    @property
+    def ai_jobs(self):
+        from core.models import AIJob
+
+        return AIJob.objects.filter(object_id=self.pk, content_type__model="quiz")
+
 
 class Question(models.Model):
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="questions")

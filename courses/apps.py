@@ -12,3 +12,8 @@ class CoursesConfig(AppConfig):
             ("Créer un cours", "courses:create"),
         ],
     }
+
+    def ready(self):
+        from .ai import quiz_generation
+
+        quiz_generation.register()

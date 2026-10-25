@@ -25,6 +25,7 @@
     <a href="{% url 'courses:chapter' chapter.pk %}">{{ chapter.title }}</a>
     {% if user == course.trainer %}
       <a class="btn btn-sm btn-outline-secondary ms-2" href="{% url 'courses:resource_create' chapter.pk %}">Ajouter une ressource</a>
+      <a class="btn btn-sm btn-outline-secondary ms-2" href="{% url 'courses:quiz_create' chapter.pk %}">Ajouter un quiz</a>
     {% endif %}
     {% for quiz in chapter.quizzes.all %}
       {% if quiz.is_published %}<a class="btn btn-sm btn-outline-primary ms-2" href="{% url 'courses:quiz' quiz.pk %}">Passer le quiz</a>{% endif %}

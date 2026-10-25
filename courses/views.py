@@ -6,10 +6,18 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView, View
 
 from accounts.models import User
+from core.ai import run_ai_job
 from core.permissions import RoleRequiredMixin
 
-from .forms import ChapterForm, CourseFilterForm, CourseForm, ResourceForm
-from .models import Chapter, Course, Quiz, QuizAttempt, Resource
+from .forms import (
+    ChapterForm,
+    CourseFilterForm,
+    CourseForm,
+    QuestionForm,
+    QuizForm,
+    ResourceForm,
+)
+from .models import Chapter, Course, Question, Quiz, QuizAttempt, Resource
 from .services import (
     enroll_learner,
     mark_chapter_completed,
@@ -116,6 +124,128 @@ class QuizDetailView(LoginRequiredMixin, DetailView):
         )
         messages.success(request, f"Quiz terminé : votre score est de {score} %.")
         return redirect("courses:quiz", pk=self.object.pk)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        latest_attempt = QuizAttempt.objects.filter(
+            learner=self.request.user, quiz=self.object
+        ).first()
+        context["latest_attempt"] = latest_attempt
+        return context
+
+
+class TrainerQuizMixin(RoleRequiredMixin):
+    allowed_roles = (User.Role.FORMATEUR,)
+
+    def get_queryset(self):
+        return Quiz.objects.filter(chapter__course__trainer=self.request.user)
+
+
+class TrainerQuizCreateView(TrainerQuizMixin, CreateView):
+    model = Quiz
+    form_class = QuizForm
+    template_name = "courses/quiz_form.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        self.chapter = get_object_or_404(
+            Chapter, pk=kwargs["chapter_pk"], course__trainer=request.user
+        )
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.chapter = self.chapter
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("courses:quiz_manage", kwargs={"pk": self.object.pk})
+
+
+class TrainerQuizUpdateView(TrainerQuizMixin, UpdateView):
+    form_class = QuizForm
+    template_name = "courses/quiz_form.html"
+
+    def get_success_url(self):
+        return reverse("courses:quiz_manage", kwargs={"pk": self.object.pk})
+
+
+class TrainerQuestionCreateView(RoleRequiredMixin, CreateView):
+    model = Question
+    form_class = QuestionForm
+    template_name = "courses/form.html"
+    allowed_roles = (User.Role.FORMATEUR,)
+
+    def dispatch(self, request, *args, **kwargs):
+        self.quiz = get_object_or_404(
+            Quiz, pk=kwargs["quiz_pk"], chapter__course__trainer=request.user
+        )
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.quiz = self.quiz
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("courses:quiz_manage", kwargs={"pk": self.quiz.pk})
+
+
+class TrainerQuestionUpdateView(RoleRequiredMixin, UpdateView):
+    model = Question
+    form_class = QuestionForm
+    template_name = "courses/form.html"
+    allowed_roles = (User.Role.FORMATEUR,)
+
+    def get_queryset(self):
+        return Question.objects.filter(quiz__chapter__course__trainer=self.request.user)
+
+    def get_success_url(self):
+        return reverse("courses:quiz_manage", kwargs={"pk": self.object.quiz.pk})
+
+
+class TrainerQuizManageView(TrainerQuizMixin, DetailView):
+    template_name = "courses/quiz_manage.html"
+    context_object_name = "quiz"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["generation_job"] = self.object.ai_jobs.order_by("-created_at").first()
+        return context
+
+
+class GenerateQuizView(TrainerQuizMixin, View):
+    def post(self, request, pk):
+        quiz = get_object_or_404(self.get_queryset(), pk=pk)
+        run_ai_job(
+            "quiz_generation",
+            request.user,
+            target=quiz,
+            payload={
+                "title": quiz.title,
+                "chapter": quiz.chapter.content,
+            },
+        )
+        messages.info(
+            request, "La génération du quiz est lancée. Le résultat restera un brouillon."
+        )
+        return redirect("courses:quiz_manage", pk=quiz.pk)
+
+
+class PublishQuizView(TrainerQuizMixin, View):
+    def post(self, request, pk):
+        quiz = get_object_or_404(self.get_queryset(), pk=pk)
+        questions = list(quiz.questions.prefetch_related("choices"))
+        if not questions or any(question.choices.count() != 4 for question in questions):
+            messages.error(
+                request,
+                "Ajoutez quatre choix à chaque question avant de publier le quiz.",
+            )
+            return redirect("courses:quiz_manage", pk=quiz.pk)
+        if any(question.choices.filter(is_correct=True).count() != 1 for question in questions):
+            messages.error(request, "Chaque question doit avoir une seule bonne réponse.")
+            return redirect("courses:quiz_manage", pk=quiz.pk)
+        quiz.is_published = True
+        quiz.save(update_fields=["is_published"])
+        messages.success(request, "Le quiz est publié.")
+        return redirect("courses:quiz_manage", pk=quiz.pk)
 
 
 class CompleteChapterView(LoginRequiredMixin, View):
