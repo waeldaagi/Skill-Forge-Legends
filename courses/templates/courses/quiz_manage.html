@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ quiz.title }} · Gestion du quiz{% endblock %}
+{% block content %}
+<h1>{{ quiz.title }}</h1>
+<p>Statut : {% if quiz.is_published %}Publié{% else %}Brouillon{% endif %}</p>
+<div class="d-flex flex-wrap gap-2 mb-3">
+  <a class="btn btn-outline-primary" href="{% url 'courses:quiz_update' quiz.pk %}">Modifier le quiz</a>
+  <a class="btn btn-outline-primary" href="{% url 'courses:question_create' quiz.pk %}">Ajouter une question</a>
+  {% if not quiz.is_published %}
+    <form method="post" action="{% url 'courses:quiz_generate' quiz.pk %}">
+      {% csrf_token %}
+      <button class="btn btn-outline-primary" type="submit">Générer un quiz avec l’IA</button>
+    </form>
+  {% endif %}
+  {% if not quiz.is_published %}
+    <form method="post" action="{% url 'courses:quiz_publish' quiz.pk %}">
+      {% csrf_token %}
+      <button class="btn sf-btn-primary" type="submit">Publier le quiz</button>
+    </form>
+  {% endif %}
+</div>
+{% if generation_job %}
+  {% load ai_status %}
+  {% ai_job_status generation_job %}
+{% endif %}
+<ol>
+  {% for question in quiz.questions.all %}
+    <li class="mb-3">
+      <strong>{{ question.statement }}</strong>
+      <a class="btn btn-sm btn-outline-secondary ms-2" href="{% url 'courses:question_update' question.pk %}">Modifier la question</a>
+      <ul>
+        {% for choice in question.choices.all %}
+          <li>{% if choice.is_correct %}<strong>{{ choice.text }}</strong>{% else %}{{ choice.text }}{% endif %}</li>
+        {% endfor %}
+      </ul>
+    </li>
+  {% empty %}
+    <li>Aucune question. Ajoutez la première question du quiz.</li>
+  {% endfor %}
+</ol>
+{% endblock %}

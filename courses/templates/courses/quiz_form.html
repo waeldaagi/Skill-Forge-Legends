@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Gérer un quiz · SkillForge{% endblock %}
+{% block content %}
+<h1>Gérer un quiz</h1>
+<form method="post" novalidate>
+  {% csrf_token %}
+  {{ form }}
+  <button class="btn sf-btn-primary" type="submit">Enregistrer le quiz</button>
+</form>
+{% endblock %}

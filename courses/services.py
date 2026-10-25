@@ -1,25 +1,42 @@
-"""Contrats publics du module Catalogue et cours, appelés par les autres apps.
+from django.db import transaction
 
-Version provisoire posée en Phase 0. Taha la remplace en Phase 1 sans changer les signatures.
-"""
+from payments.services import has_active_subscription
+
+from .models import ChapterProgress, Course, Enrollment
 
 
 def user_can_access_course(user, course):
-    """Vrai si l'utilisateur peut suivre le cours : cours gratuit, ou premium avec abonnement actif.
+    """Vérifie qu'un apprenant peut ouvrir un cours publié."""
+    if not getattr(user, "is_authenticated", False) or course.status != Course.Status.PUBLISHED:
+        return False
+    return not course.is_premium or has_active_subscription(user)
 
-    Provisoire : tout cours est accessible.
-    """
-    return True
+
+@transaction.atomic
+def enroll_learner(user, course):
+    """Inscrit un apprenant une seule fois et renvoie son inscription."""
+    enrollment, _ = Enrollment.objects.get_or_create(learner=user, course=course)
+    return enrollment
 
 
 def course_progress(user, course):
-    """Pourcentage des chapitres du cours terminés par l'utilisateur, entier de 0 à 100.
-
-    Provisoire : aucune progression enregistrée.
-    """
-    return 0
+    """Renvoie le pourcentage entier de chapitres terminés pour un cours."""
+    chapter_count = course.chapters.count()
+    if chapter_count == 0:
+        return 0
+    completed_count = ChapterProgress.objects.filter(
+        enrollment__learner=user, enrollment__course=course
+    ).count()
+    return round(completed_count * 100 / chapter_count)
 
 
 def is_course_completed(user, course):
-    """Vrai quand l'utilisateur a terminé tous les chapitres du cours."""
-    return course_progress(user, course) == 100
+    """Vrai quand tous les chapitres d'un cours sont terminés."""
+    return course_progress(user, course) == 100 and course.chapters.exists()
+
+
+@transaction.atomic
+def mark_chapter_completed(user, chapter):
+    enrollment = enroll_learner(user, chapter.course)
+    progress, _ = ChapterProgress.objects.get_or_create(enrollment=enrollment, chapter=chapter)
+    return progress

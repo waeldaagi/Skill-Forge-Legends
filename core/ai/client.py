@@ -83,6 +83,12 @@ def _to_service_error(exc):
         )
     if isinstance(exc, httpx.HTTPStatusError):
         status = exc.response.status_code
+        if status == 404:
+            return AIServiceError(
+                ErrorType.HTTP_ERROR,
+                "Le modèle Gemini configuré est introuvable ou indisponible. "
+                "Vérifiez AI_MODEL dans le fichier .env.",
+            )
         # 429 (quota) et 5xx sont passagers ; un 4xx (clé invalide, requête refusée) ne l'est pas.
         return AIServiceError(
             ErrorType.HTTP_ERROR,
