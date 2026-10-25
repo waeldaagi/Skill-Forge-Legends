@@ -1,0 +1,44 @@
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["*/migrations/*"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "B", "UP", "DJ"]
+
+[tool.ruff.lint.isort]
+known-first-party = [
+    "config",
+    "core",
+    "accounts",
+    "courses",
+    "mentoring",
+    "community",
+    "assessment",
+    "payments",
+    "analytics",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.test"
+python_files = ["test_*.py"]
+
+[tool.coverage.run]
+source = ["."]
+branch = true
+omit = [
+    "venv/*",
+    "*/migrations/*",
+    "*/tests/*",
+    "config/settings/*",
+    "config/asgi.py",
+    "config/wsgi.py",
+    "manage.py",
+]
+
+[tool.coverage.report]
+skip_empty = true
+show_missing = true
+
+[tool.coverage.html]
+directory = "htmlcov"

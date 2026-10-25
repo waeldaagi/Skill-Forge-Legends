@@ -1,0 +1,87 @@
+# Accessibilité
+
+Ce document décrit ce que le socle commun (`templates/base.html`, `static/css/theme.css`, rendu des formulaires) garantit à toutes les pages. Les audits Lighthouse ou axe des pages clés seront ajoutés en Phase 5, avec les scores avant et après corrections.
+
+## Structure commune des pages
+
+`templates/base.html` fournit à chaque page :
+
+- `<html lang="fr">` et un lien d'évitement « Aller au contenu » vers `#contenu`, visible dès qu'il reçoit le focus ;
+- les repères `<header>`, `<nav aria-label="Navigation principale">`, `<main id="contenu">` et `<footer>` ;
+- un seul `<h1>`, fourni par la page enfant ; les sections suivent avec `<h2>` puis `<h3>` ;
+- un bouton de menu mobile avec `aria-label`, `aria-controls` et `aria-expanded` (Bootstrap met ce dernier à jour) ;
+- `aria-current="page"` sur le lien de navigation de la page courante.
+
+Le test `core/tests/test_views.py` vérifie la langue, le lien d'évitement, les repères et l'unicité du `<h1>` sur l'accueil.
+
+## Formulaires
+
+Tous les formulaires passent par `core.forms.SkillForgeFormRenderer` (réglage `FORM_RENDERER`) :
+
+- chaque champ a un `<label for>` ; un groupe de cases ou de boutons radio a un `<fieldset>` et une `<legend>` ;
+- le caractère obligatoire est écrit en texte, « (obligatoire) », en plus de l'attribut HTML `required` ;
+- un champ en erreur reçoit `aria-invalid="true"` et `aria-describedby` vers le message d'erreur (`id_<champ>_error`) et le texte d'aide (`id_<champ>_helptext`) ;
+- les erreurs générales du formulaire s'affichent dans une alerte `role="alert"`.
+
+Django 5.2 pose lui-même `aria-invalid` et `aria-describedby` ; le renderer ajoute les classes Bootstrap et la mention « (obligatoire) ». Le test `core/tests/test_forms.py` couvre ces quatre points.
+
+## Contenu dynamique
+
+- Messages Django : conteneur `aria-live="polite"`, et `role="alert"` pour les messages d'erreur.
+- Statut d'un traitement IA (`{% ai_job_status job %}`) : zone `role="status"` qui reste en place pendant que HTMX remplace son contenu toutes les 2 s. Le lecteur d'écran annonce chaque changement d'état. Le spinner est décoratif (`aria-hidden="true"`) et toujours accompagné d'un texte précis (« Classement de votre message en cours… »).
+- Un échec IA s'affiche dans la même zone de statut, sans `role="alert"` imbriqué, pour éviter une double annonce.
+
+## Clavier et focus
+
+- Aucun élément cliquable n'est un `div` ou un `span` : liens `<a>` et boutons `<button>` uniquement.
+- Focus visible sur tout élément interactif : contour de 3 px, violet `#6D28D9` sur fond clair, orange clair `#FDBA74` sur l'en-tête et le pied de page bleu nuit. Bootstrap remplace habituellement ce contour par une ombre légère ; le thème la retire au profit du contour.
+- Les modales Bootstrap se ferment avec Échap (comportement par défaut, à conserver).
+
+## Mouvement
+
+`prefers-reduced-motion: reduce` coupe les animations et les transitions, y compris la rotation du spinner. Le texte de statut reste affiché.
+
+## Contrastes (WCAG AA)
+
+Seuils : 4,5:1 pour le texte courant, 3:1 pour un texte de 24 px et plus et pour les contours de composants. Ratios calculés avec la formule de luminance relative du WCAG 2.1.
+
+| Texte | Fond | Usage | Ratio | Résultat |
+|---|---|---|---|---|
+| `#1F2937` texte | `#F8FAFC` fond de page | Texte courant | 14,03 | Conforme |
+| `#1F2937` texte | `#FFFFFF` surface | Texte dans les cartes et formulaires | 14,68 | Conforme |
+| `#475569` secondaire | `#FFFFFF` surface | Texte secondaire, mention « (obligatoire) » | 7,58 | Conforme |
+| `#475569` secondaire | `#F8FAFC` fond de page | Texte d'introduction | 7,24 | Conforme |
+| `#6D28D9` violet | `#FFFFFF` surface | Liens | 7,10 | Conforme |
+| `#6D28D9` violet | `#F8FAFC` fond de page | Liens, numéros des étapes | 6,79 | Conforme |
+| `#5B21B6` violet foncé | `#FFFFFF` surface | Lien survolé | 8,98 | Conforme |
+| `#FFFFFF` blanc | `#6D28D9` violet | Bouton principal | 7,10 | Conforme |
+| `#FFFFFF` blanc | `#5B21B6` violet foncé | Bouton principal survolé | 8,98 | Conforme |
+| `#FFFFFF` blanc | `#0B1026` bleu nuit | Marque, lien de l'en-tête actif | 18,81 | Conforme |
+| `#E2E8F0` gris clair | `#0B1026` bleu nuit | Liens de l'en-tête, pied de page | 15,26 | Conforme |
+| `#F97316` orange | `#0B1026` bleu nuit | « Forge » dans la marque | 6,71 | Conforme |
+| `#0B1026` bleu nuit | `#F97316` orange | Bouton d'accent (`.btn-accent`) | 6,71 | Conforme |
+| `#0B1026` bleu nuit | `#FDBA74` orange clair | Bouton d'accent survolé | 11,15 | Conforme |
+| `#0B1026` bleu nuit | `#FFFFFF` blanc | Bouton de l'en-tête survolé | 18,81 | Conforme |
+| `#15803D` succès | `#FFFFFF` surface | Message de succès, statut IA terminé | 5,02 | Conforme |
+| `#15803D` succès | `#DCFCE7` fond succès | Alerte de succès | 4,57 | Conforme, marge faible |
+| `#B91C1C` erreur | `#FFFFFF` surface | Message d'erreur sous un champ | 6,47 | Conforme |
+| `#B91C1C` erreur | `#FEE2E2` fond erreur | Alerte d'erreur | 5,30 | Conforme |
+| `#FFFFFF` blanc | `#B91C1C` erreur | Bouton de suppression | 6,47 | Conforme |
+| `#92400E` avertissement | `#FEF3C7` fond avertissement | Alerte d'avertissement | 6,37 | Conforme |
+| `#6D28D9` violet | `#EDE9FE` fond violet clair | Alerte d'information | 5,98 | Conforme |
+
+Contours et éléments non textuels (seuil 3:1) :
+
+| Élément | Fond | Ratio | Résultat |
+|---|---|---|---|
+| Bordure des champs `#64748B` | `#FFFFFF` | 4,76 | Conforme |
+| Contour de focus `#6D28D9` | `#FFFFFF` | 7,10 | Conforme |
+| Contour de focus `#FDBA74` | `#0B1026` | 11,15 | Conforme |
+
+Paire exclue : l'orange `#F97316` sur blanc donne 2,80. L'orange n'est donc jamais utilisé comme couleur de texte sur fond clair, et un bouton orange porte un texte bleu nuit. Les bordures de cartes (`#E2E8F0`) sont décoratives et ne portent aucune information ; elles ne sont pas soumises au seuil de 3:1.
+
+Toute nouvelle paire texte/fond introduite par un module doit être ajoutée à ce tableau.
+
+## Vérifications visuelles
+
+Accueil et page de connexion vérifiés à 375 px et à 1280 px de large le 25/10/2026 (captures Chrome headless) : aucun défilement horizontal, menu replié en bouton sur mobile.
