@@ -8,9 +8,8 @@
 <article class="sf-post" aria-labelledby="titre-sujet">
   <div class="sf-page-header">
     <h1 id="titre-sujet">{{ thread.title }}</h1>
-    {% if not thread.is_published %}
-      {% include "community/partials/moderation_badge.html" with post=thread %}
-    {% elif thread.is_resolved %}
+    {# Message non publié : seule la zone de statut, mise à jour en direct, indique où il en est. #}
+    {% if thread.is_published and thread.is_resolved %}
       <span class="sf-status sf-status--approuve">Résolu</span>
     {% endif %}
   </div>
@@ -45,7 +44,6 @@
       <h3 id="auteur-reponse-{{ reply.pk }}">Réponse de {{ reply.author }}</h3>
       <span>{{ reply.created_at|date:"j F Y" }}</span>
       {% if reply.is_accepted %}<span class="sf-status sf-status--approuve">Réponse acceptée</span>{% endif %}
-      {% if not reply.is_published %}{% include "community/partials/moderation_badge.html" with post=reply %}{% endif %}
     </div>
     {% if reply.author_id == user.pk and not reply.is_published %}
       {% include "community/partials/author_moderation.html" with post=reply %}
