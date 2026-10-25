@@ -47,6 +47,9 @@ class CourseCatalogueTests(TestCase):
 
         response = self.client.get(reverse("courses:question_create", kwargs={"quiz_pk": quiz.pk}))
 
+        self.assertTemplateUsed(response, "courses/question_form.html")
+        self.assertContains(response, "Contenu de la question")
+        self.assertContains(response, "Réponses proposées")
         self.assertContains(response, "Enregistrer la question")
         self.assertContains(response, 'name="choice_1"')
 

@@ -172,7 +172,7 @@ class TrainerQuizUpdateView(TrainerQuizMixin, UpdateView):
 class TrainerQuestionCreateView(RoleRequiredMixin, CreateView):
     model = Question
     form_class = QuestionForm
-    template_name = "courses/form.html"
+    template_name = "courses/question_form.html"
     allowed_roles = (User.Role.FORMATEUR,)
 
     def get_context_data(self, **kwargs):
@@ -199,7 +199,7 @@ class TrainerQuestionCreateView(RoleRequiredMixin, CreateView):
 class TrainerQuestionUpdateView(RoleRequiredMixin, UpdateView):
     model = Question
     form_class = QuestionForm
-    template_name = "courses/form.html"
+    template_name = "courses/question_form.html"
     allowed_roles = (User.Role.FORMATEUR,)
 
     def get_context_data(self, **kwargs):
