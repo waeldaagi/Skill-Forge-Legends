@@ -15,7 +15,6 @@ class Command(BaseCommand):
                 "last_name": "Ben Amor",
                 "email": "sami.benamor@skillforge.tn",
                 "role": User.Role.FORMATEUR,
-                "is_verified": True,
             },
         )
         trainer.set_password("Forge-Demo-2026")
