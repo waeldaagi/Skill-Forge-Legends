@@ -59,6 +59,7 @@ Skills du projet (`.claude/skills/`), à charger **avant** d'écrire :
 - **Formulaires** : `FORM_RENDERER = "core.forms.SkillForgeFormRenderer"`. `{{ form }}` produit les libellés, les classes Bootstrap, la mention « (obligatoire) », `aria-invalid` et `aria-describedby`. Aucune classe CSS n'est à poser dans les formulaires.
 - **E-mails** : `core.services.queue_email(subject, message, recipient_list)`. L'e-mail est confié à Celery après la validation de la transaction. Pour un envoi différé (rappel 1 h avant), utiliser `core.tasks.send_email.apply_async(..., eta=...)`.
 - **Erreurs** : gabarits `templates/403.html`, `404.html`, `500.html`, `403_csrf.html`. Le message d'une `PermissionDenied` s'affiche sur la page 403 : il doit être rédigé pour l'utilisateur.
+- **Profils vérifiés** : un mentor ou un formateur non vérifié (`User.is_verified`, coché par un administrateur dans l'admin) ne publie rien. Mentorat : `mentoring.services.ensure_can_publish`, annuaire et réservation filtrés.
 - **Gabarits** : hériter de `base.html`, un seul `<h1>`, aucun style en ligne, classes et jetons de `static/css/theme.css` (`sf-page-header`, `sf-filters`, `sf-cards`, `sf-details`, `sf-actions`, `sf-status--<statut>`). Listes paginées : `{% include "core/partials/pagination.html" %}`, qui conserve les filtres. Une liste `annotate(Count(...))` a besoin d'un `order_by` explicite : une requête agrégée ignore `Meta.ordering`.
 - **Données de démo** : chaque app déclare dans son `AppConfig` un attribut `demo_seeder = "<app>.demo.seed"`. `seed(accounts)` reçoit les comptes de démo par rôle, crée ses données sans dupliquer (`get_or_create`) et renvoie un résumé d'une ligne. Comptes secondaires : `core.demo.create_demo_user`. Jamais d'appel à l'IA dans un seed.
 
@@ -116,7 +117,7 @@ Dans les tests, `run_ai_job` n'exécute la tâche qu'à la validation de la tran
 | Contrat | Signature | État |
 |---|---|---|
 | `core.permissions` | `RoleRequiredMixin`, `role_required`, `OwnerRequiredMixin` | Implémenté |
-| `courses.services` | `user_can_access_course(user, course) -> bool`, `course_progress(user, course) -> int` (0 à 100), `is_course_completed(user, course) -> bool` | Stub jusqu'à la Phase 1 |
+| `courses.services` | `user_can_access_course(user, course) -> bool`, `course_progress(user, course) -> int` (0 à 100), `is_course_completed(user, course) -> bool`, `enroll_learner(user, course)` | Implémenté (Phase 1) |
 | `payments.services` | `has_active_subscription(user) -> bool` | Stub (`True`) jusqu'à la Phase 4 |
 | `assessment.services` | `verified_certificates(user)` : certificats non révoqués | Stub (liste vide) jusqu'à la Phase 3 |
 | `core.ai` | `run_ai_job(...) -> AIJob`, `complete_json(...)` | Implémenté |

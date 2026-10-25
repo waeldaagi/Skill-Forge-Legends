@@ -1,6 +1,6 @@
 # Module `mentoring` : mentorat en direct
 
-Responsable : Wael Daagi. État au 25/10/2026 : Phase 2, branche `feature/mentoring`.
+Responsable : Wael Daagi. État au 25/10/2026 : Phase 2, intégrée avec la Phase 1 (branche `integration/phases-0-1-2`).
 
 ## 1. Objectif et acteurs
 
@@ -43,6 +43,8 @@ classDiagram
     AvailabilitySlot "1" -- "*" MentoringSession : slot
     User "1" -- "*" MentoringSession : learner
     MentoringSession "1" -- "0..1" SessionReview
+    MentorProfile "*" -- "*" Skill : expertises
+    MentoringSession "*" -- "0..1" Course : course
 ```
 
 Contraintes :
@@ -55,10 +57,11 @@ Contraintes :
 | Note de 1 à 5 | validators et `CheckConstraint` |
 | Un avis par session | `OneToOneField` |
 | Profil réservé au rôle Mentor | `MentorProfile.clean()` et `limit_choices_to` |
+| Seul un mentor vérifié par un administrateur apparaît dans l'annuaire, publie des créneaux et peut être réservé | `services.mentor_directory`, `ensure_can_publish`, `book_slot` |
 
 **Écart au plan initial.** Le plan prévoyait un `OneToOne` entre session et créneau. Avec un `OneToOne`, une session annulée bloquerait le créneau à jamais. La session pointe donc vers le créneau par une clé étrangère, et la contrainte unique partielle garantit qu'un créneau n'a jamais deux sessions actives. L'historique des sessions annulées reste conservé.
 
-**Dépendances en attente de la Phase 1 (Taha).** Trois éléments du cahier des charges seront ajoutés dès que les modèles de `accounts` et `courses` seront dans `develop` : `MentorProfile.expertises` (M2M vers `Skill`) et le filtre de l'annuaire par expertise, `MentoringSession.course` (FK optionnelle vers `Course`), et le filtre « mentors vérifiés » (`User.is_verified`).
+**Liens avec la Phase 1.** Les expertises d'un mentor sont des `Skill` (module `accounts`) et servent de filtre dans l'annuaire. Une session peut citer le cours concerné, choisi parmi les cours publiés auxquels l'apprenant est inscrit. Le champ `User.is_verified` est coché par un administrateur dans l'admin Django.
 
 ## 3. URLs et rôles
 
@@ -119,11 +122,11 @@ Ce module n'a pas de fonctionnalité IA : la fonctionnalité IA de Wael est la m
 
 ## 7. Tests et accessibilité
 
-99 tests au 25/10/2026, couverture du module de 98 % (`pytest --cov=mentoring mentoring`) :
+110 tests au 25/10/2026, couverture du module de 99 % (`pytest --cov=mentoring mentoring`) :
 
 - modèles (16) : chaque règle de `clean()`, bornes 30 et 120 min incluses, contraintes en base, double session active refusée par la base ;
-- services (30) : réservation, créneau déjà pris, objet périmé qui ne contourne pas le verrou, confirmation, refus, fin, annulation à 2 h 01 (acceptée) et 1 h 59 (refusée), avis, fenêtre de la salle, e-mails, rappel ;
-- formulaires (9), vues (33), dont une vérification que le nombre de requêtes de l'annuaire ne grandit pas avec le nombre de mentors ;
+- services (32) : réservation, mentor non vérifié, créneau déjà pris, objet périmé qui ne contourne pas le verrou, confirmation, refus, fin, annulation à 2 h 01 (acceptée) et 1 h 59 (refusée), avis, fenêtre de la salle, e-mails, rappel ;
+- formulaires (9), vues (42), dont le filtre par expertise, le choix du cours concerné, le refus d'un mentor non vérifié et une vérification que le nombre de requêtes de l'annuaire ne grandit pas avec le nombre de mentors ;
 - matrice d'accès (7 tests, 112 combinaisons : 16 URL × 6 rôles et l'anonyme) ;
 - données de démo (4).
 
@@ -142,4 +145,4 @@ Limite des tests : un `TestCase` ne reproduit pas deux transactions simultanées
 7. **Et si la session est annulée après la planification du rappel ?** La tâche relit la session au moment d'envoyer et ne fait rien si elle n'est plus confirmée.
 8. **Comment la salle de visio est-elle protégée ?** Le nom de salle est un UUID impossible à deviner, la page n'est accessible qu'aux deux participants, et seulement entre 15 minutes avant le début et la fin d'une session confirmée.
 9. **Où sont les règles métier ?** Dans `mentoring/services.py`. Les vues appellent un service, affichent son message et redirigent ; les gabarits n'affichent que des indicateurs calculés par la vue.
-10. **Qu'est-ce qui manque encore ?** Les expertises (`Skill`), le lien vers un cours et le filtre « mentor vérifié », qui dépendent des modèles de la Phase 1.
+10. **Et un mentor qui n'est pas encore vérifié ?** Il peut remplir son profil, mais il n'apparaît pas dans l'annuaire et ne peut pas publier de créneau (page 403 avec le motif). Même par URL directe, son créneau ne peut pas être réservé : `book_slot` le refuse, et un test le prouve.

@@ -13,24 +13,22 @@ La CI GitHub Actions lance la même suite sur PostgreSQL 16 et Redis 7, refuse u
 
 Sont exclus de la mesure : migrations, settings, `manage.py`, `asgi.py`, `wsgi.py` et les dossiers `tests/` eux-mêmes.
 
-## Résultats au 25/10/2026 (Phase 2 : mentorat et communauté)
+## Résultats au 25/10/2026 (Phases 0, 1 et 2 intégrées)
 
-Commande : `pytest --cov`, sur SQLite ; la même suite passe sous PostgreSQL 16. Couverture des instructions et des branches.
+Commande : `pytest --cov`, sur SQLite, branche `integration/phases-0-1-2`. Couverture des instructions et des branches.
 
-| App | Tests | Instructions | Non couvertes | Couverture |
-|---|---|---|---|---|
-| `core` | 76 | 445 | 2 | 99,2 % |
-| `accounts` | 19 | 87 | 0 | 100 % |
-| `mentoring` | 103 | 560 | 4 | 99,0 % |
-| `community` | 78 | 633 | 6 | 98,6 % |
-| `config` | — | 18 | 1 | 90,0 % |
-| `courses` | 0 | 12 | 6 | 50,0 % |
-| `assessment` | 0 | 8 | 2 | 75,0 % |
-| `payments` | 0 | 8 | 2 | 75,0 % |
-| `analytics` | 0 | 6 | 0 | 100 % |
-| **Total** | **276** | **1 777** | **23** | **98,4 %** |
+| App | Responsable | Tests | Instructions | Non couvertes | Couverture |
+|---|---|---|---|---|---|
+| `core` | Wael | 82 | 465 | 2 | 99,4 % |
+| `mentoring` | Wael | 110 | 602 | 4 | 99,0 % |
+| `community` | Wael | 82 | 658 | 5 | 98,9 % |
+| `accounts` | Taha | 23 | 209 | 23 | 89,7 % |
+| `courses` | Taha | 21 | 642 | 102 | 83,5 % |
+| `config` | — | — | 18 | 1 | 90,0 % |
+| `assessment`, `payments`, `analytics` | Hamdi, Ismail | 0 | 22 | 3 | stubs |
+| **Total** | | **318** | **2 616** | **140** | **93,8 %** |
 
-`courses`, `assessment`, `payments` et `analytics` ne contiennent encore que leur configuration et les stubs des contrats entre modules. Ces stubs seront remplacés par leur responsable, avec ses propres tests (Phases 1, 3 et 4).
+`courses/views.py` n'est couvert qu'à 65 % : les bugs relevés dans `docs/audit/integration-2026-10-25.md` se trouvent dans ces parties non testées. `assessment`, `payments` et `analytics` ne contiennent encore que les stubs des contrats entre modules (Phases 3 et 4).
 
 ## Ce que les tests prouvent
 
