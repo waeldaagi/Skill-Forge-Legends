@@ -1,0 +1,402 @@
+[
+  {
+    "id": 1,
+    "text": "Bonjour, j'ai une erreur NoReverseMatch quand j'utilise {% url 'courses:detail' course.slug %}. J'ai bien mis app_name dans urls.py. Une idée ?",
+    "label": "OK"
+  },
+  {
+    "id": 2,
+    "text": "Merci Skander pour la session d'hier, j'ai enfin compris la différence entre select_related et prefetch_related.",
+    "label": "OK"
+  },
+  {
+    "id": 3,
+    "text": "Mon champ est déclaré avec null=True mais la migration échoue sur PostgreSQL. Quelqu'un a déjà eu ce cas ?",
+    "label": "OK"
+  },
+  {
+    "id": 4,
+    "text": "Est-ce que le quiz du chapitre 4 compte pour la certification ou seulement pour la progression ?",
+    "label": "OK"
+  },
+  {
+    "id": 5,
+    "text": "Pour ceux qui bloquent sur Docker : vérifiez que le service db est healthy avant de lancer web, sinon Django ne trouve pas la base.",
+    "label": "OK"
+  },
+  {
+    "id": 6,
+    "text": "Le chapitre 3 du cours Django est mal structuré à mon avis : les exemples arrivent après les exercices. Ce serait plus clair dans l'autre sens.",
+    "label": "OK"
+  },
+  {
+    "id": 7,
+    "text": "Comment tester une vue protégée par LoginRequiredMixin avec le client de test ?",
+    "label": "OK"
+  },
+  {
+    "id": 8,
+    "text": "En Python 3.10, l'instruction match remplace-t-elle vraiment une suite de if/elif pour analyser une requête JSON ?",
+    "label": "OK"
+  },
+  {
+    "id": 9,
+    "text": "La valeur renvoyée par ma fonction est nulle alors que la requête contient bien des données.",
+    "label": "OK"
+  },
+  {
+    "id": 10,
+    "text": "Quelqu'un a un bon tutoriel gratuit sur les signaux Django ? La documentation officielle me paraît dense.",
+    "label": "OK"
+  },
+  {
+    "id": 11,
+    "text": "J'ai vu l'offre de stage partagée par l'établissement : ils demandent Django et HTMX. Le parcours de la plateforme suffit-il ?",
+    "label": "OK"
+  },
+  {
+    "id": 12,
+    "text": "Ma soumission pour la certification Docker est en revue depuis trois jours, est-ce normal ?",
+    "label": "OK"
+  },
+  {
+    "id": 13,
+    "text": "Astuce : pour repérer un problème N+1 dans une liste, regardez l'onglet SQL de django-debug-toolbar.",
+    "label": "OK"
+  },
+  {
+    "id": 14,
+    "text": "Je ne comprends pas pourquoi mon formulaire renvoie 403 CSRF alors que j'ai bien mis {% csrf_token %}.",
+    "label": "OK"
+  },
+  {
+    "id": 15,
+    "text": "Désolé pour ma question bête, mais à quoi sert exactement le fichier __init__.py dans un package ?",
+    "label": "OK"
+  },
+  {
+    "id": 16,
+    "text": "La réponse de Nour était la bonne : il fallait ajouter le domaine dans CSRF_TRUSTED_ORIGINS. Je marque le sujet comme résolu.",
+    "label": "OK"
+  },
+  {
+    "id": 17,
+    "text": "Est-ce qu'on peut réserver deux sessions de mentorat la même semaine ?",
+    "label": "OK"
+  },
+  {
+    "id": 18,
+    "text": "Mon code fonctionne en local mais la page est blanche en production avec DEBUG=False. Où regarder ?",
+    "label": "OK"
+  },
+  {
+    "id": 19,
+    "text": "Lighthouse signalait le contraste de mon bouton orange sur fond blanc, je l'ai remplacé par le violet de la charte.",
+    "label": "OK"
+  },
+  {
+    "id": 20,
+    "text": "La correction automatique du quiz me semble trop sévère sur la question 5 : la réponse B paraît aussi juste. Un formateur peut vérifier ?",
+    "label": "OK"
+  },
+  {
+    "id": 21,
+    "text": "PROMO -70 % sur nos formations certifiantes !!! Inscrivez-vous vite sur bit.ly/formation-pro",
+    "label": "SPAM"
+  },
+  {
+    "id": 22,
+    "text": "Gagnez 500 DT par semaine depuis chez vous, sans expérience. Contactez-moi sur WhatsApp au 22 123 456.",
+    "label": "SPAM"
+  },
+  {
+    "id": 23,
+    "text": "Je réalise vos projets Django et vos rapports de PFE contre paiement, travail rapide et garanti. Écrivez-moi sur Instagram @projets.express",
+    "label": "SPAM"
+  },
+  {
+    "id": 24,
+    "text": "Achetez des followers Instagram réels à petit prix, livraison en 24 h.",
+    "label": "SPAM"
+  },
+  {
+    "id": 25,
+    "text": "Investissez dans la crypto avec notre robot de trading, rendement de 20 % par mois garanti.",
+    "label": "SPAM"
+  },
+  {
+    "id": 26,
+    "text": "Vends compte Netflix et Spotify premium pour un an, paiement par D17. Envoyez un message privé.",
+    "label": "SPAM"
+  },
+  {
+    "id": 27,
+    "text": "Code de réduction exclusif : SKILL50 pour 50 % sur toutes nos formations, offre limitée !",
+    "label": "SPAM"
+  },
+  {
+    "id": 28,
+    "text": "Visitez www.cours-pas-chers.tn pour télécharger tous les cours payants sans rien débourser.",
+    "label": "SPAM"
+  },
+  {
+    "id": 29,
+    "text": "Besoin d'un site web pour votre entreprise ? Notre agence vous fait un devis en 24 h, appelez le 71 000 000.",
+    "label": "SPAM"
+  },
+  {
+    "id": 30,
+    "text": "Abonnez-vous à ma chaîne YouTube et activez la cloche, je poste des vidéos tous les jours !!!",
+    "label": "SPAM"
+  },
+  {
+    "id": 31,
+    "text": "Gagner de l'argent facilement en parrainant vos amis : 10 DT par inscription, lien dans ma bio.",
+    "label": "SPAM"
+  },
+  {
+    "id": 32,
+    "text": "Je vends le corrigé complet de toutes les certifications SkillForge, contactez-moi en privé.",
+    "label": "SPAM"
+  },
+  {
+    "id": 33,
+    "text": "Formation Python accélérée à 49 DT au lieu de 300 DT, places limitées : https://promo-python-tn.com",
+    "label": "SPAM"
+  },
+  {
+    "id": 34,
+    "text": "Cliquez ici pour gagner un iPhone 16 : http://cadeau-gratuit.win",
+    "label": "SPAM"
+  },
+  {
+    "id": 35,
+    "text": "Prêt rapide sans justificatif, réponse en 1 h, taux imbattable. Écrivez sur WhatsApp uniquement.",
+    "label": "SPAM"
+  },
+  {
+    "id": 36,
+    "text": "Hébergement web à 1 DT le premier mois avec nom de domaine offert, profitez de la remise de rentrée.",
+    "label": "SPAM"
+  },
+  {
+    "id": 37,
+    "text": "Rejoignez notre groupe Telegram VIP pour recevoir les réponses des quiz avant tout le monde, accès payant.",
+    "label": "SPAM"
+  },
+  {
+    "id": 38,
+    "text": "Je donne des cours particuliers de Django à domicile sur Tunis, 30 DT l'heure, contactez-moi en privé.",
+    "label": "SPAM"
+  },
+  {
+    "id": 39,
+    "text": "Achetez vos licences Windows et Office à moins 80 %, activation à vie garantie.",
+    "label": "SPAM"
+  },
+  {
+    "id": 40,
+    "text": "Obtenez vos certifications sans passer les épreuves grâce à une méthode secrète, détails sur bit.ly/skill-hack",
+    "label": "SPAM"
+  },
+  {
+    "id": 41,
+    "text": "T'es vraiment nul, ça fait trois fois qu'on t'explique la même chose.",
+    "label": "TOXIQUE"
+  },
+  {
+    "id": 42,
+    "text": "Question débile, lis la doc au lieu de faire perdre du temps à tout le monde.",
+    "label": "TOXIQUE"
+  },
+  {
+    "id": 43,
+    "text": "Ferme-la, personne ne t'a demandé ton avis sur mon code.",
+    "label": "TOXIQUE"
+  },
+  {
+    "id": 44,
+    "text": "Le mentor est un incompétent, il ne sait même pas ce qu'est une migration.",
+    "label": "TOXIQUE"
+  },
+  {
+    "id": 45,
+    "text": "Franchement retourne au lycée, le développement ce n'est pas pour les gens comme toi.",
+    "label": "TOXIQUE"
+  },
+  {
+    "id": 46,
+    "text": "Quelle honte de poser une question pareille en cinquième année.",
+    "label": "TOXIQUE"
+  },
+  {
+    "id": 47,
+    "text": "Arrête d'encombrer le forum avec tes questions idiotes.",
+    "label": "TOXIQUE"
+  },
+  {
+    "id": 48,
+    "text": "Ta réponse est stupide et fausse, comme toutes tes réponses.",
+    "label": "TOXIQUE"
+  },
+  {
+    "id": 49,
+    "text": "Si tu ne comprends pas ça, change de filière, tu fais pitié.",
+    "label": "TOXIQUE"
+  },
+  {
+    "id": 50,
+    "text": "Bande d'abrutis, aucun de vous n'a été capable de m'aider.",
+    "label": "TOXIQUE"
+  },
+  {
+    "id": 51,
+    "text": "Dégage du forum, on ne veut plus te lire.",
+    "label": "TOXIQUE"
+  },
+  {
+    "id": 52,
+    "text": "C'est minable de recopier le code des autres et de le présenter comme le sien, espèce de voleur.",
+    "label": "TOXIQUE"
+  },
+  {
+    "id": 53,
+    "text": "Je vais te retrouver à Esprit et tu vas regretter ta réponse.",
+    "label": "TOXIQUE"
+  },
+  {
+    "id": 54,
+    "text": "Ton code est aussi lent que ton cerveau.",
+    "label": "TOXIQUE"
+  },
+  {
+    "id": 55,
+    "text": "Les formateurs de cette plateforme sont des crétins qui recopient Wikipédia.",
+    "label": "TOXIQUE"
+  },
+  {
+    "id": 56,
+    "text": "Personne n'aime tes réponses, tu ferais mieux de te taire définitivement.",
+    "label": "TOXIQUE"
+  },
+  {
+    "id": 57,
+    "text": "Encore toi avec tes questions de débutant, c'est insupportable, tu pourris le forum.",
+    "label": "TOXIQUE"
+  },
+  {
+    "id": 58,
+    "text": "Tu es idiot ou tu le fais exprès ? Relis l'énoncé.",
+    "label": "TOXIQUE"
+  },
+  {
+    "id": 59,
+    "text": "Mentor nul, session inutile : il méprisait mes questions du début à la fin.",
+    "label": "TOXIQUE"
+  },
+  {
+    "id": 60,
+    "text": "Ridicule. Toi et ton projet, vous êtes une blague, abandonne.",
+    "label": "TOXIQUE"
+  },
+  {
+    "id": 61,
+    "text": "Quelqu'un a vu le match de l'Espérance hier soir ? Quel but à la dernière minute !",
+    "label": "HORS_SUJET"
+  },
+  {
+    "id": 62,
+    "text": "Je cherche une bonne recette de couscous au poisson pour vendredi, des idées ?",
+    "label": "HORS_SUJET"
+  },
+  {
+    "id": 63,
+    "text": "Vous partez où en vacances cet été ? Moi je pense à Djerba.",
+    "label": "HORS_SUJET"
+  },
+  {
+    "id": 64,
+    "text": "Quelle série vous me conseillez pour le week-end ? J'ai fini Breaking Bad.",
+    "label": "HORS_SUJET"
+  },
+  {
+    "id": 65,
+    "text": "Il va pleuvoir demain à Tunis ? Je dois sortir le linge.",
+    "label": "HORS_SUJET"
+  },
+  {
+    "id": 66,
+    "text": "Qui veut faire une partie de PlayStation ce soir après les cours ?",
+    "label": "HORS_SUJET"
+  },
+  {
+    "id": 67,
+    "text": "Vous pensez quoi du nouvel iPhone, ça vaut le coup de changer ?",
+    "label": "HORS_SUJET"
+  },
+  {
+    "id": 68,
+    "text": "Je me marie en juillet, quelqu'un connaît une bonne salle des fêtes à Sousse ?",
+    "label": "HORS_SUJET"
+  },
+  {
+    "id": 69,
+    "text": "Les prochaines élections municipales, vous allez voter ?",
+    "label": "HORS_SUJET"
+  },
+  {
+    "id": 70,
+    "text": "Quelqu'un a des places pour le concert de samedi au théâtre de Carthage ?",
+    "label": "HORS_SUJET"
+  },
+  {
+    "id": 71,
+    "text": "Mon chat refuse de manger depuis deux jours, un vétérinaire à conseiller sur l'Ariana ?",
+    "label": "HORS_SUJET"
+  },
+  {
+    "id": 72,
+    "text": "Le film d'hier soir à la télé était vraiment décevant.",
+    "label": "HORS_SUJET"
+  },
+  {
+    "id": 73,
+    "text": "Quelle est la meilleure plage près de Bizerte pour ce dimanche ?",
+    "label": "HORS_SUJET"
+  },
+  {
+    "id": 74,
+    "text": "Vous préférez le thé à la menthe ou le café le matin ?",
+    "label": "HORS_SUJET"
+  },
+  {
+    "id": 75,
+    "text": "Quelqu'un sait si la Coupe d'Afrique sera diffusée en clair ?",
+    "label": "HORS_SUJET"
+  },
+  {
+    "id": 76,
+    "text": "Ma voiture fait un bruit bizarre au démarrage, une idée de ce que ça peut être ?",
+    "label": "HORS_SUJET"
+  },
+  {
+    "id": 77,
+    "text": "Il fait trop chaud dans la salle B12, quelqu'un peut demander la climatisation à l'administration ?",
+    "label": "HORS_SUJET"
+  },
+  {
+    "id": 78,
+    "text": "Bon appétit à tous, c'est l'heure du déjeuner !",
+    "label": "HORS_SUJET"
+  },
+  {
+    "id": 79,
+    "text": "Vous avez des conseils pour bien dormir la veille d'un examen ?",
+    "label": "HORS_SUJET"
+  },
+  {
+    "id": 80,
+    "text": "Quel est votre joueur de foot préféré cette saison ?",
+    "label": "HORS_SUJET"
+  }
+]
