@@ -1,6 +1,29 @@
 # Accessibilité
 
-Ce document décrit ce que le socle commun (`templates/base.html`, `static/css/theme.css`, rendu des formulaires) garantit à toutes les pages. Les audits Lighthouse ou axe des pages clés seront ajoutés en Phase 5, avec les scores avant et après corrections.
+Ce document décrit ce que le socle commun (`templates/base.html`, `static/css/theme.css`, rendu des formulaires) garantit à toutes les pages, et les audits réalisés. L'audit des pages de chaque module (catalogue, réservation, forum, soumission, tableaux de bord) sera ajouté en Phase 5, avec les scores avant et après corrections.
+
+## Audit du 25/10/2026 (fin de la Phase 0)
+
+Outil : Lighthouse 13.5.0 (catégorie accessibilité, moteur axe-core 4.14), Chrome 155 sans interface, profil mobile. Serveur de développement local.
+
+| Page | Score | Audits réussis | Échecs |
+|---|---|---|---|
+| Accueil, visiteur anonyme | 100 | 22 | 0 |
+| Connexion | 100 | 20 | 0 |
+| Accueil, administrateur connecté (menu utilisateur, lien Administration) | 100 | 22 | 0 |
+
+Audits réussis notamment : contraste des couleurs, noms accessibles des liens et des boutons, ordre des titres, langue du document, titre de la page, lien d'évitement, attributs ARIA valides, listes et listes de définitions bien formées, taille des cibles tactiles, présence d'un repère `main`. Les 44 autres audits ne s'appliquent pas à ces pages (pas d'image, de tableau ni de vidéo, par exemple).
+
+Lighthouse ne mesure pas le parcours au clavier. Il a donc été vérifié par un script (Chrome piloté par puppeteer, touche Tab) :
+
+| Parcours | Résultat |
+|---|---|
+| Accueil, 1280 px | Ordre : lien d'évitement, logo, « Se connecter » (en-tête), « Se connecter » (contenu). Contour de focus de 3 px sur chaque élément. |
+| Lien d'évitement | Entrée mène à `#contenu` ; la tabulation suivante atteint le premier lien du contenu. |
+| Connexion | Le champ « Nom d'utilisateur » a le focus à l'ouverture (`autofocus` posé par Django), puis mot de passe, puis bouton « Se connecter ». |
+| Accueil administrateur, 375 px | Le bouton « Afficher le menu » s'ouvre avec Entrée (`aria-expanded` passe à `true`) ; la tabulation suivante atteint « Administration ». |
+
+Limite : Lighthouse refuse d'auditer une page qui répond 404, 403 ou 500. Ces pages utilisent le même gabarit `base.html` et la même structure (un `<h1>`, un paragraphe, un bouton) que les pages auditées.
 
 ## Structure commune des pages
 
@@ -84,4 +107,4 @@ Toute nouvelle paire texte/fond introduite par un module doit être ajoutée à 
 
 ## Vérifications visuelles
 
-Accueil et page de connexion vérifiés à 375 px et à 1280 px de large le 25/10/2026 (captures Chrome headless) : aucun défilement horizontal, menu replié en bouton sur mobile.
+Accueil et page de connexion vérifiés à 375 px et à 1280 px de large le 25/10/2026 (captures Chrome sans interface) : aucun défilement horizontal, menu replié en bouton sur mobile.
