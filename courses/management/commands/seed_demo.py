@@ -53,6 +53,15 @@ class Command(BaseCommand):
                 "evidence": "Un modèle Django décrit les règles et les données du domaine.",
             },
         )
-        Choice.objects.get_or_create(question=question, text="Un modèle", is_correct=True)
-        Choice.objects.get_or_create(question=question, text="Une URL", is_correct=False)
+        for text, is_correct in (
+            ("Un modèle", True),
+            ("Une URL", False),
+            ("Un gabarit", False),
+            ("Une migration", False),
+        ):
+            Choice.objects.update_or_create(
+                question=question,
+                text=text,
+                defaults={"is_correct": is_correct},
+            )
         self.stdout.write(self.style.SUCCESS("Données de démonstration des cours prêtes."))

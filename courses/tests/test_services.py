@@ -31,7 +31,7 @@ class CourseServiceTests(TestCase):
 
     def test_marking_chapters_completed_returns_full_progress(self):
         learner = UserFactory()
-        first = ChapterFactory()
+        first = ChapterFactory(order=1)
         second = ChapterFactory(course=first.course, order=2)
 
         mark_chapter_completed(learner, first)
