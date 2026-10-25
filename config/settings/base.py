@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.forms",
     "core",
     "accounts",
     "courses",
@@ -59,6 +60,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
+
+# Libellés, classes Bootstrap et mention « obligatoire » identiques dans tous les formulaires.
+FORM_RENDERER = "core.forms.SkillForgeFormRenderer"
 
 # SQLite si DATABASE_URL est absent : le projet démarre même sans Docker.
 DATABASES = {
