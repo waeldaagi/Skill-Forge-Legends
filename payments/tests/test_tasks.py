@@ -11,9 +11,7 @@ from payments.tasks import expire_subscriptions_task
 class PaymentTaskTests(TestCase):
     def test_expiration_task_updates_expired_subscriptions(self):
         user = UserFactory()
-        plan = Plan.objects.create(
-            name="Premium", slug="premium", price="29.900", duration_days=30
-        )
+        plan = Plan.objects.create(name="Premium", slug="premium", price="29.900", duration_days=30)
         subscription = Subscription.objects.create(
             user=user,
             plan=plan,

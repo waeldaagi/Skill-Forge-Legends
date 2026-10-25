@@ -18,9 +18,7 @@ class PlanListView(ListView):
     def get_queryset(self):
         plans = Plan.objects.filter(is_active=True)
         if not self.request.user.is_authenticated:
-            return plans.annotate(
-                active_subscription_id=Value(None, output_field=IntegerField())
-            )
+            return plans.annotate(active_subscription_id=Value(None, output_field=IntegerField()))
         active_subscription = Subscription.objects.filter(
             user=self.request.user,
             plan_id=OuterRef("pk"),
