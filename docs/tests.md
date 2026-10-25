@@ -13,22 +13,23 @@ La CI GitHub Actions lance la même suite sur PostgreSQL 16 et Redis 7, refuse u
 
 Sont exclus de la mesure : migrations, settings, `manage.py`, `asgi.py`, `wsgi.py` et les dossiers `tests/` eux-mêmes.
 
-## Résultats au 25/10/2026 (Phases 0, 1 et 2 intégrées, bugs de la Phase 1 corrigés)
+## Résultats au 25/10/2026 (Phases 0, 1 et 2 intégrées, paiements fusionnés, bugs de la Phase 1 corrigés)
 
 Commande : `pytest --cov`, sur SQLite, branche `integration/phases-0-1-2`. Couverture des instructions et des branches.
 
 | App | Responsable | Tests | Instructions | Non couvertes | Couverture |
 |---|---|---|---|---|---|
-| `core` | Wael | 87 | 478 | 2 | 99,4 % |
+| `core` | Wael | 87 | 480 | 2 | 99,4 % |
 | `mentoring` | Wael | 110 | 602 | 4 | 99,0 % |
 | `community` | Wael | 82 | 658 | 5 | 98,9 % |
 | `accounts` | Taha | 32 | 213 | 1 | 98,7 % |
 | `courses` | Taha | 82 | 876 | 16 | 97,4 % |
 | `config` | — | — | 18 | 1 | 90,0 % |
-| `assessment`, `payments`, `analytics` | Hamdi, Ismail | 0 | 22 | 3 | stubs |
-| **Total** | | **393** | **2 867** | **32** | **98,4 %** |
+| `payments` | Ismail | 18 | 213 | 7 | 95,2 % |
+| `assessment`, `analytics` | Hamdi, Ismail | 0 | 14 | 2 | stubs |
+| **Total** | | **411** | **3 074** | **38** | **98,2 %** |
 
-Avant la correction des bugs relevés dans `docs/audit/integration-2026-10-25.md`, `courses/views.py` n'était couvert qu'à 65 % : les bugs se trouvaient précisément dans les parties non testées. Il l'est maintenant à 99 %. La suite tourne sans aucun avertissement de dépréciation (`pytest -W error::DeprecationWarning`). `assessment`, `payments` et `analytics` ne contiennent encore que les stubs des contrats entre modules (Phases 3 et 4).
+Avant la correction des bugs relevés dans `docs/audit/integration-2026-10-25.md`, `courses/views.py` n'était couvert qu'à 65 % : les bugs se trouvaient précisément dans les parties non testées. Il l'est maintenant à 99 %. La suite tourne sans aucun avertissement de dépréciation (`pytest -W error::DeprecationWarning`). `assessment` et `analytics` ne contiennent encore que les stubs des contrats entre modules (Phases 3 et 4).
 
 ## Ce que les tests prouvent
 
