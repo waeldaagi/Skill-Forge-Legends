@@ -73,8 +73,8 @@ Le module `core` n'a pas de fonctionnalité IA propre. Il fournit le socle utili
 - Prompt : chaque module écrit le sien. Le socle ajoute la consigne anti-injection et le schéma JSON du modèle pydantic. Le texte de l'utilisateur est encadré par `delimit_user_content`, qui retire toute balise de fermeture glissée dans le texte.
 - Sortie : un modèle pydantic par fonctionnalité.
 - Mesures : `AICallLog` enregistre la durée et le résultat de chaque appel. Le tableau de bord administrateur (Phase 4) en tirera la latence moyenne, la latence p95 et le taux d'échec par fonctionnalité.
-- Fournisseurs : `mock` pour les tests, la CI et la démo hors ligne ; `gemini` en réel (API `generateContent`, modèle `gemini-3.8-flash` par défaut), comme dans l'atelier IA du cours.
-- Limites : `gemini` est testé avec des réponses HTTP simulées ; il n'a pas encore été appelé avec une vraie clé. Les relances Celery s'ajoutent à la relance pour JSON invalide : dans le pire cas, un job fait 6 appels.
+- Fournisseurs : `mock` pour les tests, la CI et la démo hors ligne ; `gemini` en réel (API `generateContent`, modèle `gemini-3.5-flash-lite` par défaut), comme dans l'atelier IA du cours. Essai réel du 25/10/2026 : `gemini-3.8-flash` renvoyait HTTP 503 (forte demande) ; `gemini-3.5-flash-lite` a classé correctement un message normal et un spam, en 1,0 à 1,3 s par appel.
+- Limites : deux appels réels seulement à ce stade ; les métriques viendront des commandes `evaluate_*`. Les relances Celery s'ajoutent à la relance pour JSON invalide : dans le pire cas, un job fait 6 appels.
 
 ## 7. Tests
 
