@@ -74,6 +74,17 @@ class Thread(ModeratedContent):
     )
     title = models.CharField("titre", max_length=150)
     content = models.TextField("message", max_length=5000)
+    course = models.ForeignKey(
+        "courses.Course",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="threads",
+        verbose_name="cours",
+    )
+    tags = models.ManyToManyField(
+        "accounts.Skill", blank=True, related_name="threads", verbose_name="tags"
+    )
     is_resolved = models.BooleanField("résolu", default=False)
     created_at = models.DateTimeField("créé le", auto_now_add=True)
     updated_at = models.DateTimeField("modifié le", auto_now=True)

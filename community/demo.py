@@ -3,8 +3,9 @@
 Les statuts de modération sont posés directement : le seed n'appelle jamais l'IA.
 """
 
-from accounts.models import User
+from accounts.models import Skill, User
 from core.demo import create_demo_user
+from courses.models import Course
 
 from .models import ModerationStatus, Reply, Report, Thread, Vote
 from .services import HUMAN_REVIEW_REASON
@@ -28,6 +29,8 @@ def seed(accounts):
         "Le {% csrf_token %} est bien dans le formulaire.",
         is_resolved=True,
     )
+    django_course = Course.objects.filter(slug="django-du-modele-au-deploiement").first()
+    _classify(csrf, django_course, ["Django", "HTMX"])
     accepted = _reply(
         csrf,
         skander,
@@ -45,6 +48,7 @@ def seed(accounts):
         "Deux branches ont créé une migration 0004 dans courses. makemigrations refuse de "
         "continuer. Comment s'en sortir sans perdre de données ?",
     )
+    _classify(merge, django_course, ["Django"])
     _reply(
         merge,
         nour,
@@ -90,6 +94,12 @@ def seed(accounts):
         f"{Thread.objects.count()} sujets, {Reply.objects.count()} réponses, "
         f"{queue_size} éléments à modérer"
     )
+
+
+def _classify(thread, course, skill_names):
+    thread.course = course
+    thread.save(update_fields=["course"])
+    thread.tags.set([Skill.objects.get_or_create(name=name)[0] for name in skill_names])
 
 
 def _thread(author, title, content, is_resolved=False, **moderation):
