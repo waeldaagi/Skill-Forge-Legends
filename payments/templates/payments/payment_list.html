@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Mes paiements{% endblock %}
+{% block content %}
+<main id="contenu" class="container py-4">
+  <h1>Mes paiements</h1>
+  {% for payment in payments %}
+    <article class="card p-3 mb-3">
+      <h2 class="h3">{{ payment.plan.name }}</h2>
+      <p>{{ payment.amount }} {{ payment.currency }} — {{ payment.get_status_display }}</p>
+      {% if payment.invoice %}
+        <a class="btn btn-outline-primary" href="{% url 'payments:invoice_download' payment.invoice.pk %}">Télécharger la facture PDF</a>
+      {% endif %}
+    </article>
+  {% empty %}
+    <p>Aucun paiement enregistré.</p>
+  {% endfor %}
+</main>
+{% endblock %}
