@@ -18,6 +18,7 @@ from .models import (
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("name", "slug")
     search_fields = ("name",)
+    readonly_fields = ("slug",)
 
 
 @admin.register(Course)
@@ -25,7 +26,8 @@ class CourseAdmin(admin.ModelAdmin):
     list_display = ("title", "category", "trainer", "level", "status", "is_premium")
     list_filter = ("status", "level", "is_premium", "category")
     search_fields = ("title", "description", "trainer__username")
-    prepopulated_fields = {"slug": ("title",)}
+    # Le slug est calculé à la création (Course.save) : un champ prérempli ferait planter l'admin.
+    readonly_fields = ("slug",)
 
 
 @admin.register(Chapter)

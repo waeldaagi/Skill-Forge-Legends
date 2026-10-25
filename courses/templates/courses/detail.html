@@ -2,17 +2,25 @@
 {% block title %}{{ course.title }} · SkillForge{% endblock %}
 {% block content %}
 <h1>{{ course.title }}</h1>
+{% if course.status == "DRAFT" %}
+  <div class="alert alert-info">Brouillon : ce cours n'est visible que par vous.</div>
+{% endif %}
 {% if course.image %}
   <img class="img-fluid rounded mb-3" src="{{ course.image.url }}" alt="Illustration du cours {{ course.title }}">
 {% endif %}
 <p>{{ course.description }}</p>
 <p>Formateur : {{ course.trainer.get_full_name|default:course.trainer.username }}</p>
-{% if user.is_authenticated and user.role == "APPRENANT" %}
-<form method="post" action="{% url 'courses:enroll' course.slug %}">
-  {% csrf_token %}<button class="btn sf-btn-primary" type="submit">S’inscrire à ce cours</button>
-</form>
+{% if is_learner %}
+  {% if enrollment %}
+    <p><label for="course-progress">Vous suivez ce cours. Progression : {{ progress }} %</label></p>
+    <progress id="course-progress" class="sf-progress" value="{{ progress }}" max="100">{{ progress }} %</progress>
+  {% else %}
+    <form method="post" action="{% url 'courses:enroll' course.slug %}">
+      {% csrf_token %}<button class="btn sf-btn-primary" type="submit">S’inscrire à ce cours</button>
+    </form>
+  {% endif %}
 {% endif %}
-{% if user == course.trainer %}
+{% if is_owner %}
 <div class="d-flex flex-wrap gap-2 my-3">
   <a class="btn btn-outline-primary" href="{% url 'courses:update' course.slug %}">Modifier le cours</a>
   <a class="btn btn-outline-primary" href="{% url 'courses:chapter_create' course.pk %}">Ajouter un chapitre</a>
@@ -21,19 +29,22 @@
 <h2 class="h3 mt-4">Chapitres</h2>
 <ol>
 {% for chapter in course.chapters.all %}
-  <li>
+  <li class="mb-2">
     <a href="{% url 'courses:chapter' chapter.pk %}">{{ chapter.title }}</a>
-    {% if user == course.trainer %}
-      <a class="btn btn-sm btn-outline-secondary ms-2" href="{% url 'courses:resource_create' chapter.pk %}">Ajouter une ressource</a>
-      <a class="btn btn-sm btn-outline-secondary ms-2" href="{% url 'courses:quiz_create' chapter.pk %}">Ajouter un quiz</a>
+    {% if chapter.pk in completed_chapter_ids %}<span class="badge text-bg-success ms-1">Terminé</span>{% endif %}
+    {% if is_owner %}
+      <a class="btn btn-sm btn-outline-secondary ms-2" href="{% url 'courses:chapter_update' chapter.pk %}">Modifier<span class="visually-hidden"> le chapitre {{ chapter.title }}</span></a>
+      <a class="btn btn-sm btn-outline-danger ms-2" href="{% url 'courses:chapter_delete' chapter.pk %}">Supprimer<span class="visually-hidden"> le chapitre {{ chapter.title }}</span></a>
+      <a class="btn btn-sm btn-outline-secondary ms-2" href="{% url 'courses:resource_create' chapter.pk %}">Ajouter une ressource<span class="visually-hidden"> au chapitre {{ chapter.title }}</span></a>
+      <a class="btn btn-sm btn-outline-secondary ms-2" href="{% url 'courses:quiz_create' chapter.pk %}">Ajouter un quiz<span class="visually-hidden"> au chapitre {{ chapter.title }}</span></a>
     {% endif %}
     {% for quiz in chapter.quizzes.all %}
-      {% if user == course.trainer %}
+      {% if is_owner %}
         <a class="btn btn-sm btn-outline-secondary ms-2" href="{% url 'courses:quiz_manage' quiz.pk %}">
-          {% if quiz.is_published %}Gérer le quiz{% else %}Publier le quiz{% endif %}
+          {% if quiz.is_published %}Gérer le quiz{% else %}Publier le quiz{% endif %}<span class="visually-hidden"> {{ quiz.title }}</span>
         </a>
       {% elif quiz.is_published %}
-        <a class="btn btn-sm btn-outline-primary ms-2" href="{% url 'courses:quiz' quiz.pk %}">Passer le quiz</a>
+        <a class="btn btn-sm btn-outline-primary ms-2" href="{% url 'courses:quiz' quiz.pk %}">Passer le quiz<span class="visually-hidden"> {{ quiz.title }}</span></a>
       {% endif %}
     {% endfor %}
   </li>

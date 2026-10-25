@@ -3,7 +3,11 @@
 {% block content %}
 <p><a href="{% url 'courses:chapter' quiz.chapter.pk %}">Retour au chapitre</a></p>
 <h1>{{ quiz.title }}</h1>
+{% if can_submit %}
 <p>Répondez aux questions, puis consultez votre score.</p>
+{% else %}
+<p class="alert alert-info">Aperçu du quiz : seuls les apprenants peuvent y répondre.</p>
+{% endif %}
 <form method="post">
   {% csrf_token %}
   {% for question in quiz.questions.all %}
@@ -19,7 +23,7 @@
   {% empty %}
     <p>Ce quiz ne contient pas encore de question.</p>
   {% endfor %}
-  {% if quiz.questions.all %}
+  {% if can_submit and quiz.questions.all %}
     <button class="btn sf-btn-primary" type="submit">Terminer le quiz</button>
   {% endif %}
 </form>

@@ -7,6 +7,9 @@ from .models import Category, Chapter, Choice, Course, Question, Quiz
 
 def seed(accounts):
     trainer = accounts[User.Role.FORMATEUR]
+    # Un formateur non vérifié ne peut rien publier : le compte de démo est vérifié.
+    trainer.is_verified = True
+    trainer.save(update_fields=["is_verified"])
     category, _ = Category.objects.get_or_create(name="Développement web")
     course, _ = Course.objects.update_or_create(
         slug="django-du-modele-au-deploiement",

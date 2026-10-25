@@ -1,7 +1,9 @@
 import logging
 from pathlib import Path
+from typing import Annotated
 
-from pydantic import BaseModel, Field
+from django.db import transaction
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from pypdf import PdfReader
 from pypdf.errors import PdfReadError
 
@@ -15,16 +17,37 @@ GENERATION_TIMEOUT_SECONDS = 60
 logger = logging.getLogger(__name__)
 
 
+# Longueur du champ Choice.text : un choix plus long serait refusé par la base.
+ChoiceText = Annotated[str, Field(min_length=1, max_length=300)]
+
+
 class GeneratedQuestion(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
+
     statement: str = Field(min_length=1)
-    choices: list[str] = Field(min_length=4, max_length=4)
+    choices: list[ChoiceText] = Field(min_length=4, max_length=4)
     correct_index: int = Field(ge=0, le=3)
     explanation: str = Field(min_length=1)
     evidence: str = Field(min_length=1)
 
+    @field_validator("choices")
+    @classmethod
+    def choices_are_distinct(cls, choices):
+        # Deux choix identiques violeraient la contrainte unique_choice_per_question.
+        if len({choice.casefold() for choice in choices}) != len(choices):
+            raise ValueError("Les quatre choix d'une question doivent être différents.")
+        return choices
+
 
 class GeneratedQuiz(BaseModel):
     questions: list[GeneratedQuestion] = Field(min_length=1, max_length=10)
+
+    @model_validator(mode="after")
+    def statements_are_distinct(self):
+        statements = [question.statement.casefold() for question in self.questions]
+        if len(set(statements)) != len(statements):
+            raise ValueError("Deux questions du quiz ont le même énoncé.")
+        return self
 
 
 def run(job):
@@ -36,6 +59,13 @@ def run(job):
         timeout=GENERATION_TIMEOUT_SECONDS,
     )
     quiz = job.target
+    with transaction.atomic():
+        _replace_questions(quiz, output)
+    return output.model_dump()
+
+
+def _replace_questions(quiz, output):
+    # Tout ou rien : une erreur en cours d'écriture ne laisse pas un quiz à moitié remplacé.
     quiz.questions.all().delete()
     for order, generated in enumerate(output.questions, start=1):
         question = Question.objects.create(
@@ -54,7 +84,6 @@ def run(job):
     quiz.is_ai_generated = True
     quiz.is_published = False
     quiz.save(update_fields=["is_ai_generated", "is_published"])
-    return output.model_dump()
 
 
 def build_chapter_source(chapter):

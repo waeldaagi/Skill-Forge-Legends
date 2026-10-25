@@ -23,6 +23,11 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("--provider", default="mock", choices=("mock", "gemini"))
+        parser.add_argument(
+            "--output",
+            default="docs/ia/quiz_generation.md",
+            help="Fichier du rapport (les tests écrivent dans un dossier temporaire).",
+        )
 
     def handle(self, *args, **options):
         provider = options["provider"]
@@ -49,7 +54,7 @@ class Command(BaseCommand):
             durations.append((time.perf_counter() - started) * 1000)
 
         report = self._build_report(provider, durations, valid_outputs, question_count, failures)
-        report_path = Path("docs/ia/quiz_generation.md")
+        report_path = Path(options["output"])
         report_path.parent.mkdir(parents=True, exist_ok=True)
         report_path.write_text(report, encoding="utf-8")
         self.stdout.write(self.style.SUCCESS(f"Rapport écrit dans {report_path}."))

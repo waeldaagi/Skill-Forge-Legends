@@ -10,7 +10,7 @@ class CoursesConfig(AppConfig):
         "APPRENANT": [("Catalogue des cours", "courses:list")],
         "FORMATEUR": [
             ("Catalogue des cours", "courses:list"),
-            ("Créer un cours", "courses:create"),
+            ("Mes cours", "courses:trainer_courses"),
         ],
     }
 

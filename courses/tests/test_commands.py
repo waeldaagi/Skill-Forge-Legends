@@ -1,3 +1,4 @@
+import tempfile
 from io import StringIO
 from pathlib import Path
 
@@ -16,10 +17,17 @@ class CourseCommandTests(TestCase):
         self.assertEqual(quiz.questions.get().choices.count(), 4)
 
     def test_evaluate_command_reports_valid_mock_outputs(self):
-        report_path = Path("docs/ia/quiz_generation.md")
+        # Dossier temporaire : le test ne touche jamais au rapport versionné dans docs/ia/.
+        with tempfile.TemporaryDirectory() as directory:
+            report_path = Path(directory) / "quiz_generation.md"
 
-        call_command("evaluate_quiz_generation", "--provider", "mock")
+            call_command(
+                "evaluate_quiz_generation",
+                "--provider",
+                "mock",
+                "--output",
+                str(report_path),
+                stdout=StringIO(),
+            )
 
-        self.assertTrue(report_path.exists())
-        self.assertIn("Sorties JSON valides", report_path.read_text(encoding="utf-8"))
-        report_path.unlink()
+            self.assertIn("Sorties JSON valides : 5/5", report_path.read_text(encoding="utf-8"))

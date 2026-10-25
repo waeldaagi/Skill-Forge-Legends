@@ -1,23 +1,35 @@
 {% extends "base.html" %}
 {% block title %}{{ quiz.title }} · Gestion du quiz{% endblock %}
 {% block content %}
+<p><a href="{{ quiz.chapter.course.get_absolute_url }}">Retour au cours</a></p>
 <h1>{{ quiz.title }}</h1>
-<p>Statut : {% if quiz.is_published %}Publié{% else %}Brouillon{% endif %}</p>
+<p>Chapitre : {{ quiz.chapter.title }} · Statut : {% if quiz.is_published %}Publié{% else %}Brouillon{% endif %}{% if quiz.is_ai_generated %} · Généré par l’IA, à relire avant publication{% endif %}</p>
+{% if not user.is_verified %}
+  <div class="alert alert-warning">
+    Votre profil de formateur n'est pas encore vérifié par un administrateur : vous ne pouvez pas publier ce quiz.
+  </div>
+{% endif %}
 <div class="d-flex flex-wrap gap-2 mb-3">
   <a class="btn btn-outline-primary" href="{% url 'courses:quiz_update' quiz.pk %}">Modifier le quiz</a>
   <a class="btn btn-outline-primary" href="{% url 'courses:question_create' quiz.pk %}">Ajouter une question</a>
-  {% if not quiz.is_published %}
+  {% if quiz.is_published %}
+    <form method="post" action="{% url 'courses:quiz_unpublish' quiz.pk %}">
+      {% csrf_token %}
+      <button class="btn btn-outline-primary" type="submit">Dépublier le quiz</button>
+    </form>
+  {% else %}
     <form method="post" action="{% url 'courses:quiz_generate' quiz.pk %}">
       {% csrf_token %}
       <button class="btn btn-outline-primary" type="submit">Générer un quiz avec l’IA</button>
     </form>
+    {% if user.is_verified %}
+      <form method="post" action="{% url 'courses:quiz_publish' quiz.pk %}">
+        {% csrf_token %}
+        <button class="btn sf-btn-primary" type="submit">Publier le quiz</button>
+      </form>
+    {% endif %}
   {% endif %}
-  {% if not quiz.is_published %}
-    <form method="post" action="{% url 'courses:quiz_publish' quiz.pk %}">
-      {% csrf_token %}
-      <button class="btn sf-btn-primary" type="submit">Publier le quiz</button>
-    </form>
-  {% endif %}
+  <a class="btn btn-outline-danger" href="{% url 'courses:quiz_delete' quiz.pk %}">Supprimer le quiz</a>
 </div>
 {% if generation_job %}
   {% load ai_status %}
@@ -27,10 +39,11 @@
   {% for question in quiz.questions.all %}
     <li class="mb-3">
       <strong>{{ question.statement }}</strong>
-      <a class="btn btn-sm btn-outline-secondary ms-2" href="{% url 'courses:question_update' question.pk %}">Modifier la question</a>
+      <a class="btn btn-sm btn-outline-secondary ms-2" href="{% url 'courses:question_update' question.pk %}">Modifier<span class="visually-hidden"> la question {{ forloop.counter }}</span></a>
+      <a class="btn btn-sm btn-outline-danger ms-2" href="{% url 'courses:question_delete' question.pk %}">Supprimer<span class="visually-hidden"> la question {{ forloop.counter }}</span></a>
       <ul>
         {% for choice in question.choices.all %}
-          <li>{% if choice.is_correct %}<strong>{{ choice.text }}</strong>{% else %}{{ choice.text }}{% endif %}</li>
+          <li>{% if choice.is_correct %}<strong>{{ choice.text }}</strong> <span class="visually-hidden">(bonne réponse)</span>{% else %}{{ choice.text }}{% endif %}</li>
         {% endfor %}
       </ul>
     </li>

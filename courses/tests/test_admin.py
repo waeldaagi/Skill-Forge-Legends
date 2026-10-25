@@ -69,3 +69,19 @@ class CourseAdminTests(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertIn("/admin/login/", response["Location"])
+
+    def test_admin_add_and_change_pages_open(self):
+        # Un slug prérempli sur un champ non éditable faisait planter ces pages.
+        admin_user = User.objects.create_superuser(
+            "administrateur", "admin@skillforge.test", "mot-de-passe"
+        )
+        course = CourseFactory()
+        self.client.force_login(admin_user)
+
+        for url in (
+            reverse("admin:courses_course_add"),
+            reverse("admin:courses_course_change", args=[course.pk]),
+            reverse("admin:courses_category_add"),
+        ):
+            with self.subTest(url=url):
+                self.assertEqual(self.client.get(url).status_code, 200)

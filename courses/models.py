@@ -1,9 +1,27 @@
+import re
+from urllib.parse import parse_qs, urlsplit
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator, MinValueValidator
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
+
+from core.validators import validate_upload_size
+
+YOUTUBE_VIDEO_ID = re.compile(r"^[A-Za-z0-9_-]{11}$")
+
+
+def unique_slug(model, value, fallback):
+    """Slug libre pour ``model`` : « django », puis « django-2 », « django-3 »…"""
+    max_length = model._meta.get_field("slug").max_length
+    base = slugify(value)[: max_length - 6].strip("-") or fallback
+    slug, number = base, 2
+    while model.objects.filter(slug=slug).exists():
+        slug = f"{base}-{number}"
+        number += 1
+    return slug
 
 
 class Category(models.Model):
@@ -19,7 +37,8 @@ class Category(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
+        if not self.slug:
+            self.slug = unique_slug(Category, self.name, fallback="categorie")
         super().save(*args, **kwargs)
 
 
@@ -49,7 +68,7 @@ class Course(models.Model):
         "image",
         upload_to="courses/",
         blank=True,
-        validators=[FileExtensionValidator(["jpg", "jpeg", "png", "webp"])],
+        validators=[FileExtensionValidator(["jpg", "jpeg", "png", "webp"]), validate_upload_size],
     )
     is_premium = models.BooleanField("cours premium", default=False)
     status = models.CharField("statut", max_length=12, choices=Status.choices, default=Status.DRAFT)
@@ -66,7 +85,9 @@ class Course(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.title)
+        # Calculé une seule fois : renommer le cours ne casse pas les liens déjà partagés.
+        if not self.slug:
+            self.slug = unique_slug(Course, self.title, fallback="cours")
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -91,6 +112,29 @@ class Chapter(models.Model):
     def __str__(self):
         return f"{self.course.title} · {self.order}. {self.title}"
 
+    @property
+    def video_embed_url(self):
+        """URL à intégrer dans l'iframe (YouTube ou Vimeo) ; chaîne vide pour un autre site.
+
+        Une URL « youtube.com/watch?v=… » collée telle quelle est refusée dans une iframe.
+        """
+        parts = urlsplit(self.video_url)
+        host = (parts.hostname or "").removeprefix("www.").removeprefix("m.")
+        segments = [segment for segment in parts.path.split("/") if segment]
+        video_id = ""
+        if host == "youtu.be" and segments:
+            video_id = segments[0]
+        elif host in {"youtube.com", "youtube-nocookie.com"}:
+            if parts.path == "/watch":
+                video_id = parse_qs(parts.query).get("v", [""])[0]
+            elif len(segments) >= 2 and segments[0] in {"embed", "shorts", "live"}:
+                video_id = segments[1]
+        if YOUTUBE_VIDEO_ID.match(video_id):
+            return f"https://www.youtube-nocookie.com/embed/{video_id}"
+        if host in {"vimeo.com", "player.vimeo.com"} and segments and segments[-1].isdigit():
+            return f"https://player.vimeo.com/video/{segments[-1]}"
+        return ""
+
 
 class Resource(models.Model):
     chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, related_name="resources")
@@ -99,7 +143,7 @@ class Resource(models.Model):
         "fichier",
         upload_to="resources/",
         blank=True,
-        validators=[FileExtensionValidator(["pdf", "doc", "docx", "zip"])],
+        validators=[FileExtensionValidator(["pdf", "doc", "docx", "zip"]), validate_upload_size],
     )
     url = models.URLField("lien", blank=True)
 

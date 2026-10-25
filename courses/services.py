@@ -4,12 +4,27 @@ from payments.services import has_active_subscription
 
 from .models import ChapterProgress, Course, Enrollment
 
+# Même règle que pour les mentors : un formateur non vérifié prépare ses cours, sans les publier.
+UNVERIFIED_TRAINER_MESSAGE = (
+    "Votre profil de formateur doit être vérifié par un administrateur avant toute publication."
+)
+
 
 def user_can_access_course(user, course):
     """Vérifie qu'un apprenant peut ouvrir un cours publié."""
     if not getattr(user, "is_authenticated", False) or course.status != Course.Status.PUBLISHED:
         return False
     return not course.is_premium or has_active_subscription(user)
+
+
+def can_read_course(user, course):
+    """Le formateur relit son propre cours, même en brouillon ou premium.
+
+    Pour tous les autres, la règle reste celle de ``user_can_access_course``.
+    """
+    if getattr(user, "is_authenticated", False) and course.trainer_id == user.pk:
+        return True
+    return user_can_access_course(user, course)
 
 
 @transaction.atomic
