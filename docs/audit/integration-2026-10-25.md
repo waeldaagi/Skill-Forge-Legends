@@ -9,7 +9,7 @@ Branche `integration/phases-0-1-2`, partie de `develop` (socle, mentorat, commun
 | `feature/accounts` (3 commits) | Fusion sans conflit |
 | `feature/courses` (18 commits) | Un conflit textuel (`docs/tests.md`) ; changements de Taha dans le socle `core` arbitrés (section 2) |
 | Doublon de commande `seed_demo` | La commande de `courses` était masquée par celle de `core` : convertie en `courses/demo.py` (`demo_seeder`) |
-| Suite de tests | 318 tests verts, lint et migrations à jour, `check --deploy` sans remarque |
+| Suite de tests | 318 tests verts après la fusion ; 393 après la correction des bugs (section 4), couverture de 98,4 %, lint et migrations à jour, `check --deploy` sans remarque |
 | `seed_demo` | Crée les comptes, le cours Django, puis le mentorat et le forum qui s'y rattachent |
 
 ## 2. Arbitrages sur le socle `core`
@@ -35,38 +35,59 @@ Branche `integration/phases-0-1-2`, partie de `develop` (socle, mentorat, commun
 
 Ajouts de la feuille de route rendus possibles par la Phase 1 : expertises des mentors, cours concerné par une session, mentors vérifiés (mentorat) ; cours et tags des sujets (communauté).
 
-## 4. Bugs restant dans le code de la Phase 1 (à corriger par Taha)
+## 4. Bugs de la Phase 1 corrigés
 
-Constatés en exécutant le code fusionné. Non corrigés ici pour que Taha garde la maîtrise de ses modules et puisse les expliquer au jury.
+Constatés en exécutant le code fusionné, puis corrigés sur la branche d'intégration. Chaque correction a son test de non-régression ; la colonne « Test » donne le fichier.
 
-| Gravité | Bug | Preuve | Correction proposée |
+| Gravité | Bug | Correction | Test |
 |---|---|---|---|
-| Haute | Visiteur anonyme sur les 4 URL de création du formateur (quiz, question, chapitre, ressource) : **erreur 500** | `TypeError: Field 'id' expected a number but got AnonymousUser` | `courses/views.py:150, 185, 337, 365` : charger l'objet après le contrôle de rôle (`cached_property` utilisée dans `get_context_data` et `form_valid`), comme dans `mentoring/views.py` |
-| Haute | Quiz d'un cours premium ouvert et noté sans abonnement, par URL directe (le chapitre, lui, est protégé) | Sonde : GET 200, POST 302 avec `has_active_subscription` à `False` | `QuizDetailView` (`courses/views.py:102`) : refuser si `user_can_access_course` est faux, et réserver la soumission au rôle apprenant |
-| Haute | Réponse de quiz non numérique : **erreur 500** | `ValueError: Field 'id' expected a number but got 'abc'` | `courses/views.py:118` : comparer aux identifiants des choix déjà chargés (`{choice.pk for choice in question.choices.all()}`) au lieu de filtrer avec la valeur brute |
-| Haute | Deux cours de même titre : **erreur 500** ; renommer un cours casse ses liens | `IntegrityError: UNIQUE constraint failed: courses_course.slug` | `courses/models.py:69` (et `:22` pour `Category`) : calculer le slug à la création seulement, avec un suffixe si déjà pris, et valider l'unicité dans le formulaire |
-| Moyenne | Formateur non vérifié : il peut publier un cours (contraire au cahier des charges) | Sonde : cours publié créé | `TrainerCourseCreateView` et la publication des quiz : refuser si `request.user.is_verified` est faux |
-| Moyenne | Recruteur sur les URL formateur : 404 au lieu de 403 | Sonde | Même correction que le premier bug |
-| Moyenne | Le test de la commande d'évaluation **supprime `docs/ia/quiz_generation.md`** | `courses/tests/test_commands.py:25` | Écrire le rapport dans un dossier temporaire (option `--output`) |
-| Moyenne | Un cours intitulé « Nouveau » est inaccessible (son URL est celle de la création) | Sonde : `/cours/nouveau/` ouvre la création | Préfixer la création (`formateur/cours/nouveau/`) ou réserver ce slug |
-| Moyenne | La génération IA peut proposer deux choix identiques : la contrainte d'unicité lève une erreur, le job échoue | Lecture : aucune validation d'unicité dans `GeneratedQuestion` | Valider l'unicité des 4 choix dans le schéma pydantic : la sortie sera redemandée une fois |
-| Basse | Le formateur ne peut pas ouvrir son propre cours en brouillon, et n'a pas de liste « Mes cours » | Sonde : 404 sur son brouillon | Vue « Mes cours » et aperçu du brouillon pour son formateur |
-| Basse | `novalidate` sur 6 formulaires : validation du navigateur désactivée | Lecture des gabarits | Retirer `novalidate` |
-| Basse | N'importe quel rôle peut rejoindre un établissement | `accounts/views.py:55` | Réserver au rôle apprenant |
-| Basse | Pas de lien « Mot de passe oublié » sur la page de connexion | Lecture de `login.html` | Ajouter le lien vers `accounts:password_reset` |
-| Basse | Une vidéo YouTube collée en URL « watch » ne s'affiche pas dans l'iframe du chapitre | Lecture de `chapter.html` | Convertir l'URL en URL d'intégration, ou afficher un lien |
-| Basse | Avertissement `RemovedInDjango60Warning` à chaque test : champs URL des formulaires sans protocole par défaut | Sortie de pytest | Dans `ChapterForm` et `ResourceForm`, déclarer les champs URL avec `forms.URLField(assume_scheme="https")` |
+| Haute | Visiteur anonyme sur les 4 URL de création du formateur (quiz, question, chapitre, ressource) : **erreur 500** (`TypeError … AnonymousUser`) | Objet parent chargé après le contrôle de rôle, par une `cached_property` | `courses/tests/test_views.py`, `test_permissions.py` |
+| Haute | Quiz d'un cours premium ouvert et noté sans abonnement, par URL directe | `QuizDetailView.get_object` applique `can_read_course` ; réponse réservée au rôle apprenant (403 sinon) | `test_views.py` (`PremiumQuizTests`) |
+| Haute | Réponse de quiz non numérique : **erreur 500** | Comparaison aux identifiants des choix de la question ; une réponse forgée compte comme fausse | `test_views.py` (`QuizSubmissionTests`) |
+| Haute | Deux cours de même titre : **erreur 500** ; renommer un cours cassait ses liens | Slug calculé à la création seulement, avec suffixe s'il est pris (`Course` et `Category`) | `test_models.py`, `test_views.py` |
+| Moyenne | Formateur non vérifié : il pouvait publier un cours | Statut « Publié » refusé dans `CourseForm` ; publication de quiz refusée ; avertissement dans « Mes cours » | `test_views.py` (`UnverifiedTrainerTests`) |
+| Moyenne | Recruteur sur les URL formateur : 404 au lieu de 403 | Même correction que le premier bug | `test_permissions.py` |
+| Moyenne | Le test de la commande d'évaluation supprimait `docs/ia/quiz_generation.md` | Option `--output` ; le test écrit dans un dossier temporaire | `test_commands.py` |
+| Moyenne | Un cours intitulé « Nouveau » était inaccessible | Pages du formateur déplacées sous `formateur/` (`formateur/cours/nouveau/`) | `test_views.py` (`CourseUrlTests`) |
+| Moyenne | La génération IA pouvait proposer deux choix identiques : `IntegrityError`, job en échec | Schéma pydantic : quatre choix différents, 300 caractères au plus, énoncés distincts ; écriture en une transaction | `test_ai.py` |
+| Basse | Le formateur ne pouvait pas ouvrir son propre brouillon, et n'avait pas de liste « Mes cours » | `CourseDetailView` montre le brouillon à son formateur ; vue « Mes cours » dans la navigation | `test_views.py` (`TrainerCourseTests`) |
+| Basse | `novalidate` sur 6 formulaires | Retiré : la validation du navigateur s'ajoute à celle du serveur | Lighthouse |
+| Basse | N'importe quel rôle pouvait rejoindre un établissement | `JoinInstitutionView` réservée au rôle apprenant ; lien masqué aux autres | `accounts/tests/test_views.py` |
+| Basse | Pas de lien « Mot de passe oublié » sur la page de connexion | Lien ajouté | `accounts/tests/test_views.py` |
+| Basse | Une vidéo YouTube « watch » ne s'affichait pas dans l'iframe | `Chapter.video_embed_url` (YouTube, Vimeo) ; lien simple pour un autre site | `test_models.py`, `test_views.py` |
+| Basse | Avertissement `RemovedInDjango60Warning` à chaque test | `core.forms.https_url_formfield` (`assume_scheme="https"`) dans `ChapterForm` et `ResourceForm` | Suite sans avertissement |
+
+Bugs trouvés pendant la correction, absents de la première analyse :
+
+| Gravité | Bug | Correction | Test |
+|---|---|---|---|
+| Haute | Page d'ajout d'un cours dans l'admin Django : **erreur 500** (`prepopulated_fields` sur le slug non éditable) | Slug en lecture seule dans l'admin | `courses/tests/test_admin.py` |
+| Haute | Deux choix identiques saisis par le formateur : **erreur 500** (contrainte `unique_choice_per_question`) | `QuestionForm.clean` signale le doublon sur le champ | `test_views.py` (`TrainerQuizTests`) |
+| Haute | Ordre de chapitre ou de question déjà pris : **erreur 500** (le parent n'étant pas un champ du formulaire, Django ne validait pas la contrainte) | `clean_order` dans `ChapterForm` et `QuestionForm` ; première position libre proposée | `test_views.py` |
+| Moyenne | Un formateur ou un recruteur qui « terminait » un chapitre se retrouvait inscrit au cours | `CompleteChapterView` réservée au rôle apprenant ; bouton masqué aux autres | `test_permissions.py`, `test_views.py` |
+| Moyenne | Régénérer un quiz publié supprimait ses questions sous les yeux des apprenants | Génération refusée sur un quiz publié ; bouton « Dépublier le quiz » ajouté | `test_views.py` (`TrainerQuizTests`) |
+| Moyenne | La progression en % n'apparaissait nulle part (cahier des charges) | Progression et chapitres terminés sur la page du cours | `test_views.py` (`LearnerProgressTests`) |
+| Moyenne | Vidéo YouTube intégrée refusée (erreur 153) : Django envoie `Referrer-Policy: same-origin` | `referrerpolicy="strict-origin-when-cross-origin"` sur l'iframe | `test_views.py` (`ChapterVideoTests`), capture |
+| Basse | Liens de réinitialisation du mot de passe écrits en dur (`/comptes/...`) | `reverse_lazy` | `accounts/tests/test_views.py` |
+| Basse | Inscription possible sans e-mail : la réinitialisation du mot de passe était alors impossible | E-mail obligatoire à l'inscription | `accounts/tests/test_views.py` |
+| Basse | « Mes cours » sur mobile (375 px) : la page entière défilait horizontalement, car les textes `visually-hidden` (position absolue) des cellules sortaient de la zone défilante du tableau | `.sf-table-wrapper { position: relative; }`, qui protège aussi les autres tableaux | Mesure par script à 375 px, avant et après |
 
 ## 5. Écarts au cahier des charges et à la Definition of Done (Phase 1)
 
-- **CRUD incomplet.** Chapitres et ressources : création seulement. Quiz et questions : pas de suppression. Administrateur : pas de gestion des utilisateurs ni des établissements dans l'interface (seulement dans l'admin Django).
-- **Uploads.** Extensions vérifiées, mais aucune limite de 5 Mo (avatar, logo, image de cours, ressources).
-- **Tests.** 21 tests pour `courses` ; 2 tests ajoutés pour `accounts` (inscription), aucun pour le profil, le profil public ou l'adhésion à un établissement. `courses/views.py` n'est couvert qu'à 65 % : les bugs de la section 4 sont précisément dans les parties non testées. Aucune matrice d'accès.
-- **Évaluation IA.** `evaluate_quiz_generation` porte sur 5 phrases au lieu des 15 chapitres prévus. Elle utilise un autre prompt que la production et ne mesure ni l'ancrage de l'extrait justificatif ni le taux de doublons. La grille humaine (pertinence, exactitude, clarté) manque.
+Comblés pendant la correction :
+
+- **CRUD.** Chapitres, ressources, quiz et questions se créent, se modifient et se suppriment depuis l'interface, avec une page de confirmation ; un quiz se publie et se dépublie.
+- **Uploads.** `core.validators.validate_upload_size` limite à 5 Mo l'avatar, le logo, l'image d'un cours et les ressources (migrations `accounts` 0003 et `courses` 0003).
+- **Tests.** `courses` passe de 21 à 82 tests (couverture de `courses/views.py` : 65 % → 99 %), avec une matrice d'accès ; `accounts` passe de 23 à 32 tests (profil, profil public, établissement, réinitialisation du mot de passe).
+
+Restent à faire par Taha :
+
+- **Évaluation IA.** `evaluate_quiz_generation` porte sur 5 phrases au lieu des 15 chapitres prévus. Elle utilise un autre prompt que la production et ne mesure ni l'ancrage de l'extrait justificatif ni le taux de doublons. La grille humaine (pertinence, exactitude, clarté) manque, et `docs/ia/quiz_generation.md` n'est pas versionné.
 - **Prompt.** Une seule phrase, dans le code de la fonctionnalité au lieu de `courses/ai/prompts.py`, sans version.
+- **Administration.** La gestion des utilisateurs et des établissements passe par l'admin Django (réservé au rôle administrateur) ; aucune page dédiée dans l'interface.
 
 ## 6. Recommandations pour les PR de Taha
 
-- La PR n° 5 (`feature/courses` → `main`) est en conflit et vise `main` : la fermer au profit de la branche d'intégration, ou la recibler vers `develop`.
-- La PR n° 6 (`feature/accounts` → `main`) se fusionne sans conflit, mais elle aussi devrait viser `develop`.
-- Corriger d'abord les quatre bugs de gravité haute, avec un test chacun ; puis compléter le CRUD et la matrice d'accès de `courses`.
+- La PR n° 5 (`feature/courses` → `main`) est en conflit et vise `main` : la fermer au profit de la branche d'intégration.
+- La PR n° 6 (`feature/accounts` → `main`) est contenue dans la branche d'intégration : la fermer également.
+- Taha relit les corrections de la section 4 sur la branche d'intégration pour pouvoir les expliquer au jury, puis reprend l'évaluation IA (section 5).
