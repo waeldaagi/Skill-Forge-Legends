@@ -62,6 +62,18 @@ class CourseCatalogueTests(TestCase):
         quiz.refresh_from_db()
         self.assertTrue(quiz.is_published)
 
+    def test_trainer_sees_the_publish_link_for_a_draft_quiz(self):
+        trainer = UserFactory(role=User.Role.FORMATEUR)
+        course = CourseFactory(trainer=trainer)
+        chapter = ChapterFactory(course=course)
+        quiz = Quiz.objects.create(chapter=chapter, title="Quiz brouillon")
+        self.client.force_login(trainer)
+
+        response = self.client.get(course.get_absolute_url())
+
+        self.assertContains(response, reverse("courses:quiz_manage", kwargs={"pk": quiz.pk}))
+        self.assertContains(response, "Publier le quiz")
+
     def test_trainer_can_generate_a_draft_quiz_with_mock_ai(self):
         trainer = UserFactory(role=User.Role.FORMATEUR)
         course = CourseFactory(trainer=trainer)
