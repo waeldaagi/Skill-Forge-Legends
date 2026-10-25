@@ -1,67 +1,45 @@
-import os
+from io import StringIO
 
+from django.apps import apps
+from django.conf import settings
+from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+from django.utils.module_loading import import_string
 
 from accounts.models import User
-from payments.models import Plan
+from core.demo import create_demo_user
 
-DEMO_PLANS = [
-    {
-        "slug": "gratuit",
-        "name": "Gratuit",
-        "price": "0.000",
-        "duration_days": 365,
-        "benefits": "Accès aux cours gratuits",
-    },
-    {
-        "slug": "premium",
-        "name": "Premium",
-        "price": "29.900",
-        "duration_days": 30,
-        "benefits": "Accès aux cours premium",
-    },
-    {
-        "slug": "pro",
-        "name": "Pro",
-        "price": "79.900",
-        "duration_days": 90,
-        "benefits": "Accès premium et accompagnement renforcé",
-    },
-]
+DEMO_ACCOUNTS = {
+    User.Role.APPRENANT: ("yasmine.trabelsi", "Yasmine", "Trabelsi"),
+    User.Role.MENTOR: ("skander.jaziri", "Skander", "Jaziri"),
+    User.Role.FORMATEUR: ("mariem.gharbi", "Mariem", "Gharbi"),
+    User.Role.RECRUTEUR: ("oussema.mejri", "Oussema", "Mejri"),
+    User.Role.ADMIN: ("ines.hammami", "Ines", "Hammami"),
+    User.Role.ETABLISSEMENT: ("khalil.chaabane", "Khalil", "Chaabane"),
+}
 
 
 class Command(BaseCommand):
-    help = "Ajoute les données de démonstration sans supprimer les données existantes."
+    help = (
+        "Crée un compte de démo par rôle, puis les données de démo de chaque module. "
+        "Peut être relancée : rien n'est dupliqué ni supprimé."
+    )
 
     @transaction.atomic
     def handle(self, *args, **options):
-        password = os.environ.get("DEMO_PASSWORD", "")
-        if not password:
+        if not settings.DEMO_PASSWORD:
             raise CommandError(
-                "Définissez DEMO_PASSWORD avant de lancer seed_demo "
-                "(exemple : $env:DEMO_PASSWORD='...')."
+                "DEMO_PASSWORD est vide : choisissez un mot de passe de démo dans le fichier .env."
             )
-
-        for plan_data in DEMO_PLANS:
-            slug = plan_data["slug"]
-            plan, created = Plan.objects.update_or_create(slug=slug, defaults=plan_data)
-            action = "créée" if created else "mise à jour"
-            self.stdout.write(f"Offre {plan.name} {action}.")
-
-        user, created = User.objects.get_or_create(
-            username="demo_learner",
-            defaults={
-                "email": "demo.learner@skillforge.test",
-                "first_name": "Demo",
-                "last_name": "Learner",
-                "role": User.Role.APPRENANT,
-            },
-        )
-        user.email = "demo.learner@skillforge.test"
-        user.role = User.Role.APPRENANT
-        user.set_password(password)
-        user.save()
-        action = "créé" if created else "mis à jour"
-        self.stdout.write(f"Utilisateur demo_learner {action}.")
-        self.stdout.write(self.style.SUCCESS("Données de démonstration prêtes."))
+        call_command("setup_roles", stdout=StringIO())
+        accounts = {
+            role: create_demo_user(username, first_name, last_name, role)
+            for role, (username, first_name, last_name) in DEMO_ACCOUNTS.items()
+        }
+        self.stdout.write(f"Comptes de démo : {len(accounts)}, un par rôle.")
+        for app_config in apps.get_app_configs():
+            if seeder_path := getattr(app_config, "demo_seeder", ""):
+                summary = import_string(seeder_path)(accounts)
+                self.stdout.write(f"{app_config.verbose_name} : {summary}")
+        self.stdout.write(self.style.SUCCESS("Données de démo prêtes."))
