@@ -249,6 +249,16 @@ h4, h5, h6 { font-size: 1rem; }
   --bs-btn-hover-bg: #991b1b;
   --bs-btn-hover-border-color: #991b1b;
 }
+.btn-outline-danger {
+  --bs-btn-color: var(--sf-danger);
+  --bs-btn-border-color: var(--sf-danger);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--sf-danger);
+  --bs-btn-hover-border-color: var(--sf-danger);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #991b1b;
+  --bs-btn-active-border-color: #991b1b;
+}
 
 /* Composants dont Bootstrap compile le bleu en dur. */
 .form-control,

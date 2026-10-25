@@ -14,9 +14,10 @@ from accounts.models import User
 MIN_SLOT_DURATION = timedelta(minutes=30)
 MAX_SLOT_DURATION = timedelta(minutes=120)
 JITSI_BASE_URL = "https://meet.jit.si"
-# Formats Django : « mardi 28 octobre 2026, 14 h 00 » ; \h est un « h » littéral.
-DAY_AND_TIME_FORMAT = r"l j F Y, G \h i"
-TIME_FORMAT = r"G \h i"
+# Formats Django : « mardi 28 octobre 2026, 14 h 00 » ; \h est un « h » littéral. Les espaces
+# autour du « h » sont insécables : l'heure n'est jamais coupée en fin de ligne.
+TIME_FORMAT = "G \\h i"
+DAY_AND_TIME_FORMAT = f"l j F Y, {TIME_FORMAT}"
 
 
 def format_period(start, end):

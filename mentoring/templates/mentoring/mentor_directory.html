@@ -26,7 +26,7 @@
         </p>
         <p>
           {% if profile.next_free_slot %}
-            Prochain créneau libre&nbsp;: {{ profile.next_free_slot|date:"l j F, G \h i" }}
+            Prochain créneau libre&nbsp;: {{ profile.next_free_slot|date:"l j F, G \h i" }}{# espaces insécables autour du « h » #}
           {% else %}
             Aucun créneau libre pour le moment
           {% endif %}
