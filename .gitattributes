@@ -1,0 +1,10 @@
+# Fins de ligne LF dans le dépôt, quel que soit le système (le script d'entrée Docker l'exige).
+* text=auto eol=lf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff2 binary
+*.pdf binary
