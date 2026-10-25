@@ -45,12 +45,10 @@ class CourseCatalogueTests(TestCase):
         quiz = Quiz.objects.create(chapter=chapter, title="Quiz Django")
         self.client.force_login(trainer)
 
-        response = self.client.get(
-            reverse("courses:question_create", kwargs={"quiz_pk": quiz.pk})
-        )
+        response = self.client.get(reverse("courses:question_create", kwargs={"quiz_pk": quiz.pk}))
 
         self.assertContains(response, "Enregistrer la question")
-        self.assertContains(response, "name=\"choice_1\"")
+        self.assertContains(response, 'name="choice_1"')
 
     def test_trainer_can_publish_only_a_complete_quiz(self):
         trainer = UserFactory(role=User.Role.FORMATEUR)
