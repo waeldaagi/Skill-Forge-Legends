@@ -81,6 +81,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
+# Page 403 du projet, avec une consigne claire, au lieu de la page technique de Django.
+CSRF_FAILURE_VIEW = "core.views.csrf_failure"
+
 LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "core:home"
 LOGOUT_REDIRECT_URL = "core:home"
