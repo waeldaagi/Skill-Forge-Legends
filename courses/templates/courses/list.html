@@ -10,6 +10,9 @@
 {% for course in courses %}
   <article class="col-md-6 col-lg-4">
     <div class="card h-100">
+      {% if course.image %}
+        <img class="card-img-top" src="{{ course.image.url }}" alt="Illustration du cours {{ course.title }}">
+      {% endif %}
       <div class="card-body">
         <p class="text-muted mb-2">{{ course.category }} · {{ course.get_level_display }}</p>
         <h2 class="h4"><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></h2>
