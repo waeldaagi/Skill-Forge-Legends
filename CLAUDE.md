@@ -1,6 +1,6 @@
 # CLAUDE.md : SkillForge
 
-Plateforme d'e-learning Django : cours, mentorat en direct, certification évaluée par l'IA puis validée par un mentor. Promesse : Apprendre → Être accompagné → Prouver → Partager. Projet académique ESPRIT, classe 5TWIN, équipe de 4. Le plan complet par phase est dans `PROMPT_CLAUDE_CODE_SKILLFORGE.md`.
+Plateforme d'e-learning Django : cours, mentorat en direct, certification évaluée par l'IA puis validée par un mentor. Promesse : Apprendre → Être accompagné → Prouver → Partager. Projet académique ESPRIT, classe 5TWIN, équipe de 4. Le plan complet par phase est dans `PROMPT_CLAUDE_CODE_SKILLFORGE.md` : ce fichier est transmis à chaque membre et n'est jamais versionné.
 
 ## Apps et responsables
 
