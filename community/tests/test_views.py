@@ -61,6 +61,14 @@ class ThreadListViewTests(TestCase):
 
         self.assertEqual(len(six_threads), len(one_thread))
 
+    def test_filter_on_threads_without_solution(self):
+        open_thread = ThreadFactory()
+        ThreadFactory(is_resolved=True)
+
+        response = self.client.get(self.url, {"resolu": "non"})
+
+        self.assertEqual(list(response.context["threads"]), [open_thread])
+
 
 class ThreadWritingViewTests(TestCase):
     def setUp(self):
@@ -210,6 +218,29 @@ class ReplyViewTests(TestCase):
 
         self.assertEqual(Report.objects.filter(reply=reply).count(), 1)
         self.assertIn("déjà signalé", messages_of(second)[-1])
+
+    def test_edit_page_reminds_the_thread(self):
+        reply = ReplyFactory(author=self.member)
+
+        response = self.client.get(reverse("community:reply_update", args=[reply.pk]))
+
+        self.assertTemplateUsed(response, "community/reply_form.html")
+        self.assertEqual(response.context["thread"], reply.thread)
+
+    def test_author_deletes_a_reply_and_returns_to_the_thread(self):
+        reply = ReplyFactory(author=self.member)
+
+        response = self.client.post(reverse("community:reply_delete", args=[reply.pk]))
+
+        self.assertRedirects(response, reverse("community:thread_detail", args=[reply.thread.pk]))
+        self.assertFalse(Reply.objects.filter(pk=reply.pk).exists())
+
+    def test_vote_for_my_own_reply_without_htmx_explains_the_refusal(self):
+        reply = ReplyFactory(author=self.member)
+
+        response = self.client.post(reverse("community:reply_vote", args=[reply.pk]))
+
+        self.assertIn("propre réponse", messages_of(response)[0])
 
 
 class ModerationQueueViewTests(TestCase):
