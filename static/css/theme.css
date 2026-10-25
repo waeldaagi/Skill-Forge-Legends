@@ -181,6 +181,12 @@ h4, h5, h6 { font-size: 1rem; }
   gap: 8px 12px;
   color: var(--sf-on-dark);
 }
+.sf-user__name {
+  color: #fff;
+}
+.sf-header .nav-link {
+  white-space: nowrap;
+}
 .sf-user__role {
   padding: 4px 8px;
   border: 1px solid var(--sf-on-dark);
@@ -214,7 +220,13 @@ h4, h5, h6 { font-size: 1rem; }
 }
 
 /* Boutons : violet pour l'action principale, orange (texte bleu nuit) pour l'accent rare. */
-.btn-primary {
+/* .sf-btn-primary : nom utilisé par les gabarits de la Phase 1, même rendu que .btn-primary. */
+.btn-primary,
+.sf-btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-color: #fff;
+  --bs-btn-disabled-color: #fff;
   --bs-btn-bg: var(--sf-violet);
   --bs-btn-border-color: var(--sf-violet);
   --bs-btn-hover-bg: var(--sf-violet-dark);

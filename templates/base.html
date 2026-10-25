@@ -15,7 +15,7 @@
   <a class="sf-skip-link" href="#contenu">Aller au contenu</a>
 
   <header class="sf-header">
-    <nav class="navbar navbar-expand-lg" data-bs-theme="dark" aria-label="Navigation principale">
+    <nav class="navbar navbar-expand-xl" data-bs-theme="dark" aria-label="Navigation principale">
       <div class="container">
         <a class="navbar-brand sf-brand" href="{% url 'core:home' %}">Skill<span class="sf-brand__accent">Forge</span></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu-principal"
@@ -32,7 +32,7 @@
           </ul>
           {% if user.is_authenticated %}
             <div class="sf-user">
-              <span>{{ user }}</span>
+              <a class="sf-user__name" href="{% url 'accounts:profile' %}"><span class="visually-hidden">Mon profil : </span>{{ user }}</a>
               <span class="sf-user__role">{{ user.get_role_display }}</span>
               <form method="post" action="{% url 'accounts:logout' %}">
                 {% csrf_token %}
