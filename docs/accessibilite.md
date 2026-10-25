@@ -25,6 +25,33 @@ Lighthouse ne mesure pas le parcours au clavier. Il a donc été vérifié par u
 
 Limite : Lighthouse refuse d'auditer une page qui répond 404, 403 ou 500. Ces pages utilisent le même gabarit `base.html` et la même structure (un `<h1>`, un paragraphe, un bouton) que les pages auditées.
 
+## Audit du 25/10/2026 (Phase 2 : mentorat et forum)
+
+Même outil et même profil, sur les données de `seed_demo`, avec le compte de l'apprenante Yasmine Trabelsi ou du mentor Skander Jaziri selon la page.
+
+| Page | Compte | Score |
+|---|---|---|
+| Annuaire des mentors | Apprenante | 100 |
+| Détail d'un mentor et ses créneaux libres | Apprenante | 100 |
+| Réservation d'un créneau | Apprenante | 100 |
+| Mes sessions | Apprenante | 100 |
+| Demande de session à traiter | Mentor | 100 |
+| Mes créneaux | Mentor | 100 |
+| Ajout d'un créneau | Mentor | 100 |
+| Liste des sujets du forum | Apprenante | 100 |
+| Sujet résolu avec réponse acceptée et votes | Apprenante | 100 |
+| Sujet avec une réponse en attente de vérification | Apprenante | 100 |
+| Nouveau sujet | Apprenante | 100 |
+| Signalement d'une réponse | Apprenante | 100 |
+| File de modération | Mentor | 100 |
+
+Contrôles complémentaires :
+
+- aucune de ces pages ne défile horizontalement à 375 px (vérification par script) ;
+- publication réelle d'un sujet, avec worker Celery et Gemini : la zone `role="status"` annonce « Vérification automatique de votre message en cours… », puis « Votre message est publié. » ; HTMX cesse d'interroger le serveur dès la réponse 286 ;
+- bouton de vote « Utile » : `aria-pressed` indique l'état, un texte masqué nomme l'auteur de la réponse, et l'`id` stable permet à HTMX de rendre le focus au bouton après le remplacement ;
+- file de modération : chaque formulaire de rejet a ses propres `id`, pour qu'un libellé reste lié à un seul champ (test `test_each_rejection_form_has_its_own_field_ids`).
+
 ## Structure commune des pages
 
 `templates/base.html` fournit à chaque page :
@@ -94,6 +121,10 @@ Seuils : 4,5:1 pour le texte courant, 3:1 pour un texte de 24 px et plus et pour
 | `#92400E` avertissement | `#FEF3C7` | Statut « Demandée » | 6,37 | Conforme |
 | `#15803D` succès | `#DCFCE7` | Statut « Confirmée » | 4,57 | Conforme, marge faible |
 | `#1F2937` texte | `#F1F5F9` | Statut « Terminée » | 13,40 | Conforme |
+| `#92400E` avertissement | `#FEF3C7` | Statut « En attente de vérification » (forum) | 6,37 | Conforme |
+| `#15803D` succès | `#DCFCE7` | « Publié », « Résolu », « Réponse acceptée » | 4,57 | Conforme, marge faible |
+| `#B91C1C` erreur | `#FEE2E2` | « Masqué, à relire », « Rejeté » | 5,30 | Conforme |
+| `#5B21B6` violet foncé | `#EDE9FE` | Message d'information (« Votre sujet est enregistré… ») | 7,57 | Conforme |
 | `#B91C1C` erreur | `#FEE2E2` | Statuts « Annulée » et « Refusée » | 5,30 | Conforme |
 | `#92400E` avertissement | `#FEF3C7` fond avertissement | Alerte d'avertissement | 6,37 | Conforme |
 | `#6D28D9` violet | `#EDE9FE` fond violet clair | Alerte d'information | 5,98 | Conforme |
