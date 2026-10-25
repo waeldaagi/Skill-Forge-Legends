@@ -127,6 +127,15 @@ class SessionLifecycleTests(TestCase):
         self.assertFalse(session.slot.is_booked)
         self.assertIn("Flask", session.mentor_notes)
 
+    def test_learner_is_told_why_the_request_was_refused(self):
+        session = MentoringSessionFactory()
+
+        with self.captureOnCommitCallbacks(execute=True):
+            services.refuse_session(session, "Je suis en congé cette semaine.")
+
+        self.assertEqual(mail.outbox[0].to, [session.learner.email])
+        self.assertIn("Je suis en congé cette semaine.", mail.outbox[0].body)
+
     def test_freed_slot_can_be_booked_again(self):
         session = MentoringSessionFactory()
         services.refuse_session(session, "Indisponible.")
@@ -172,6 +181,15 @@ class CancellationTests(TestCase):
         session.slot.refresh_from_db()
         self.assertEqual(session.status, Status.ANNULEE)
         self.assertFalse(session.slot.is_booked)
+
+    def test_mentor_is_told_when_the_learner_cancels(self):
+        session = self.session_starting_in(days=2)
+
+        with self.captureOnCommitCallbacks(execute=True):
+            services.cancel_session(session)
+
+        self.assertEqual(mail.outbox[0].subject, "Session annulée")
+        self.assertEqual(mail.outbox[0].to, [session.mentor.email])
 
     def test_learner_cannot_cancel_1_h_59_before_the_start(self):
         session = self.session_starting_in(hours=1, minutes=59)
