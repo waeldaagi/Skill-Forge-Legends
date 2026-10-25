@@ -20,7 +20,7 @@ pip install -r requirements-dev.txt
 copy .env.example .env           # Linux/macOS : cp .env.example .env
 ```
 
-Dans `.env`, remplacez `SECRET_KEY` par une clé générée avec :
+Dans `.env`, remplacez `SECRET_KEY` par une clé générée avec la commande ci-dessous, et choisissez un mot de passe de démo dans `DEMO_PASSWORD` :
 
 ```
 python -c "import secrets; print(secrets.token_urlsafe(50))"
@@ -30,10 +30,11 @@ Puis :
 
 ```
 python manage.py migrate
-python manage.py setup_roles
-python manage.py createsuperuser
+python manage.py seed_demo
 python manage.py runserver
 ```
+
+`seed_demo` crée les groupes de rôles, un compte par rôle et les données de démo de chaque module. Elle peut être relancée : rien n'est dupliqué. Relancez-la juste avant une démonstration : elle recrée une session de mentorat qui commence 10 minutes plus tard, pour montrer la salle de visio.
 
 L'application répond sur http://127.0.0.1:8000/ et l'admin Django sur http://127.0.0.1:8000/admin/.
 
@@ -55,7 +56,18 @@ Sans Redis, mettez `CELERY_TASK_ALWAYS_EAGER=True` dans `.env` : les tâches s'e
 
 ## Comptes de démo
 
-La commande `seed_demo` (Phase 5) créera un compte par rôle. En attendant, `createsuperuser` crée un compte administrateur ; les autres comptes se créent dans l'admin Django, en choisissant leur rôle.
+Créés par `python manage.py seed_demo`. Mot de passe : la valeur de `DEMO_PASSWORD` dans votre `.env`.
+
+| Rôle | Identifiant | À montrer |
+|---|---|---|
+| Apprenant | `yasmine.trabelsi` | Annuaire des mentors, réservation, sessions, forum |
+| Mentor | `skander.jaziri` | Créneaux, demande à confirmer, salle de visio, file de modération |
+| Formateur | `mariem.gharbi` | Forum (cours et quiz en Phase 1) |
+| Recruteur | `oussema.mejri` | Espace recruteur (Phase 3) |
+| Administrateur | `ines.hammami` | Admin Django, file de modération |
+| Établissement | `khalil.chaabane` | Tableau de bord (Phase 4) |
+
+Comptes secondaires des données de démo : mentors `nour.ayari` et `hamza.khelifi`, apprenants `rania.bouzid` et `sami.jebali`.
 
 ## Modules et responsables
 
@@ -81,7 +93,7 @@ coverage run manage.py test && coverage report && coverage html
 
 `manage.py test` et `pytest` utilisent les mêmes réglages (`config.settings.test`) : Celery synchrone, fournisseur d'IA `mock`, aucun appel réseau.
 
-État au 25/10/2026 (fin de la Phase 0) : 89 tests, couverture de 97 %. Détail par app : `docs/tests.md`. La CI GitHub Actions refuse une couverture inférieure à 75 %.
+État au 25/10/2026 (Phase 2) : 276 tests, couverture de 98 %. Détail par app : `docs/tests.md`. La CI GitHub Actions refuse une couverture inférieure à 75 %.
 
 ## Déploiement
 
