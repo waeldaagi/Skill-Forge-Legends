@@ -11,7 +11,9 @@ class Plan(models.Model):
     name = models.CharField("nom", max_length=120)
     slug = models.SlugField("slug", max_length=140, unique=True)
     price = models.DecimalField(
-        "prix (TND)", max_digits=8, decimal_places=3,
+        "prix (TND)",
+        max_digits=8,
+        decimal_places=3,
         validators=[MinValueValidator(Decimal("0"))],
     )
     duration_days = models.PositiveIntegerField("durée (jours)", validators=[MinValueValidator(1)])
@@ -45,7 +47,11 @@ class Subscription(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
-        indexes = [models.Index(fields=["user", "status", "ends_at"])]
+        # Nom fixé par la migration 0001 : sans lui, Django en calcule un autre et réclame
+        # une migration de renommage.
+        indexes = [
+            models.Index(fields=["user", "status", "ends_at"], name="payments_s_user_id_7d7f1f_idx")
+        ]
 
     def __str__(self):
         return f"{self.user} — {self.plan}"
@@ -66,7 +72,9 @@ class Payment(models.Model):
     )
     plan = models.ForeignKey(Plan, on_delete=models.PROTECT, related_name="payments")
     amount = models.DecimalField(
-        "montant", max_digits=8, decimal_places=3,
+        "montant",
+        max_digits=8,
+        decimal_places=3,
         validators=[MinValueValidator(Decimal("0"))],
     )
     currency = models.CharField("devise", max_length=3, default="TND", editable=False)
