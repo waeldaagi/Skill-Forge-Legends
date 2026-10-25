@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Créer un compte · SkillForge{% endblock %}
+{% block content %}
+<h1>Créer votre compte</h1>
+<form method="post" class="sf-form" novalidate>
+  {% csrf_token %}
+  {{ form }}
+  <button class="btn sf-btn-primary" type="submit">Créer mon compte</button>
+</form>
+{% endblock %}

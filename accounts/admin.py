@@ -1,7 +1,19 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import User
+from .models import Etablissement, Skill, User
+
+
+@admin.register(Skill)
+class SkillAdmin(admin.ModelAdmin):
+    search_fields = ("name",)
+
+
+@admin.register(Etablissement)
+class EtablissementAdmin(admin.ModelAdmin):
+    list_display = ("name", "city", "institution_type", "manager", "invite_code")
+    list_filter = ("institution_type", "city")
+    search_fields = ("name", "city", "invite_code")
 
 
 @admin.register(User)
