@@ -29,7 +29,7 @@ class GeminiProvider:
                 "contents": [{"role": "user", "parts": [{"text": prompt}]}],
                 "generationConfig": {"responseMimeType": "application/json"},
             },
-            timeout=timeout,
+            timeout=settings.AI_TIMEOUT,
         )
         response.raise_for_status()
         return candidate_text(response.json())

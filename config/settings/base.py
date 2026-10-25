@@ -115,6 +115,7 @@ DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="SkillForge <no-reply@ski
 AI_PROVIDER = env("AI_PROVIDER", default="mock")
 AI_API_KEY = env("AI_API_KEY", default="")
 AI_MODEL = env("AI_MODEL", default="")
+AI_TIMEOUT = env.float("AI_TIMEOUT", default=60)
 
 LOGGING = {
     "version": 1,

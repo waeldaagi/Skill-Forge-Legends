@@ -45,7 +45,7 @@ class GeminiProviderTests(TestCase):
         self.assertEqual(sent["headers"], {"x-goog-api-key": "cle-de-test"})
         self.assertEqual(sent["json"]["generationConfig"], {"responseMimeType": "application/json"})
         self.assertIn(INJECTION_GUARD, sent["json"]["systemInstruction"]["parts"][0]["text"])
-        self.assertEqual(sent["timeout"], 30)
+        self.assertEqual(sent["timeout"], 60)
 
     def test_answer_is_validated_and_logged_with_its_model(self):
         with mock.patch(POST, return_value=gemini_response()):

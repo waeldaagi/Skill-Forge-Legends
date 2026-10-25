@@ -9,6 +9,7 @@ from core.ai import AIFeature, complete_json, delimit_user_content, register_fea
 from courses.models import Choice, Question, Resource
 
 FEATURE = "quiz_generation"
+MAX_SOURCE_LENGTH = 24000
 logger = logging.getLogger(__name__)
 
 
@@ -66,7 +67,8 @@ def build_chapter_source(chapter):
             continue
         if text.strip():
             sections.append(f"Ressource PDF « {resource.title} » :\n{text}")
-    return "\n\n".join(section for section in sections if section.strip())
+    source = "\n\n".join(section for section in sections if section.strip())
+    return source[:MAX_SOURCE_LENGTH]
 
 
 def fallback(job):
