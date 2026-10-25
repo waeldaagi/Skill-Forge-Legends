@@ -19,3 +19,6 @@ STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
 }
+
+# Sortie des tests lisible : seuls les avertissements et les erreurs s'affichent.
+LOGGING = {**LOGGING, "root": {"handlers": ["console"], "level": "WARNING"}}  # noqa: F405
