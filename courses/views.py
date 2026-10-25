@@ -75,8 +75,10 @@ class ChapterDetailView(LoginRequiredMixin, DetailView):
     context_object_name = "chapter"
 
     def get_queryset(self):
-        return Chapter.objects.filter(course__status=Course.Status.PUBLISHED).select_related(
-            "course"
+        return (
+            Chapter.objects.filter(course__status=Course.Status.PUBLISHED)
+            .select_related("course")
+            .prefetch_related("resources")
         )
 
     def dispatch(self, request, *args, **kwargs):

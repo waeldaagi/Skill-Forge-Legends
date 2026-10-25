@@ -1,13 +1,32 @@
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 
 from accounts.models import User
 from accounts.tests.factories import UserFactory
+from courses.models import Resource
 
-from .factories import CourseFactory
+from .factories import ChapterFactory, CourseFactory
 
 
 class CourseCatalogueTests(TestCase):
+    def test_learner_can_see_a_resource_added_to_a_chapter(self):
+        learner = UserFactory(role=User.Role.APPRENANT)
+        course = CourseFactory(status="PUBLISHED")
+        chapter = ChapterFactory(course=course)
+        resource = Resource.objects.create(
+            chapter=chapter,
+            title="Support du chapitre",
+            file=SimpleUploadedFile("support.pdf", b"contenu PDF", content_type="application/pdf"),
+        )
+        self.client.force_login(learner)
+
+        response = self.client.get(reverse("courses:chapter", kwargs={"pk": chapter.pk}))
+
+        self.assertTemplateUsed(response, "courses/chapter.html")
+        self.assertContains(response, resource.title)
+        self.assertContains(response, resource.file.url)
+
     def test_catalogue_filters_courses_by_search(self):
         matching = CourseFactory(title="Django du modèle au déploiement")
         CourseFactory(title="Docker pour développeurs")
