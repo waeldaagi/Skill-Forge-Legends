@@ -1,0 +1,10 @@
+{% load ai_status %}
+{# Visible par l'auteur seul tant que son message n'est pas publié. #}
+{% if post.moderation_job %}
+  {% ai_job_status post.moderation_job %}
+{% else %}
+  <p class="sf-ai-status" role="status">{{ post.author_message }}</p>
+{% endif %}
+{% if post.moderation_reason %}
+  <p class="text-muted mb-0">Motif&nbsp;: {{ post.moderation_reason }}</p>
+{% endif %}

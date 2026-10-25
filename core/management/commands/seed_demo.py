@@ -27,6 +27,9 @@ class Command(BaseCommand):
     )
 
     @transaction.atomic
+        "Peut être relancée : rien n'est dupliqué."
+    )
+
     def handle(self, *args, **options):
         if not settings.DEMO_PASSWORD:
             raise CommandError(
@@ -38,6 +41,8 @@ class Command(BaseCommand):
             for role, (username, first_name, last_name) in DEMO_ACCOUNTS.items()
         }
         self.stdout.write(f"Comptes de démo : {len(accounts)}, un par rôle.")
+        # Chaque app déclare sa fonction dans son AppConfig (attribut demo_seeder), dans l'ordre
+        # d'INSTALLED_APPS : les cours existent avant les certifications qui en dépendent.
         for app_config in apps.get_app_configs():
             if seeder_path := getattr(app_config, "demo_seeder", ""):
                 summary = import_string(seeder_path)(accounts)

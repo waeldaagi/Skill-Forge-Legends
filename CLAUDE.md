@@ -59,7 +59,8 @@ Skills du projet (`.claude/skills/`), à charger **avant** d'écrire :
 - **Formulaires** : `FORM_RENDERER = "core.forms.SkillForgeFormRenderer"`. `{{ form }}` produit les libellés, les classes Bootstrap, la mention « (obligatoire) », `aria-invalid` et `aria-describedby`. Aucune classe CSS n'est à poser dans les formulaires.
 - **E-mails** : `core.services.queue_email(subject, message, recipient_list)`. L'e-mail est confié à Celery après la validation de la transaction. Pour un envoi différé (rappel 1 h avant), utiliser `core.tasks.send_email.apply_async(..., eta=...)`.
 - **Erreurs** : gabarits `templates/403.html`, `404.html`, `500.html`, `403_csrf.html`. Le message d'une `PermissionDenied` s'affiche sur la page 403 : il doit être rédigé pour l'utilisateur.
-- **Gabarits** : hériter de `base.html`, un seul `<h1>`, aucun style en ligne, classes et jetons de `static/css/theme.css`.
+- **Gabarits** : hériter de `base.html`, un seul `<h1>`, aucun style en ligne, classes et jetons de `static/css/theme.css` (`sf-page-header`, `sf-filters`, `sf-cards`, `sf-details`, `sf-actions`, `sf-status--<statut>`). Listes paginées : `{% include "core/partials/pagination.html" %}`, qui conserve les filtres. Une liste `annotate(Count(...))` a besoin d'un `order_by` explicite : une requête agrégée ignore `Meta.ordering`.
+- **Données de démo** : chaque app déclare dans son `AppConfig` un attribut `demo_seeder = "<app>.demo.seed"`. `seed(accounts)` reçoit les comptes de démo par rôle, crée ses données sans dupliquer (`get_or_create`) et renvoie un résumé d'une ligne. Comptes secondaires : `core.demo.create_demo_user`. Jamais d'appel à l'IA dans un seed.
 
 ## Socle IA (`core/ai/`)
 
@@ -142,7 +143,7 @@ Dans les tests, `run_ai_job` n'exécute la tâche qu'à la validation de la tran
 ```
 python manage.py migrate
 python manage.py setup_roles
-python manage.py seed_demo                      # Phase 5
+python manage.py seed_demo                      # exige DEMO_PASSWORD dans .env
 python manage.py runserver
 celery -A config worker -l info --pool=solo     # --pool=solo sous Windows
 celery -A config beat -l info

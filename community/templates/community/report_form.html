@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Signaler un message · SkillForge{% endblock %}
+
+{% block content %}
+<div class="sf-narrow">
+  <h1>Signaler un message</h1>
+  <blockquote class="sf-post">
+    <p class="sf-post__meta mb-0">Message de {{ target.author }}</p>
+    {{ target.content|truncatewords:40|linebreaks }}
+  </blockquote>
+  <p class="text-muted">Le message reste visible jusqu'à la décision d'un modérateur.</p>
+  <form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit" class="btn btn-danger">Envoyer le signalement</button>
+  </form>
+</div>
+{% endblock %}

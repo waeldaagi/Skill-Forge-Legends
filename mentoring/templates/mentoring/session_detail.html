@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}{{ session.topic }} · Session · SkillForge{% endblock %}
+
+{% block content %}
+<div class="sf-page-header">
+  <h1>{{ session.topic }}</h1>
+  {% include "mentoring/partials/session_status.html" %}
+</div>
+
+<dl class="sf-details">
+  <dt>Date et heure</dt>
+  <dd>{{ session.slot.period }}</dd>
+  <dt>Mentor</dt>
+  <dd>{{ session.slot.mentor }}</dd>
+  <dt>Apprenant</dt>
+  <dd>{{ session.learner }}</dd>
+  <dt>Description du blocage</dt>
+  <dd>{{ session.blocker_description }}</dd>
+  {% if session.mentor_notes %}
+    <dt>Notes du mentor</dt>
+    <dd>{{ session.mentor_notes }}</dd>
+  {% endif %}
+  {% if session.review %}
+    <dt>Avis de l'apprenant</dt>
+    <dd>{{ session.review.rating }}/5{% if session.review.comment %} · {{ session.review.comment }}{% endif %}</dd>
+  {% endif %}
+</dl>
+
+{% if room_open %}
+  <p><a class="btn btn-primary" href="{% url 'mentoring:session_room' session.pk %}">Rejoindre la salle de visio</a></p>
+{% elif room_pending %}
+  <p class="text-muted">La salle de visio ouvre 15 minutes avant le début, sur cette page.</p>
+{% endif %}
+
+{% if can_answer or can_complete or can_cancel or can_review %}
+  <div class="sf-actions">
+    {% if can_answer %}
+      <form method="post" action="{% url 'mentoring:session_confirm' session.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Confirmer la session</button>
+      </form>
+      <a class="btn btn-outline-danger" href="{% url 'mentoring:session_refuse' session.pk %}">Refuser la demande</a>
+    {% endif %}
+    {% if can_complete %}
+      <a class="btn btn-outline-primary" href="{% url 'mentoring:session_complete' session.pk %}">Terminer la session</a>
+    {% endif %}
+    {% if can_cancel %}
+      <a class="btn btn-outline-danger" href="{% url 'mentoring:session_cancel' session.pk %}">Annuler la session</a>
+    {% endif %}
+    {% if can_review %}
+      <a class="btn btn-primary" href="{% url 'mentoring:session_review' session.pk %}">Donner mon avis</a>
+    {% endif %}
+  </div>
+{% endif %}
+
+<p><a href="{% url 'mentoring:session_list' %}">Revenir à mes sessions</a></p>
+{% endblock %}

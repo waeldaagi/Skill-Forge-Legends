@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Annuler la session · SkillForge{% endblock %}
+
+{% block content %}
+<div class="sf-narrow">
+  <h1>Annuler la session du {{ session.slot.period }}&nbsp;?</h1>
+  <p>{{ session.slot.mentor }} sera prévenu par e-mail et le créneau redeviendra libre. L'annulation n'est plus possible à moins de 2 h du début.</p>
+  <form method="post">
+    {% csrf_token %}
+    <div class="sf-actions">
+      <button type="submit" class="btn btn-danger">Annuler la session</button>
+      <a class="btn btn-outline-primary" href="{% url 'mentoring:session_detail' session.pk %}">Garder la session</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

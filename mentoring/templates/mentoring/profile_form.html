@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Profil de mentor · SkillForge{% endblock %}
+
+{% block content %}
+<div class="sf-narrow">
+  <h1>Profil de mentor</h1>
+  <p class="text-muted">Ce profil apparaît dans l'annuaire que consultent les apprenants.</p>
+  <form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit" class="btn btn-primary">Enregistrer le profil</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Supprimer un créneau · SkillForge{% endblock %}
+
+{% block content %}
+<div class="sf-narrow">
+  <h1>Supprimer le créneau du {{ slot.period }}&nbsp;?</h1>
+  <p>Il disparaîtra de l'annuaire. Aucune session n'y est rattachée.</p>
+  <form method="post">
+    {% csrf_token %}
+    <div class="sf-actions">
+      <button type="submit" class="btn btn-danger">Supprimer ce créneau</button>
+      <a class="btn btn-outline-primary" href="{% url 'mentoring:slot_list' %}">Garder le créneau</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

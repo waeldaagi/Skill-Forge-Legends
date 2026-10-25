@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}{% if reply %}Modifier ma réponse{% else %}Répondre{% endif %} · SkillForge{% endblock %}
+
+{% block content %}
+<div class="sf-narrow">
+  <h1>{% if reply %}Modifier ma réponse{% else %}Répondre au sujet{% endif %}</h1>
+  <p>Sujet&nbsp;: <a href="{% url 'community:thread_detail' thread.pk %}">{{ thread.title }}</a></p>
+  <p class="text-muted">La réponse est vérifiée automatiquement avant sa publication.</p>
+  <form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <div class="sf-actions">
+      <button type="submit" class="btn btn-primary">{% if reply %}Enregistrer ma réponse{% else %}Publier ma réponse{% endif %}</button>
+      <a class="btn btn-outline-primary" href="{% url 'community:thread_detail' thread.pk %}">Revenir au sujet</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

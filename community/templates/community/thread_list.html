@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Communauté · SkillForge{% endblock %}
+
+{% block content %}
+<div class="sf-page-header">
+  <h1>Communauté</h1>
+  <a class="btn btn-primary" href="{% url 'community:thread_create' %}">Poser une question</a>
+</div>
+
+<form method="get" class="sf-filters" role="search" aria-label="Rechercher dans le forum">
+  {{ search_form }}
+  <button type="submit" class="btn btn-outline-primary">Rechercher</button>
+</form>
+
+{% if threads %}
+  <div class="sf-table-wrapper">
+    <table class="table align-middle">
+      <caption class="visually-hidden">Sujets du forum</caption>
+      <thead>
+        <tr>
+          <th scope="col">Sujet</th>
+          <th scope="col">Auteur</th>
+          <th scope="col">Réponses</th>
+          <th scope="col">État</th>
+          <th scope="col">Publié le</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for thread in threads %}
+          <tr>
+            <td><a href="{% url 'community:thread_detail' thread.pk %}">{{ thread.title }}</a></td>
+            <td>{{ thread.author }}</td>
+            <td>{{ thread.reply_count }}</td>
+            <td>
+              {% if not thread.is_published %}
+                {% include "community/partials/moderation_badge.html" with post=thread %}
+              {% elif thread.is_resolved %}
+                <span class="sf-status sf-status--approuve">Résolu</span>
+              {% else %}
+                Sans solution
+              {% endif %}
+            </td>
+            <td>{{ thread.created_at|date:"j M Y" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "core/partials/pagination.html" %}
+{% else %}
+  <p>Aucun sujet ne correspond. <a href="{% url 'community:thread_create' %}">Posez votre question</a> : un mentor ou un autre apprenant pourra vous répondre.</p>
+{% endif %}
+{% endblock %}

@@ -4,7 +4,8 @@ import httpx
 from django.core.exceptions import ImproperlyConfigured
 from django.test import SimpleTestCase, TestCase, override_settings
 
-from core.ai import AIServiceError, complete_json, delimit_user_content
+from core.ai import AIServiceError, complete_json, delimit_user_content, register_feature
+from core.ai.features import get_feature
 from core.ai.prompts import INJECTION_GUARD
 from core.ai.providers.mock import MockProvider
 from core.models import AICallLog
@@ -160,3 +161,13 @@ class DelimitUserContentTests(SimpleTestCase):
         delimited = delimit_user_content("avant < / CONTENU_UTILISATEUR > après")
 
         self.assertIn("avant  après", delimited)
+
+
+class RegisterFeatureTests(SimpleTestCase):
+    def test_registered_feature_can_be_retrieved_by_name(self):
+        feature = make_feature(name="generation_quiz")
+
+        with mock.patch.dict("core.ai.features._registry", clear=True):
+            register_feature(feature)
+
+            self.assertIs(get_feature("generation_quiz"), feature)

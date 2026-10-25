@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}{% if object %}Modifier le sujet{% else %}Poser une question{% endif %} · SkillForge{% endblock %}
+
+{% block content %}
+<div class="sf-narrow">
+  <h1>{% if object %}Modifier le sujet{% else %}Poser une question{% endif %}</h1>
+  <p class="text-muted">Chaque message est vérifié automatiquement avant sa publication. En cas de doute, un modérateur le relit.</p>
+  <form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <div class="sf-actions">
+      <button type="submit" class="btn btn-primary">{% if object %}Enregistrer le sujet{% else %}Publier la question{% endif %}</button>
+      <a class="btn btn-outline-primary" href="{% if object %}{% url 'community:thread_detail' object.pk %}">Revenir au sujet{% else %}{% url 'community:thread_list' %}">Revenir au forum{% endif %}</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

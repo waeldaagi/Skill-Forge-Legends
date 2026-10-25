@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}{{ profile.mentor }} · Mentor · SkillForge{% endblock %}
+
+{% block content %}
+<h1>{{ profile.mentor }}</h1>
+<dl class="sf-details">
+  <dt>Spécialité</dt>
+  <dd>{{ profile.title }}</dd>
+  <dt>Expérience</dt>
+  <dd>{{ profile.years_of_experience }} an{{ profile.years_of_experience|pluralize }}</dd>
+  <dt>Avis des apprenants</dt>
+  <dd>{% if profile.review_count %}{{ profile.average_rating|floatformat:1 }}/5 sur {{ profile.review_count }} avis{% else %}Pas encore d'avis{% endif %}</dd>
+</dl>
+
+<h2>Créneaux libres</h2>
+{% if free_slots %}
+  <div class="sf-table-wrapper">
+    <table class="table align-middle">
+      <caption class="visually-hidden">Créneaux libres de {{ profile.mentor }}</caption>
+      <thead>
+        <tr>
+          <th scope="col">Date et heure</th>
+          <th scope="col"><span class="visually-hidden">Action</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for slot in free_slots %}
+          <tr>
+            <td>{{ slot.period }}</td>
+            <td class="text-end"><a class="btn btn-sm btn-primary" href="{% url 'mentoring:slot_book' slot.pk %}">Réserver ce créneau<span class="visually-hidden"> du {{ slot.period }}</span></a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p>Aucun créneau libre pour le moment. <a href="{% url 'mentoring:mentor_directory' %}">Choisissez un autre mentor</a> ou revenez plus tard.</p>
+{% endif %}
+{% endblock %}
