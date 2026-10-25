@@ -9,8 +9,9 @@ PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 
 EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 
+# Tâches exécutées dans le processus de test. Sans CELERY_TASK_EAGER_PROPAGATES : Celery rejoue
+# alors les relances (self.retry) comme un worker ; une tâche en échec reste journalisée.
 CELERY_TASK_ALWAYS_EAGER = True
-CELERY_TASK_EAGER_PROPAGATES = True
 
 # Jamais d'appel réel à une API d'IA dans les tests.
 AI_PROVIDER = "mock"

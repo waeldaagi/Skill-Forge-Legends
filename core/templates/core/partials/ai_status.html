@@ -1,0 +1,14 @@
+{% if job.status == job.Status.SUCCEEDED %}
+  {% if feature.result_template %}
+    {% include feature.result_template %}
+  {% else %}
+    <p class="sf-ai-status__done"><i class="bi bi-check-circle" aria-hidden="true"></i> Traitement terminé.</p>
+  {% endif %}
+{% elif job.status == job.Status.FAILED %}
+  <p class="sf-ai-status__error"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i> {{ job.error_message }}</p>
+{% else %}
+  <p class="sf-ai-status__pending">
+    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+    <span>{{ feature.status_message }}</span>
+  </p>
+{% endif %}
