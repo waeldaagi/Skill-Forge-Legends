@@ -4,6 +4,7 @@ from django.apps import AppConfig
 class CommunityConfig(AppConfig):
     name = "community"
     verbose_name = "Communauté"
+    demo_seeder = "community.demo.seed"
 
     def ready(self):
         # Enregistrement au démarrage, comme admin.site.register : le socle IA saura exécuter
