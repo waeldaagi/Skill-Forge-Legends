@@ -32,7 +32,8 @@ class MentoringAccessMatrixTests(TestCase):
         cls.profile = MentorProfileFactory()
         cls.slot = AvailabilitySlotFactory(mentor=cls.profile.mentor)
         cls.session = MentoringSessionFactory(slot__mentor=cls.profile.mentor)
-        cls.users = {role: UserFactory(role=role) for role in Role}
+        # Mentor vérifié : seul un mentor vérifié publie des créneaux (voir test_views.py).
+        cls.users = {role: UserFactory(role=role, is_verified=role == Role.MENTOR) for role in Role}
 
     def check(self, url, statuses, method="get"):
         for role, status in statuses.items():

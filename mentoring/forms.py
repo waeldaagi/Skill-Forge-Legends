@@ -1,6 +1,9 @@
 from django import forms
 from django.utils import timezone
 
+from accounts.models import Skill
+from courses.models import Course
+
 from .models import AvailabilitySlot, MentoringSession, MentorProfile, SessionReview
 
 Status = MentoringSession.Status
@@ -19,8 +22,12 @@ class DateTimeLocalInput(forms.DateTimeInput):
 class MentorProfileForm(forms.ModelForm):
     class Meta:
         model = MentorProfile
-        fields = ["title", "years_of_experience"]
-        widgets = {"years_of_experience": forms.NumberInput(attrs={"min": 0, "max": 50})}
+        fields = ["title", "years_of_experience", "expertises"]
+        widgets = {
+            "years_of_experience": forms.NumberInput(attrs={"min": 0, "max": 50}),
+            "expertises": forms.CheckboxSelectMultiple,
+        }
+        help_texts = {"expertises": "Les apprenants filtrent l'annuaire sur ces compétences."}
 
 
 class AvailabilitySlotForm(forms.ModelForm):
@@ -41,13 +48,22 @@ class AvailabilitySlotForm(forms.ModelForm):
 class BookingForm(forms.ModelForm):
     class Meta:
         model = MentoringSession
-        fields = ["topic", "blocker_description"]
+        fields = ["topic", "blocker_description", "course"]
         widgets = {"blocker_description": forms.Textarea(attrs={"rows": 5})}
         help_texts = {
             "topic": "Une phrase, par exemple « Erreur 403 sur un formulaire HTMX ».",
             "blocker_description": "Ce que vous avez essayé et ce qui bloque : "
             "le mentor prépare la session à partir de ce texte.",
+            "course": "Facultatif : le cours suivi sur SkillForge auquel se rapporte le blocage.",
         }
+
+    def __init__(self, *args, learner=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Seuls les cours publiés auxquels l'apprenant est inscrit sont proposés.
+        self.fields["course"].queryset = Course.objects.filter(
+            enrollments__learner=learner, status=Course.Status.PUBLISHED
+        ).distinct()
+        self.fields["course"].empty_label = "Aucun cours en particulier"
 
 
 class MentorNotesForm(forms.Form):
@@ -109,4 +125,10 @@ class SessionFilterForm(forms.Form):
 
 class MentorSearchForm(forms.Form):
     q = forms.CharField(label="Nom ou spécialité", required=False, max_length=80)
+    expertise = forms.ModelChoiceField(
+        label="Expertise",
+        queryset=Skill.objects.all(),
+        required=False,
+        empty_label="Toutes les expertises",
+    )
     disponible = forms.BooleanField(label="Avec un créneau libre", required=False)

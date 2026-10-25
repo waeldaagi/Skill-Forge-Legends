@@ -5,9 +5,17 @@
 {% block content %}
 <div class="sf-page-header">
   <h1>Mes créneaux</h1>
-  <a class="btn btn-primary" href="{% url 'mentoring:slot_create' %}">Ajouter un créneau</a>
+  {% if is_verified %}
+    <a class="btn btn-primary" href="{% url 'mentoring:slot_create' %}">Ajouter un créneau</a>
+  {% endif %}
 </div>
 
+{% if not is_verified %}
+  <div class="alert alert-warning">
+    Votre profil de mentor n'est pas encore vérifié par un administrateur : vos créneaux ne sont pas
+    publiés et vous ne pouvez pas en ajouter.
+  </div>
+{% endif %}
 {% if not has_profile %}
   <div class="alert alert-warning">
     Les apprenants ne vous trouvent pas encore dans l'annuaire.

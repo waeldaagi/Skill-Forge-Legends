@@ -7,8 +7,10 @@ from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
 
-from accounts.models import User
+from accounts.models import Skill, User
 from accounts.tests.factories import UserFactory
+from courses.services import enroll_learner
+from courses.tests.factories import CourseFactory
 from mentoring.forms import DATETIME_LOCAL_FORMAT
 from mentoring.models import AvailabilitySlot, MentoringSession, MentorProfile, SessionReview
 from mentoring.tests.factories import (
@@ -59,7 +61,7 @@ class MentorProfileViewTests(TestCase):
 
 class SlotViewsTests(TestCase):
     def setUp(self):
-        self.mentor = UserFactory(role=User.Role.MENTOR)
+        self.mentor = UserFactory(role=User.Role.MENTOR, is_verified=True)
         self.client.force_login(self.mentor)
 
     def test_list_shows_only_my_upcoming_slots(self):
@@ -166,6 +168,21 @@ class SlotViewsTests(TestCase):
 
         self.assertContains(response, 'href="?etat=libres&amp;page=2"')
 
+    def test_unverified_mentor_cannot_add_a_slot_and_is_told_why(self):
+        self.client.force_login(UserFactory(role=User.Role.MENTOR, is_verified=False))
+
+        response = self.client.get(reverse("mentoring:slot_create"))
+
+        self.assertContains(response, "doit être vérifié", status_code=403)
+
+    def test_slot_list_warns_an_unverified_mentor(self):
+        self.client.force_login(UserFactory(role=User.Role.MENTOR, is_verified=False))
+
+        response = self.client.get(reverse("mentoring:slot_list"))
+
+        self.assertContains(response, "pas encore vérifié")
+        self.assertNotContains(response, reverse("mentoring:slot_create"))
+
 
 class DirectoryViewsTests(TestCase):
     def setUp(self):
@@ -218,6 +235,17 @@ class DirectoryViewsTests(TestCase):
 
         self.assertEqual(list(response.context["free_slots"]), [free])
 
+    def test_directory_filters_on_an_expertise(self):
+        docker = Skill.objects.create(name="Docker")
+        devops = MentorProfileFactory()
+        devops.expertises.add(docker)
+        MentorProfileFactory()
+
+        response = self.client.get(reverse("mentoring:mentor_directory"), {"expertise": docker.pk})
+
+        self.assertEqual(list(response.context["profiles"]), [devops])
+        self.assertContains(response, "Expertises&nbsp;: Docker")
+
 
 class BookingViewTests(TestCase):
     def setUp(self):
@@ -261,6 +289,20 @@ class BookingViewTests(TestCase):
 
         self.assertRedirects(response, reverse("mentoring:mentor_directory"))
         self.assertIn("vient d'être réservé", messages_of(response)[0])
+
+    def test_booking_offers_only_my_courses_and_keeps_the_choice(self):
+        mine = CourseFactory()
+        CourseFactory()  # cours auquel l'apprenant n'est pas inscrit
+        enroll_learner(self.learner, mine)
+
+        form = self.client.get(self.url).context["form"]
+        self.client.post(
+            self.url,
+            {"topic": "Tests Django", "blocker_description": "Mon test échoue.", "course": mine.pk},
+        )
+
+        self.assertEqual(list(form.fields["course"].queryset), [mine])
+        self.assertEqual(MentoringSession.objects.get().course, mine)
 
 
 class SessionViewsTests(TestCase):
