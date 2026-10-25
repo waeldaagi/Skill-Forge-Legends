@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Supprimer le sujet · SkillForge{% endblock %}
+
+{% block content %}
+<div class="sf-narrow">
+  <h1>Supprimer le sujet « {{ thread.title }} »&nbsp;?</h1>
+  <p>Le sujet et toutes ses réponses seront supprimés définitivement.</p>
+  <form method="post">
+    {% csrf_token %}
+    <div class="sf-actions">
+      <button type="submit" class="btn btn-danger">Supprimer le sujet</button>
+      <a class="btn btn-outline-primary" href="{% url 'community:thread_detail' thread.pk %}">Garder le sujet</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

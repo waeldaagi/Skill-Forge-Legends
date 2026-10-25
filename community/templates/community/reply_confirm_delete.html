@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Supprimer ma réponse · SkillForge{% endblock %}
+
+{% block content %}
+<div class="sf-narrow">
+  <h1>Supprimer votre réponse&nbsp;?</h1>
+  <p>Sujet&nbsp;: {{ reply.thread.title }}. La réponse et ses votes seront supprimés définitivement.</p>
+  <form method="post">
+    {% csrf_token %}
+    <div class="sf-actions">
+      <button type="submit" class="btn btn-danger">Supprimer ma réponse</button>
+      <a class="btn btn-outline-primary" href="{% url 'community:thread_detail' reply.thread_id %}">Garder ma réponse</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

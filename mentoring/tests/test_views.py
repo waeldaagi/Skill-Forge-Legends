@@ -140,6 +140,32 @@ class SlotViewsTests(TestCase):
         self.assertEqual(response.status_code, 403)
         self.assertTrue(AvailabilitySlot.objects.filter(pk=slot.pk).exists())
 
+    def test_list_shows_past_slots_on_request(self):
+        past = AvailabilitySlotFactory(
+            mentor=self.mentor, start=from_now(days=-2), end=from_now(days=-2, hours=1)
+        )
+        AvailabilitySlotFactory(mentor=self.mentor)
+
+        response = self.client.get(reverse("mentoring:slot_list"), {"periode": "passes"})
+
+        self.assertEqual(list(response.context["slots"]), [past])
+
+    def test_list_filters_booked_slots(self):
+        booked = AvailabilitySlotFactory(mentor=self.mentor, is_booked=True)
+        AvailabilitySlotFactory(mentor=self.mentor, start=in_days(5))
+
+        response = self.client.get(reverse("mentoring:slot_list"), {"etat": "reserves"})
+
+        self.assertEqual(list(response.context["slots"]), [booked])
+
+    def test_next_page_link_keeps_the_filter(self):
+        for day in range(1, 13):
+            AvailabilitySlotFactory(mentor=self.mentor, start=in_days(day))
+
+        response = self.client.get(reverse("mentoring:slot_list"), {"etat": "libres"})
+
+        self.assertContains(response, 'href="?etat=libres&amp;page=2"')
+
 
 class DirectoryViewsTests(TestCase):
     def setUp(self):
@@ -349,6 +375,21 @@ class SessionViewsTests(TestCase):
         self.client.post(self.url("session_review"), {"rating": "5", "comment": "Très utile."})
 
         self.assertEqual(SessionReview.objects.get(session=self.session).rating, 5)
+
+    def test_list_separates_upcoming_and_past_sessions(self):
+        past = MentoringSessionFactory(
+            learner=self.learner,
+            status=Status.TERMINEE,
+            slot__start=from_now(days=-3),
+            slot__end=from_now(days=-3, hours=1),
+        )
+        self.client.force_login(self.learner)
+
+        upcoming = self.client.get(reverse("mentoring:session_list"), {"periode": "a_venir"})
+        finished = self.client.get(reverse("mentoring:session_list"), {"periode": "passees"})
+
+        self.assertEqual(list(upcoming.context["sessions"]), [self.session])
+        self.assertEqual(list(finished.context["sessions"]), [past])
 
 
 class RoomViewTests(TestCase):

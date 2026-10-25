@@ -13,22 +13,24 @@ La CI GitHub Actions lance la même suite sur PostgreSQL 16 et Redis 7, refuse u
 
 Sont exclus de la mesure : migrations, settings, `manage.py`, `asgi.py`, `wsgi.py` et les dossiers `tests/` eux-mêmes.
 
-## Résultats au 25/10/2026 (fin de la Phase 0)
+## Résultats au 25/10/2026 (Phase 2 : mentorat et communauté)
 
-Commande : `pytest --cov`, sur SQLite. Couverture des instructions et des branches.
+Commande : `pytest --cov`, sur SQLite ; la même suite passe sous PostgreSQL 16. Couverture des instructions et des branches.
 
 | App | Tests | Instructions | Non couvertes | Couverture |
 |---|---|---|---|---|
-| `core` | 70 | 404 | 2 | 99,1 % |
+| `core` | 76 | 445 | 2 | 99,2 % |
 | `accounts` | 19 | 87 | 0 | 100 % |
+| `mentoring` | 103 | 560 | 4 | 99,0 % |
+| `community` | 78 | 633 | 6 | 98,6 % |
 | `config` | — | 18 | 1 | 90,0 % |
 | `courses` | 0 | 12 | 6 | 50,0 % |
 | `assessment` | 0 | 8 | 2 | 75,0 % |
 | `payments` | 0 | 8 | 2 | 75,0 % |
-| `mentoring`, `community`, `analytics` | 0 | 6 chacune | 0 | 100 % |
-| **Total** | **89** | **555** | **13** | **97,3 %** |
+| `analytics` | 0 | 6 | 0 | 100 % |
+| **Total** | **276** | **1 777** | **23** | **98,4 %** |
 
-Les apps métier ne contiennent encore que leur configuration et les stubs des contrats entre modules (`courses.services`, `payments.services`, `assessment.services`). Ces stubs ne sont pas testés : ils seront remplacés par leur responsable, avec ses propres tests. Leur couverture n'a donc pas de sens à ce stade ; elle en prendra dès les Phases 1 à 4.
+`courses`, `assessment`, `payments` et `analytics` ne contiennent encore que leur configuration et les stubs des contrats entre modules. Ces stubs seront remplacés par leur responsable, avec ses propres tests (Phases 1, 3 et 4).
 
 ## Ce que les tests prouvent
 
@@ -48,10 +50,24 @@ Les apps métier ne contiennent encore que leur configuration et les stubs des c
 | `core/tests/test_views.py` | Accueil, repères accessibles, un seul `<h1>`, navigation selon le rôle, `aria-current`. |
 | `core/tests/test_health.py` | `/health/` : 200 si la base et Redis répondent, 503 sinon, jamais en cache. |
 | `core/tests/test_emails.py` | Adresse d'expédition ; e-mail envoyé seulement après la validation de la transaction. |
+| `core/tests/test_seed_demo.py` | Un compte par rôle avec le mot de passe de démo ; relançable sans doublon ; refus sans `DEMO_PASSWORD`. |
+| `mentoring/tests/test_models.py` | Règles d'un créneau (futur, 30 à 120 min, sans chevauchement, bornes incluses) ; deux sessions actives sur un créneau refusées par la base. |
+| `mentoring/tests/test_services.py` | Réservation verrouillée ; créneau déjà pris ; annulation à 2 h 01 acceptée et à 1 h 59 refusée ; transitions de statut ; avis ; fenêtre de la salle ; e-mails et rappel. |
+| `mentoring/tests/test_views.py` | Chaque page : statut, gabarit, contexte, effet ; nombre de requêtes de l'annuaire constant. |
+| `mentoring/tests/test_permissions.py` | 16 URL × 6 rôles et l'anonyme ; objet d'un autre participant : 404. |
+| `community/tests/test_moderation_ai.py` | Message propre publié, spam masqué, message masqué pendant la vérification, échec de l'IA sans publication, seuil de confiance de 0,6, injection de prompt. |
+| `community/tests/test_services.py` | Visibilité et ordre des messages, votes, réponse acceptée, signalements, décisions des modérateurs. |
+| `community/tests/test_views.py` | Pages du forum, vote HTMX, file de modération (un formulaire de rejet par élément, id uniques) ; nombre de requêtes de la liste constant. |
+| `community/tests/test_permissions.py` | 19 URL × 6 rôles et l'anonyme ; message d'un autre auteur : 404. |
+| `community/tests/test_evaluate_moderation.py` | Rapport complet ; le fournisseur mock reproduit la baseline ; échecs d'appel comptés. |
 
 ## Lignes non couvertes
 
-- `core/models.py`, `AIJob.__str__` : affichage dans l'admin, sans règle métier.
-- `core/forms.py`, branche « widget caché » : aucun formulaire du projet n'a encore de champ caché.
-- `config/urls.py`, route des médias en `DEBUG` : jamais active en test (Django force `DEBUG=False`).
-- Stubs de `courses`, `assessment` et `payments` : voir plus haut.
+Les vues et la pagination sont entièrement couvertes. Restent, d'après `htmlcov/` :
+
+- les `__str__` des modèles, utilisés par l'admin ;
+- le retour anticipé de `AvailabilitySlot.clean()` quand un champ est déjà invalide ;
+- la branche « widget caché » du rendu des formulaires et la route des médias, active seulement en `DEBUG` ;
+- le double clic sur un vote (`IntegrityError` ignorée) et le repli d'un sujet supprimé avant sa vérification ;
+- l'attente avant un nouvel essai dans `evaluate_moderation`, non testée pour ne pas ralentir la suite de 10 s ;
+- les stubs des modules encore à écrire.

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Modération · SkillForge{% endblock %}
+
+{% block content %}
+<h1>Modération</h1>
+<p class="text-muted">Messages masqués par la vérification automatique, en attente après un échec de l'IA, ou signalés par des membres.</p>
+
+<section aria-labelledby="titre-signalements">
+  <h2 id="titre-signalements">Signalements à traiter ({{ reports|length }})</h2>
+  {% for report in reports %}
+    <div class="sf-moderation-item">
+      <h3>{{ report.get_reason_display }} · signalé par {{ report.reporter }}</h3>
+      {% if report.details %}<p>Précisions&nbsp;: {{ report.details }}</p>{% endif %}
+      <blockquote class="text-muted">{{ report.target.content|truncatewords:60|linebreaks }}</blockquote>
+      <p>Auteur&nbsp;: {{ report.target.author }} · <a href="{% if report.thread %}{% url 'community:thread_detail' report.thread_id %}{% else %}{% url 'community:thread_detail' report.reply.thread_id %}{% endif %}">voir le sujet</a></p>
+      <div class="sf-actions">
+        <form method="post" action="{% url 'community:report_dismiss' report.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-primary">Classer sans suite</button>
+        </form>
+        <form method="post" action="{% if report.thread %}{% url 'community:thread_reject' report.thread_id %}{% else %}{% url 'community:reply_reject' report.reply_id %}{% endif %}">
+          {% csrf_token %}
+          {{ report.rejection_form }}
+          <button type="submit" class="btn btn-danger">Rejeter le message</button>
+        </form>
+      </div>
+    </div>
+  {% empty %}
+    <p>Aucun signalement en attente.</p>
+  {% endfor %}
+</section>
+
+<section aria-labelledby="titre-sujets">
+  <h2 id="titre-sujets">Sujets à relire ({{ pending_threads|length }})</h2>
+  {% for thread in pending_threads %}
+    {% include "community/partials/moderation_item.html" with post=thread approve_url_name="community:thread_approve" reject_url_name="community:thread_reject" %}
+  {% empty %}
+    <p>Aucun sujet à relire.</p>
+  {% endfor %}
+</section>
+
+<section aria-labelledby="titre-reponses">
+  <h2 id="titre-reponses">Réponses à relire ({{ pending_replies|length }})</h2>
+  {% for reply in pending_replies %}
+    {% include "community/partials/moderation_item.html" with post=reply approve_url_name="community:reply_approve" reject_url_name="community:reply_reject" %}
+  {% empty %}
+    <p>Aucune réponse à relire.</p>
+  {% endfor %}
+</section>
+{% endblock %}
