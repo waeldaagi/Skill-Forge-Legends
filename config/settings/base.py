@@ -117,7 +117,6 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="SkillForge <no-reply@skillforge.tn>")
-DEMO_PASSWORD = env("DEMO_PASSWORD", default="")
 
 # Mot de passe commun des comptes créés par « seed_demo » ; jamais de valeur par défaut.
 DEMO_PASSWORD = env("DEMO_PASSWORD", default="")
