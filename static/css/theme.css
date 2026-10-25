@@ -536,8 +536,18 @@ h4, h5, h6 { font-size: 1rem; }
   color: var(--sf-success);
   background: var(--sf-success-subtle);
 }
+.sf-status--en_attente {
+  color: var(--sf-warning-text);
+  background: var(--sf-warning-subtle);
+}
+.sf-status--approuve {
+  color: var(--sf-success);
+  background: var(--sf-success-subtle);
+}
 .sf-status--annulee,
-.sf-status--refusee {
+.sf-status--refusee,
+.sf-status--signale,
+.sf-status--rejete {
   color: var(--sf-danger);
   background: var(--sf-danger-subtle);
 }
@@ -550,4 +560,52 @@ h4, h5, h6 { font-size: 1rem; }
   min-height: 480px;
   border: 1px solid var(--sf-border);
   border-radius: var(--sf-radius);
+}
+
+/* Forum (communauté). */
+.sf-post {
+  margin-bottom: 16px;
+  padding: 16px 24px;
+  border: 1px solid var(--sf-border);
+  border-radius: var(--sf-radius);
+  background: var(--sf-surface);
+}
+.sf-post--accepted {
+  border-left: 4px solid var(--sf-success);
+}
+.sf-post__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 12px;
+  color: var(--sf-muted);
+  font-size: 0.875rem;
+}
+.sf-post__meta h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--sf-text);
+}
+.sf-post__body p:last-child {
+  margin-bottom: 0;
+}
+.sf-post__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.sf-post__actions form {
+  margin: 0;
+}
+.sf-moderation-item {
+  margin-bottom: 16px;
+  padding: 16px 24px;
+  border: 1px solid var(--sf-border);
+  border-radius: var(--sf-radius);
+  background: var(--sf-surface);
+}
+.sf-moderation-item h3 {
+  font-size: 1rem;
 }

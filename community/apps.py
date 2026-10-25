@@ -24,6 +24,18 @@ class CommunityConfig(AppConfig):
             )
         )
 
+    role_navigation = {
+        "APPRENANT": [("Communauté", "community:thread_list")],
+        "FORMATEUR": [("Communauté", "community:thread_list")],
+        "MENTOR": [
+            ("Communauté", "community:thread_list"),
+            ("Modération", "community:moderation_queue"),
+        ],
+        "ADMIN": [
+            ("Communauté", "community:thread_list"),
+            ("Modération", "community:moderation_queue"),
+        ],
+    }
     role_permissions = {
         "APPRENANT": ["community.add_thread", "community.add_reply", "community.add_report"],
         "FORMATEUR": ["community.add_thread", "community.add_reply", "community.add_report"],

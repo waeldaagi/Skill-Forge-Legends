@@ -1,0 +1,10 @@
+<form method="post" action="{% url 'community:reply_vote' reply.pk %}"
+      hx-post="{% url 'community:reply_vote' reply.pk %}" hx-swap="outerHTML">
+  {% csrf_token %}
+  {# id stable : HTMX rend le focus au bouton après l'avoir remplacé. #}
+  <button type="submit" id="vote-{{ reply.pk }}" aria-pressed="{% if reply.has_voted %}true{% else %}false{% endif %}"
+          class="btn btn-sm {% if reply.has_voted %}btn-primary{% else %}btn-outline-primary{% endif %}">
+    <i class="bi bi-hand-thumbs-up" aria-hidden="true"></i>
+    Utile<span class="visually-hidden"> : réponse de {{ reply.author }}</span> ({{ reply.vote_count }})
+  </button>
+</form>

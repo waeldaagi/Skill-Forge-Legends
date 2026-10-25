@@ -42,6 +42,8 @@ def visible_threads(user):
         Thread.objects.filter(Q(moderation_status=ModerationStatus.APPROUVE) | Q(author=user))
         .select_related("author")
         .annotate(reply_count=Count("replies", filter=approved_replies))
+        # Ordre explicite : une requête agrégée (GROUP BY) n'applique pas Meta.ordering.
+        .order_by("-created_at")
     )
 
 
@@ -51,6 +53,7 @@ def visible_replies(thread, user):
         thread.replies.filter(Q(moderation_status=ModerationStatus.APPROUVE) | Q(author=user))
         .select_related("author", "moderation_job")
         .annotate(vote_count=Count("votes"), has_voted=Exists(user_vote))
+        .order_by("created_at")
     )
 
 

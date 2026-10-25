@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}{{ thread.title }} · Communauté · SkillForge{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'community:thread_list' %}">Revenir au forum</a></p>
+
+<article class="sf-post" aria-labelledby="titre-sujet">
+  <div class="sf-page-header">
+    <h1 id="titre-sujet">{{ thread.title }}</h1>
+    {% if not thread.is_published %}
+      {% include "community/partials/moderation_badge.html" with post=thread %}
+    {% elif thread.is_resolved %}
+      <span class="sf-status sf-status--approuve">Résolu</span>
+    {% endif %}
+  </div>
+  <p class="sf-post__meta">{{ thread.author }} · {{ thread.created_at|date:"j F Y" }}</p>
+
+  {% if is_author and not thread.is_published %}
+    {% include "community/partials/author_moderation.html" with post=thread %}
+  {% endif %}
+
+  <div class="sf-post__body">{{ thread.content|linebreaks }}</div>
+
+  <div class="sf-post__actions">
+    {% if is_author %}
+      <a class="btn btn-sm btn-outline-primary" href="{% url 'community:thread_update' thread.pk %}">Modifier le sujet</a>
+      {% if thread.is_published %}
+        <form method="post" action="{% url 'community:thread_resolve' thread.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-outline-primary">{% if thread.is_resolved %}Rouvrir le sujet{% else %}Marquer comme résolu{% endif %}</button>
+        </form>
+      {% endif %}
+      <a class="btn btn-sm btn-outline-danger" href="{% url 'community:thread_delete' thread.pk %}">Supprimer le sujet</a>
+    {% elif thread.is_published %}
+      <a class="btn btn-sm btn-outline-danger" href="{% url 'community:thread_report' thread.pk %}">Signaler le sujet</a>
+    {% endif %}
+  </div>
+</article>
+
+<h2>Réponses ({{ replies|length }})</h2>
+{% for reply in replies %}
+  <article class="sf-post{% if reply.is_accepted %} sf-post--accepted{% endif %}" id="reponse-{{ reply.pk }}" aria-labelledby="auteur-reponse-{{ reply.pk }}">
+    <div class="sf-post__meta">
+      <h3 id="auteur-reponse-{{ reply.pk }}">Réponse de {{ reply.author }}</h3>
+      <span>{{ reply.created_at|date:"j F Y" }}</span>
+      {% if reply.is_accepted %}<span class="sf-status sf-status--approuve">Réponse acceptée</span>{% endif %}
+      {% if not reply.is_published %}{% include "community/partials/moderation_badge.html" with post=reply %}{% endif %}
+    </div>
+    {% if reply.author_id == user.pk and not reply.is_published %}
+      {% include "community/partials/author_moderation.html" with post=reply %}
+    {% endif %}
+    <div class="sf-post__body">{{ reply.content|linebreaks }}</div>
+    <div class="sf-post__actions">
+      {% if reply.author_id == user.pk %}
+        <a class="btn btn-sm btn-outline-primary" href="{% url 'community:reply_update' reply.pk %}">Modifier ma réponse</a>
+        <a class="btn btn-sm btn-outline-danger" href="{% url 'community:reply_delete' reply.pk %}">Supprimer ma réponse</a>
+      {% elif reply.is_published %}
+        {% include "community/partials/vote_button.html" %}
+        {% if can_accept and not reply.is_accepted %}
+          <form method="post" action="{% url 'community:reply_accept' reply.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-outline-primary">Accepter cette réponse<span class="visually-hidden"> de {{ reply.author }}</span></button>
+          </form>
+        {% endif %}
+        <a class="btn btn-sm btn-outline-danger" href="{% url 'community:reply_report' reply.pk %}">Signaler<span class="visually-hidden"> la réponse de {{ reply.author }}</span></a>
+      {% endif %}
+    </div>
+  </article>
+{% empty %}
+  <p>Pas encore de réponse.{% if thread.is_published and not is_author %} Si vous connaissez la solution, partagez-la ci-dessous.{% endif %}</p>
+{% endfor %}
+
+{% if thread.is_published %}
+  <h2>Répondre</h2>
+  <form method="post" action="{% url 'community:reply_create' thread.pk %}" class="sf-narrow">
+    {% csrf_token %}
+    {{ reply_form }}
+    <button type="submit" class="btn btn-primary">Publier ma réponse</button>
+  </form>
+{% endif %}
+{% endblock %}

@@ -51,6 +51,15 @@ class VisibilityTests(TestCase):
         self.assertEqual(listed.vote_count, 1)
         self.assertTrue(listed.has_voted)
 
+    def test_threads_newest_first_and_replies_oldest_first(self):
+        older = ReplyFactory()
+        newer_thread = ThreadFactory()
+        later_reply = ReplyFactory(thread=older.thread)
+        reader = UserFactory()
+
+        self.assertEqual(list(services.visible_threads(reader))[:2], [newer_thread, older.thread])
+        self.assertEqual(list(services.visible_replies(older.thread, reader)), [older, later_reply])
+
     def test_unpublished_thread_accepts_no_reply(self):
         thread = ThreadFactory(moderation_status=Status.EN_ATTENTE)
 

@@ -1,0 +1,24 @@
+<div class="sf-moderation-item">
+  <h3>{% if post.title %}{{ post.title }}{% else %}Réponse au sujet « {{ post.thread.title }} »{% endif %}</h3>
+  <p class="sf-post__meta mb-2">
+    {{ post.author }} · {{ post.created_at|date:"j F Y, G \h i" }} ·
+    {% include "community/partials/moderation_badge.html" %}
+  </p>
+  {% if post.moderation_label %}
+    <p>Avis de l'IA&nbsp;: {{ post.get_moderation_label_display }}, confiance {{ post.moderation_confidence|floatformat:2 }}. {{ post.moderation_reason }}</p>
+  {% elif post.moderation_reason %}
+    <p>{{ post.moderation_reason }}</p>
+  {% endif %}
+  <blockquote class="text-muted">{{ post.content|linebreaks }}</blockquote>
+  <div class="sf-actions">
+    <form method="post" action="{% url approve_url_name post.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary">Publier le message</button>
+    </form>
+    <form method="post" action="{% url reject_url_name post.pk %}">
+      {% csrf_token %}
+      {{ post.rejection_form }}
+      <button type="submit" class="btn btn-danger">Rejeter le message</button>
+    </form>
+  </div>
+</div>
