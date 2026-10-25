@@ -3,6 +3,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+from analytics.views import PilotageView
+
 urlpatterns = [
     path("", include("core.urls")),
     path("admin/", admin.site.urls),
@@ -12,7 +14,8 @@ urlpatterns = [
     path("communaute/", include("community.urls")),
     path("evaluation/", include("assessment.urls")),
     path("paiements/", include("payments.urls")),
-    path("pilotage/", include("analytics.urls")),
+    path("analytics/", include("analytics.urls")),
+    path("pilotage/", PilotageView.as_view(), name="pilotage"),
 ]
 
 if settings.DEBUG:

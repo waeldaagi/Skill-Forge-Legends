@@ -30,7 +30,6 @@ DEMO_PLANS = [
     },
 ]
 
-
 class Command(BaseCommand):
     help = "Ajoute les données de démonstration sans supprimer les données existantes."
 
