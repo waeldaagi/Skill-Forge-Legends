@@ -55,6 +55,7 @@ Constatés en exécutant le code fusionné. Non corrigés ici pour que Taha gard
 | Basse | N'importe quel rôle peut rejoindre un établissement | `accounts/views.py:55` | Réserver au rôle apprenant |
 | Basse | Pas de lien « Mot de passe oublié » sur la page de connexion | Lecture de `login.html` | Ajouter le lien vers `accounts:password_reset` |
 | Basse | Une vidéo YouTube collée en URL « watch » ne s'affiche pas dans l'iframe du chapitre | Lecture de `chapter.html` | Convertir l'URL en URL d'intégration, ou afficher un lien |
+| Basse | Avertissement `RemovedInDjango60Warning` à chaque test : champs URL des formulaires sans protocole par défaut | Sortie de pytest | Dans `ChapterForm` et `ResourceForm`, déclarer les champs URL avec `forms.URLField(assume_scheme="https")` |
 
 ## 5. Écarts au cahier des charges et à la Definition of Done (Phase 1)
 
