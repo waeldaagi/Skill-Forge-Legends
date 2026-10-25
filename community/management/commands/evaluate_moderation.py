@@ -129,8 +129,6 @@ def render_report(rows, provider_name, model_name):
 
 
 def latency_table(latencies):
-    if latencies.size == 0:
-        return ["Aucun appel réussi : pas de latence à mesurer."]
     return [
         "| Moyenne | Médiane | p95 | Maximum |",
         "|---|---|---|---|",
