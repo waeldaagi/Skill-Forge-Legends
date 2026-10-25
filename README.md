@@ -81,7 +81,7 @@ coverage run manage.py test && coverage report && coverage html
 
 `manage.py test` et `pytest` utilisent les mêmes réglages (`config.settings.test`) : Celery synchrone, fournisseur d'IA `mock`, aucun appel réseau.
 
-État au 25/10/2026 (fin de la Phase 0) : 79 tests, couverture de 96 %. La CI GitHub Actions refuse une couverture inférieure à 75 %.
+État au 25/10/2026 (fin de la Phase 0) : 85 tests, couverture de 96 %. La CI GitHub Actions refuse une couverture inférieure à 75 %.
 
 ## Déploiement
 

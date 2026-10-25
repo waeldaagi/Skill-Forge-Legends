@@ -2,6 +2,7 @@ from typing import Protocol
 
 from django.core.exceptions import ImproperlyConfigured
 
+from .gemini import GeminiProvider
 from .mock import MockProvider
 
 
@@ -17,7 +18,7 @@ class Provider(Protocol):
     def generate(self, *, feature: str, system: str, prompt: str, timeout: float) -> str: ...
 
 
-PROVIDERS = {"mock": MockProvider}
+PROVIDERS = {"mock": MockProvider, "gemini": GeminiProvider}
 
 
 def get_provider(name) -> Provider:

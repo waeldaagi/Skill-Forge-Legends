@@ -73,12 +73,14 @@ Le module `core` n'a pas de fonctionnalité IA propre. Il fournit le socle utili
 - Prompt : chaque module écrit le sien. Le socle ajoute la consigne anti-injection et le schéma JSON du modèle pydantic. Le texte de l'utilisateur est encadré par `delimit_user_content`, qui retire toute balise de fermeture glissée dans le texte.
 - Sortie : un modèle pydantic par fonctionnalité.
 - Mesures : `AICallLog` enregistre la durée et le résultat de chaque appel. Le tableau de bord administrateur (Phase 4) en tirera la latence moyenne, la latence p95 et le taux d'échec par fonctionnalité.
-- Limites : le fournisseur réel n'est pas encore choisi, seul `mock` existe. Les relances Celery s'ajoutent à la relance pour JSON invalide : dans le pire cas, un job fait 6 appels.
+- Fournisseurs : `mock` pour les tests, la CI et la démo hors ligne ; `gemini` en réel (API `generateContent`, modèle `gemini-3.8-flash` par défaut), comme dans l'atelier IA du cours.
+- Limites : `gemini` est testé avec des réponses HTTP simulées ; il n'a pas encore été appelé avec une vraie clé. Les relances Celery s'ajoutent à la relance pour JSON invalide : dans le pire cas, un job fait 6 appels.
 
 ## 7. Tests
 
-79 tests au 25/10/2026, couverture globale de 96 % (`pytest --cov`). Pour `core` :
+85 tests au 25/10/2026, couverture globale de 96 % (`pytest --cov`). Pour `core` :
 
+- fournisseur Gemini : clé dans l'en-tête, JSON imposé, modèle configurable, erreur 503, réponse bloquée, clé absente ;
 - client IA : réponse valide, journalisation, timeout, erreurs 401 et 503, service injoignable, JSON invalide puis corrigé, JSON invalide deux fois, fournisseur inconnu, consigne anti-injection présente ;
 - tâches IA : succès, échec avec repli, deux relances puis échec, erreur passagère puis succès, erreur inattendue, fonctionnalité non enregistrée ;
 - vue de statut : propriétaire, autre utilisateur (404), anonyme (redirection), code 286 en fin de traitement ;
