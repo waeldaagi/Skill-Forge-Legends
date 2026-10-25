@@ -2,7 +2,7 @@ from datetime import timedelta
 from functools import partial
 
 from django.db import transaction
-from django.db.models import Avg, Count
+from django.db.models import Avg, Count, OuterRef, Subquery
 from django.utils import timezone
 
 from core.services import queue_email
@@ -42,10 +42,12 @@ class ReviewNotAllowed(MentoringError):
 
 
 def mentor_directory():
-    """Profils de mentor avec leur note moyenne et leur nombre d'avis."""
+    """Profils de mentor avec note moyenne, nombre d'avis et prochain créneau libre."""
+    next_free_slot = free_slots(OuterRef("mentor")).order_by("start").values("start")[:1]
     return MentorProfile.objects.select_related("mentor").annotate(
         average_rating=Avg("mentor__availability_slots__sessions__review__rating"),
         review_count=Count("mentor__availability_slots__sessions__review"),
+        next_free_slot=Subquery(next_free_slot),
     )
 
 
@@ -117,6 +119,13 @@ def refuse_session(session, mentor_notes):
     session.mentor_notes = mentor_notes
     session.save(update_fields=["status", "mentor_notes", "updated_at"])
     _release(session.slot)
+    _notify(
+        session.learner,
+        "Demande de session refusée",
+        f"{session.mentor} ne peut pas assurer la session du {session.slot.period}.\n"
+        f"Motif : {mentor_notes}\n\n"
+        "Vous pouvez réserver un autre créneau depuis l'annuaire.",
+    )
 
 
 def complete_session(session, mentor_notes):
@@ -138,6 +147,12 @@ def cancel_session(session):
     session.status = Status.ANNULEE
     session.save(update_fields=["status", "updated_at"])
     _release(session.slot)
+    _notify(
+        session.mentor,
+        "Session annulée",
+        f"{session.learner} a annulé la session du {session.slot.period}.\n"
+        "Le créneau est de nouveau libre dans l'annuaire.",
+    )
 
 
 def add_review(session, rating, comment):

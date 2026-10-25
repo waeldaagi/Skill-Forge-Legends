@@ -5,7 +5,18 @@ class MentoringConfig(AppConfig):
     name = "mentoring"
     verbose_name = "Mentorat en direct"
 
-    # Lu par « setup_roles » (voir accounts/apps.py).
+    # Lus par le context processor de navigation et par « setup_roles » (voir accounts/apps.py).
+    role_navigation = {
+        "APPRENANT": [
+            ("Trouver un mentor", "mentoring:mentor_directory"),
+            ("Mes sessions", "mentoring:session_list"),
+        ],
+        "MENTOR": [
+            ("Mes créneaux", "mentoring:slot_list"),
+            ("Mes sessions", "mentoring:session_list"),
+            ("Profil de mentor", "mentoring:profile_edit"),
+        ],
+    }
     role_permissions = {
         "MENTOR": [
             "mentoring.add_mentorprofile",

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Donner mon avis · SkillForge{% endblock %}
+
+{% block content %}
+<div class="sf-narrow">
+  <h1>Donner mon avis</h1>
+  <p>{{ session.topic }} · avec {{ session.slot.mentor }} · {{ session.slot.period }}</p>
+  <form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit" class="btn btn-primary">Envoyer mon avis</button>
+  </form>
+</div>
+{% endblock %}

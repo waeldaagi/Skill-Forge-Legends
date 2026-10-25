@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Trouver un mentor · SkillForge{% endblock %}
+
+{% block content %}
+<h1>Trouver un mentor</h1>
+<p class="text-muted">Réservez une session en visio quand vous bloquez sur un exercice ou un projet.</p>
+
+<form method="get" class="sf-filters" role="search" aria-label="Rechercher un mentor">
+  {{ search_form }}
+  <button type="submit" class="btn btn-outline-primary">Rechercher</button>
+</form>
+
+{% if profiles %}
+  <ul class="sf-cards list-unstyled">
+    {% for profile in profiles %}
+      <li class="sf-card">
+        <h2>{{ profile.mentor }}</h2>
+        <p>{{ profile.title }} · {{ profile.years_of_experience }} an{{ profile.years_of_experience|pluralize }} d'expérience</p>
+        <p class="text-muted">
+          {% if profile.review_count %}
+            Note moyenne&nbsp;: {{ profile.average_rating|floatformat:1 }}/5 sur {{ profile.review_count }} avis
+          {% else %}
+            Pas encore d'avis
+          {% endif %}
+        </p>
+        <p>
+          {% if profile.next_free_slot %}
+            Prochain créneau libre&nbsp;: {{ profile.next_free_slot|date:"l j F, G \h i" }}
+          {% else %}
+            Aucun créneau libre pour le moment
+          {% endif %}
+        </p>
+        <a class="btn btn-outline-primary" href="{% url 'mentoring:mentor_detail' profile.pk %}">Voir les créneaux<span class="visually-hidden"> de {{ profile.mentor }}</span></a>
+      </li>
+    {% endfor %}
+  </ul>
+  {% include "core/partials/pagination.html" %}
+{% else %}
+  <p>Aucun mentor ne correspond à cette recherche. Retirez un filtre ou essayez un autre mot.</p>
+{% endif %}
+{% endblock %}
