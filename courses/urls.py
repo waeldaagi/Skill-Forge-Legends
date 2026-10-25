@@ -12,6 +12,7 @@ urlpatterns = [
     path("<slug:slug>/modifier/", views.TrainerCourseUpdateView.as_view(), name="update"),
     path("<slug:slug>/supprimer/", views.TrainerCourseDeleteView.as_view(), name="delete"),
     path("chapitres/<int:pk>/", views.ChapterDetailView.as_view(), name="chapter"),
+    path("quiz/<int:pk>/", views.QuizDetailView.as_view(), name="quiz"),
     path(
         "chapitres/<int:pk>/terminer/",
         views.CompleteChapterView.as_view(),

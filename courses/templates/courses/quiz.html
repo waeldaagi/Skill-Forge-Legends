@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ quiz.title }} · SkillForge{% endblock %}
+{% block content %}
+<p><a href="{% url 'courses:chapter' quiz.chapter.pk %}">Retour au chapitre</a></p>
+<h1>{{ quiz.title }}</h1>
+<p>Répondez aux questions, puis consultez votre score.</p>
+<form method="post">
+  {% csrf_token %}
+  {% for question in quiz.questions.all %}
+    <fieldset class="mb-4">
+      <legend class="h2">{{ forloop.counter }}. {{ question.statement }}</legend>
+      {% for choice in question.choices.all %}
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="question-{{ question.pk }}" value="{{ choice.pk }}" id="choice-{{ choice.pk }}" required>
+          <label class="form-check-label" for="choice-{{ choice.pk }}">{{ choice.text }}</label>
+        </div>
+      {% endfor %}
+    </fieldset>
+  {% empty %}
+    <p>Ce quiz ne contient pas encore de question.</p>
+  {% endfor %}
+  {% if quiz.questions.all %}
+    <button class="btn sf-btn-primary" type="submit">Terminer le quiz</button>
+  {% endif %}
+</form>
+{% endblock %}

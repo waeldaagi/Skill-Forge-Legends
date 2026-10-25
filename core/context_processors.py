@@ -1,5 +1,5 @@
 from django.apps import apps
-from django.urls import reverse
+from django.urls import NoReverseMatch, reverse
 
 
 def navigation(request):
@@ -13,6 +13,10 @@ def navigation(request):
     for app_config in apps.get_app_configs():
         role_links = getattr(app_config, "role_navigation", {}).get(request.user.role, [])
         for label, url_name in role_links:
-            url = reverse(url_name)
+            try:
+                url = reverse(url_name)
+            except NoReverseMatch:
+                # Une branche de module peut être testée avant la fusion de son module voisin.
+                continue
             nav_links.append({"label": label, "url": url, "is_current": request.path == url})
     return {"nav_links": nav_links}

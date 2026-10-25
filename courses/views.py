@@ -9,7 +9,7 @@ from accounts.models import User
 from core.permissions import RoleRequiredMixin
 
 from .forms import ChapterForm, CourseFilterForm, CourseForm, ResourceForm
-from .models import Chapter, Course, Resource
+from .models import Chapter, Course, Quiz, QuizAttempt, Resource
 from .services import (
     enroll_learner,
     mark_chapter_completed,
@@ -52,7 +52,7 @@ class CourseDetailView(DetailView):
         return (
             Course.objects.filter(status=Course.Status.PUBLISHED)
             .select_related("category", "trainer")
-            .prefetch_related("chapters")
+            .prefetch_related("chapters__quizzes")
         )
 
 
@@ -86,6 +86,34 @@ class ChapterDetailView(LoginRequiredMixin, DetailView):
         ):
             raise Http404
         return response
+
+
+class QuizDetailView(LoginRequiredMixin, DetailView):
+    model = Quiz
+    template_name = "courses/quiz.html"
+    context_object_name = "quiz"
+
+    def get_queryset(self):
+        return Quiz.objects.filter(
+            is_published=True, chapter__course__status=Course.Status.PUBLISHED
+        ).prefetch_related("questions__choices")
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        questions = list(self.object.questions.prefetch_related("choices"))
+        correct_answers = 0
+        answers = {}
+        for question in questions:
+            choice_id = request.POST.get(f"question-{question.pk}")
+            answers[str(question.pk)] = choice_id
+            if choice_id and question.choices.filter(pk=choice_id, is_correct=True).exists():
+                correct_answers += 1
+        score = round(correct_answers * 100 / len(questions)) if questions else 0
+        QuizAttempt.objects.create(
+            learner=request.user, quiz=self.object, score=score, answers=answers
+        )
+        messages.success(request, f"Quiz terminé : votre score est de {score} %.")
+        return redirect("courses:quiz", pk=self.object.pk)
 
 
 class CompleteChapterView(LoginRequiredMixin, View):
