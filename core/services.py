@@ -2,6 +2,7 @@ from functools import partial
 
 from django.db import transaction
 
+from .dispatch import enqueue
 from .tasks import send_email
 
 
@@ -10,4 +11,6 @@ def queue_email(subject, message, recipient_list, html_message=None):
 
     Si la transaction échoue (réservation refusée, par exemple), aucun e-mail ne part.
     """
-    transaction.on_commit(partial(send_email.delay, subject, message, recipient_list, html_message))
+    transaction.on_commit(
+        partial(enqueue, send_email, subject, message, recipient_list, html_message)
+    )

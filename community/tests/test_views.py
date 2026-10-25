@@ -1,15 +1,21 @@
+from unittest import mock
+
 from django.contrib.messages import get_messages
 from django.db import connection
 from django.test import TestCase
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
+from kombu.exceptions import OperationalError
 
 from accounts.models import User
 from accounts.tests.factories import UserFactory
 from community.models import ModerationStatus, Reply, Report, Thread, Vote
+from community.services import HUMAN_REVIEW_REASON
 from community.tests.factories import ReplyFactory, ReportFactory, ThreadFactory
+from core.ai.jobs import execute_ai_job
 
 Status = ModerationStatus
+REDIS_DOWN = OperationalError("Error 10061 connecting to 127.0.0.1:6379.")
 
 
 def messages_of(response):
@@ -241,6 +247,24 @@ class ReplyViewTests(TestCase):
         response = self.client.post(reverse("community:reply_vote", args=[reply.pk]))
 
         self.assertIn("propre réponse", messages_of(response)[0])
+
+    def test_reply_with_redis_down_stays_hidden_for_a_human_instead_of_failing(self):
+        thread = ThreadFactory()
+
+        with (
+            mock.patch.object(execute_ai_job, "apply_async", side_effect=REDIS_DOWN),
+            self.assertLogs("core.dispatch", "ERROR"),
+            self.captureOnCommitCallbacks(execute=True),
+        ):
+            response = self.client.post(
+                reverse("community:reply_create", args=[thread.pk]),
+                {"content": "Ajoutez app_name dans urls.py."},
+            )
+
+        reply = Reply.objects.get()
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(reply.moderation_status, Status.EN_ATTENTE)
+        self.assertEqual(reply.moderation_reason, HUMAN_REVIEW_REASON)
 
 
 class ModerationQueueViewTests(TestCase):

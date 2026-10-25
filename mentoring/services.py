@@ -5,6 +5,7 @@ from django.db import transaction
 from django.db.models import Avg, Count, OuterRef, Subquery
 from django.utils import timezone
 
+from core.dispatch import enqueue
 from core.services import queue_email
 
 from .models import AvailabilitySlot, MentoringSession, MentorProfile, SessionReview
@@ -107,9 +108,7 @@ def confirm_session(session):
     )
     reminder_at = session.slot.start - REMINDER_BEFORE
     if reminder_at > timezone.now():
-        transaction.on_commit(
-            partial(send_session_reminder.apply_async, args=[session.pk], eta=reminder_at)
-        )
+        transaction.on_commit(partial(enqueue, send_session_reminder, session.pk, eta=reminder_at))
 
 
 @transaction.atomic

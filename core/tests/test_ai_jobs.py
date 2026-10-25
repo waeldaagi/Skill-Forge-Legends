@@ -1,15 +1,17 @@
 from unittest import mock
 
 from django.test import TestCase
+from kombu.exceptions import OperationalError
 
 from accounts.tests.factories import UserFactory
 from core.ai import AIServiceError, run_ai_job
-from core.ai.jobs import UNEXPECTED_ERROR_MESSAGE
+from core.ai.jobs import QUEUE_DOWN_MESSAGE, UNEXPECTED_ERROR_MESSAGE, execute_ai_job
 from core.models import AIJob
 from core.tests.fake_feature import FEATURE_NAME, make_feature, registered
 
 TIMEOUT = AIServiceError("timeout", "Le service d'IA n'a pas répondu à temps.", retryable=True)
 REJECTED_KEY = AIServiceError("http_error", "Le service d'IA a renvoyé une erreur (HTTP 401).")
+REDIS_DOWN = OperationalError("Error 10061 connecting to 127.0.0.1:6379.")
 
 
 class RunAIJobTests(TestCase):
@@ -93,3 +95,16 @@ class RunAIJobTests(TestCase):
             run_ai_job("fonctionnalite_inconnue", self.user)
 
         self.assertFalse(AIJob.objects.exists())
+
+    def test_unreachable_redis_fails_the_job_and_applies_the_fallback(self):
+        fallback = mock.Mock()
+
+        with (
+            mock.patch.object(execute_ai_job, "apply_async", side_effect=REDIS_DOWN),
+            self.assertLogs("core.dispatch", "ERROR"),
+        ):
+            job = self.run_job(make_feature(fallback=fallback))
+
+        self.assertEqual(job.status, AIJob.Status.FAILED)
+        self.assertTrue(job.error_message.startswith(QUEUE_DOWN_MESSAGE))
+        fallback.assert_called_once()
