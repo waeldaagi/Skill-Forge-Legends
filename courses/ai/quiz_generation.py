@@ -1,9 +1,15 @@
+import logging
+from pathlib import Path
+
 from pydantic import BaseModel, Field
+from pypdf import PdfReader
+from pypdf.errors import PdfReadError
 
 from core.ai import AIFeature, complete_json, delimit_user_content, register_feature
-from courses.models import Choice, Question
+from courses.models import Choice, Question, Resource
 
 FEATURE = "quiz_generation"
+logger = logging.getLogger(__name__)
 
 
 class GeneratedQuestion(BaseModel):
@@ -22,7 +28,7 @@ def run(job):
     output = complete_json(
         FEATURE,
         "Génère des questions QCM pédagogiques à partir du contenu fourni.",
-        delimit_user_content(job.payload["chapter"]),
+        delimit_user_content(job.payload["source"]),
         GeneratedQuiz,
     )
     quiz = job.target
@@ -45,6 +51,22 @@ def run(job):
     quiz.is_published = False
     quiz.save(update_fields=["is_ai_generated", "is_published"])
     return output.model_dump()
+
+
+def build_chapter_source(chapter):
+    sections = [f"Chapitre : {chapter.title}", chapter.content]
+    resources = Resource.objects.filter(chapter=chapter).exclude(file="")
+    for resource in resources:
+        if Path(resource.file.name).suffix.lower() != ".pdf":
+            continue
+        try:
+            text = "\n".join(page.extract_text() or "" for page in PdfReader(resource.file).pages)
+        except (OSError, PdfReadError, ValueError) as exc:
+            logger.warning("Impossible de lire la ressource PDF %s : %s", resource.pk, exc)
+            continue
+        if text.strip():
+            sections.append(f"Ressource PDF « {resource.title} » :\n{text}")
+    return "\n\n".join(section for section in sections if section.strip())
 
 
 def fallback(job):

@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock, patch
+
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
@@ -94,6 +96,26 @@ class CourseCatalogueTests(TestCase):
             3,
         )
         self.assertTrue(all(question.choices.count() == 4 for question in quiz.questions.all()))
+
+    @patch("courses.ai.quiz_generation.PdfReader")
+    def test_quiz_generation_source_includes_attached_pdf_text(self, pdf_reader):
+        from courses.ai.quiz_generation import build_chapter_source
+
+        chapter = ChapterFactory(content="Introduction du chapitre")
+        Resource.objects.create(
+            chapter=chapter,
+            title="Support PDF",
+            file=SimpleUploadedFile("support.pdf", b"pdf", content_type="application/pdf"),
+        )
+        page = MagicMock()
+        page.extract_text.return_value = "Les vues Django traitent les requêtes."
+        pdf_reader.return_value.pages = [page]
+
+        source = build_chapter_source(chapter)
+
+        self.assertIn("Introduction du chapitre", source)
+        self.assertIn("Support PDF", source)
+        self.assertIn("Les vues Django traitent les requêtes.", source)
 
     def test_course_image_is_visible_in_catalogue_and_detail(self):
         course = CourseFactory(

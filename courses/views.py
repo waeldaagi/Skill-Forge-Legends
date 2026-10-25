@@ -9,6 +9,7 @@ from accounts.models import User
 from core.ai import run_ai_job
 from core.permissions import RoleRequiredMixin
 
+from .ai.quiz_generation import build_chapter_source
 from .forms import (
     ChapterForm,
     CourseFilterForm,
@@ -220,7 +221,7 @@ class GenerateQuizView(TrainerQuizMixin, View):
             target=quiz,
             payload={
                 "title": quiz.title,
-                "chapter": quiz.chapter.content,
+                "source": build_chapter_source(quiz.chapter),
             },
         )
         messages.info(
