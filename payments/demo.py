@@ -28,8 +28,6 @@ DEMO_PLANS = [
 def seed_demo(accounts):
     created_count = 0
     for plan_data in DEMO_PLANS:
-        _, created = Plan.objects.update_or_create(
-            slug=plan_data["slug"], defaults=plan_data
-        )
+        _, created = Plan.objects.update_or_create(slug=plan_data["slug"], defaults=plan_data)
         created_count += created
     return f"{len(DEMO_PLANS)} offres ({created_count} créées)"
