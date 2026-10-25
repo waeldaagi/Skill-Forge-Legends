@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Accès refusé · SkillForge{% endblock %}
+
+{% block content %}
+<section class="sf-error" aria-labelledby="titre-erreur">
+  <p class="sf-error__code">Erreur 403</p>
+  <h1 id="titre-erreur">{% block error_title %}Accès refusé{% endblock %}</h1>
+  <p>{{ reason|default:"Votre compte ne donne pas accès à cette page." }}</p>
+  {% block advice %}<p>Connectez-vous avec un autre compte ou revenez à l'accueil.</p>{% endblock %}
+  <a class="btn btn-primary" href="{% url 'core:home' %}">Revenir à l'accueil</a>
+</section>
+{% endblock %}

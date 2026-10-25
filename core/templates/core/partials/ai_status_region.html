@@ -1,0 +1,5 @@
+{# Zone stable : role="status" annonce chaque mise à jour ; HTMX n'en remplace que le contenu. #}
+<div class="sf-ai-status" role="status"
+     {% if not job.is_finished %}hx-get="{% url 'core:ai_job_status' job.pk %}" hx-trigger="every 2s" hx-swap="innerHTML"{% endif %}>
+  {% include "core/partials/ai_status.html" %}
+</div>

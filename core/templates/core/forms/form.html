@@ -1,0 +1,7 @@
+{% if errors %}
+  <div class="alert alert-danger" role="alert">
+    {% for error in errors %}<p class="mb-0">{{ error }}</p>{% endfor %}
+  </div>
+{% endif %}
+{% for field, errors in fields %}{{ field.as_field_group }}{% endfor %}
+{% for field in hidden_fields %}{{ field }}{% endfor %}

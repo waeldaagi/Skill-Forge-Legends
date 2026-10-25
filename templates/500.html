@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Erreur du serveur · SkillForge{% endblock %}
+
+{% block content %}
+<section class="sf-error" aria-labelledby="titre-erreur">
+  <p class="sf-error__code">Erreur 500</p>
+  <h1 id="titre-erreur">Erreur du serveur</h1>
+  <p>La page n'a pas pu être affichée à cause d'un problème côté serveur. L'erreur est enregistrée dans le journal.</p>
+  <p>Réessayez dans quelques minutes.</p>
+  <a class="btn btn-primary" href="{% url 'core:home' %}">Revenir à l'accueil</a>
+</section>
+{% endblock %}

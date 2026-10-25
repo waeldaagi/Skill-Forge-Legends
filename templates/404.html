@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Page introuvable · SkillForge{% endblock %}
+
+{% block content %}
+<section class="sf-error" aria-labelledby="titre-erreur">
+  <p class="sf-error__code">Erreur 404</p>
+  <h1 id="titre-erreur">Page introuvable</h1>
+  <p>Cette adresse ne correspond à aucune page. Le lien est peut-être ancien ou mal recopié.</p>
+  <a class="btn btn-primary" href="{% url 'core:home' %}">Revenir à l'accueil</a>
+</section>
+{% endblock %}

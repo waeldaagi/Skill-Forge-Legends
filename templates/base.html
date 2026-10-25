@@ -1,0 +1,67 @@
+{% load static %}<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}SkillForge{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}SkillForge : des cours, du mentorat en direct et des certificats vérifiables.{% endblock %}">
+  <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap-icons/bootstrap-icons.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  <a class="sf-skip-link" href="#contenu">Aller au contenu</a>
+
+  <header class="sf-header">
+    <nav class="navbar navbar-expand-lg" data-bs-theme="dark" aria-label="Navigation principale">
+      <div class="container">
+        <a class="navbar-brand sf-brand" href="{% url 'core:home' %}">Skill<span class="sf-brand__accent">Forge</span></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu-principal"
+                aria-controls="menu-principal" aria-expanded="false" aria-label="Afficher le menu">
+          <span class="navbar-toggler-icon" aria-hidden="true"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="menu-principal">
+          <ul class="navbar-nav me-auto">
+            {% for link in nav_links %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ link.url }}"{% if link.is_current %} aria-current="page"{% endif %}>{{ link.label }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+          {% if user.is_authenticated %}
+            <div class="sf-user">
+              <span>{{ user }}</span>
+              <span class="sf-user__role">{{ user.get_role_display }}</span>
+              <form method="post" action="{% url 'accounts:logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm sf-btn-on-dark">Se déconnecter</button>
+              </form>
+            </div>
+          {% else %}
+            <a class="btn btn-sm sf-btn-on-dark" href="{% url 'accounts:login' %}">Se connecter</a>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="contenu" class="sf-main">
+    <div class="container">
+      {% include "core/partials/messages.html" %}
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+  <footer class="sf-footer">
+    <div class="container">
+      <p class="mb-0">SkillForge · Projet du module Framework Python pour le Web · ESPRIT, classe 5TWIN, 2026</p>
+    </div>
+  </footer>
+
+  <script src="{% static 'vendor/bootstrap/bootstrap.bundle.min.js' %}" defer></script>
+  <script src="{% static 'vendor/htmx/htmx.min.js' %}" defer></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

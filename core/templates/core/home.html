@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}SkillForge · Apprendre, être accompagné, prouver, partager{% endblock %}
+
+{% block content %}
+<section class="sf-intro" aria-labelledby="titre-accueil">
+  <h1 id="titre-accueil">Apprendre, être accompagné, prouver, partager.</h1>
+  <p class="sf-intro__lead">
+    SkillForge réunit les cours, le mentorat en direct et la certification sur une seule plateforme.
+    L'apprenant suit un parcours, réserve une session avec un mentor quand il bloque, puis soumet une
+    preuve évaluée par l'IA et validée par un mentor.
+  </p>
+  {% if not user.is_authenticated %}
+    <a class="btn btn-primary" href="{% url 'accounts:login' %}">Se connecter</a>
+  {% endif %}
+</section>
+
+<section aria-labelledby="titre-parcours">
+  <h2 id="titre-parcours">Le parcours d'un apprenant</h2>
+  <ol class="sf-steps">
+    <li>
+      <h3>Apprendre</h3>
+      <p>Des cours découpés en chapitres, avec des quiz et le suivi de la progression.</p>
+    </li>
+    <li>
+      <h3>Être accompagné</h3>
+      <p>Une session en visio avec un mentor, réservée sur l'un de ses créneaux libres.</p>
+    </li>
+    <li>
+      <h3>Prouver</h3>
+      <p>Une preuve évaluée selon une grille de critères, d'abord par l'IA, puis par un mentor.</p>
+    </li>
+    <li>
+      <h3>Partager</h3>
+      <p>Un certificat vérifiable par QR code, visible des recruteurs sur le profil public.</p>
+    </li>
+  </ol>
+</section>
+
+<section aria-labelledby="titre-acteurs">
+  <h2 id="titre-acteurs">Six profils d'utilisateurs</h2>
+  <dl class="sf-actors">
+    <dt>Apprenant</dt>
+    <dd>Suit les parcours, réserve des sessions de mentorat, soumet ses preuves et obtient des certificats.</dd>
+    <dt>Mentor</dt>
+    <dd>Publie ses disponibilités, anime les sessions en visio et revoit les évaluations de l'IA.</dd>
+    <dt>Formateur</dt>
+    <dd>Crée les cours, les chapitres, les quiz et les grilles de certification.</dd>
+    <dt>Recruteur</dt>
+    <dd>Recherche des talents à partir des profils publics et des certificats vérifiés.</dd>
+    <dt>Administrateur</dt>
+    <dd>Gère les utilisateurs, les rôles, les offres et la modération.</dd>
+    <dt>Établissement</dt>
+    <dd>Suit ses apprenants : progression, certificats et risque d'abandon.</dd>
+  </dl>
+</section>
+{% endblock %}
