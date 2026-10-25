@@ -3,8 +3,9 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
 API_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-# Modèle stable conseillé par Google pour un nouveau projet (octobre 2026). AI_MODEL le remplace.
-DEFAULT_MODEL = "gemini-3.8-flash"
+# Modèle stable, rapide (≈ 1 s) et peu coûteux : gemini-3.8-flash était saturé (HTTP 503) lors
+# de l'essai du 25/10/2026. AI_MODEL permet d'en choisir un autre.
+DEFAULT_MODEL = "gemini-3.5-flash-lite"
 
 
 class GeminiProvider:
