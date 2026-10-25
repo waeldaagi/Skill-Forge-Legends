@@ -26,10 +26,8 @@ class Command(BaseCommand):
         "Peut être relancée : rien n'est dupliqué ni supprimé."
     )
 
+    # Tout ou rien : un module dont les données échouent n'en laisse aucune à moitié créée.
     @transaction.atomic
-        "Peut être relancée : rien n'est dupliqué."
-    )
-
     def handle(self, *args, **options):
         if not settings.DEMO_PASSWORD:
             raise CommandError(

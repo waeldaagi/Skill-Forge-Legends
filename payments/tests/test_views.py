@@ -87,9 +87,7 @@ class PaymentViewTests(TestCase):
         )
         self.client.force_login(self.user)
 
-        cancel_response = self.client.post(
-            reverse("payments:cancel", args=[subscription.pk])
-        )
+        cancel_response = self.client.post(reverse("payments:cancel", args=[subscription.pk]))
         subscriptions_response = self.client.get(reverse("payments:subscriptions"))
         plans_response = self.client.get(reverse("payments:plans"))
 
@@ -116,9 +114,7 @@ class PaymentViewTests(TestCase):
         payment = simulate_payment(self.user, self.plan)
         self.client.force_login(self.user)
 
-        response = self.client.get(
-            reverse("payments:invoice_download", args=[payment.invoice.pk])
-        )
+        response = self.client.get(reverse("payments:invoice_download", args=[payment.invoice.pk]))
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["Content-Type"], "application/pdf")
@@ -129,9 +125,7 @@ class PaymentViewTests(TestCase):
         payment.invoice.pdf.delete(save=True)
         self.client.force_login(self.user)
 
-        response = self.client.get(
-            reverse("payments:invoice_download", args=[payment.invoice.pk])
-        )
+        response = self.client.get(reverse("payments:invoice_download", args=[payment.invoice.pk]))
 
         self.assertEqual(response.status_code, 200)
         payment.invoice.refresh_from_db()
@@ -170,8 +164,6 @@ class PaymentViewTests(TestCase):
         payment = simulate_payment(self.other_user, self.plan)
         self.client.force_login(self.user)
 
-        response = self.client.get(
-            reverse("payments:invoice_download", args=[payment.invoice.pk])
-        )
+        response = self.client.get(reverse("payments:invoice_download", args=[payment.invoice.pk]))
 
         self.assertEqual(response.status_code, 404)
