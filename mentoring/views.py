@@ -204,7 +204,8 @@ class SlotBookView(RoleRequiredMixin, FormView):
         )
 
     def get(self, request, *args, **kwargs):
-        if self.slot.is_booked or self.slot.start <= timezone.now():
+        slot = self.slot
+        if slot.is_booked or slot.start <= timezone.now() or not slot.mentor.is_verified:
             messages.error(request, "Ce créneau n'est plus disponible. Choisissez-en un autre.")
             return redirect("mentoring:mentor_directory")
         return super().get(request, *args, **kwargs)

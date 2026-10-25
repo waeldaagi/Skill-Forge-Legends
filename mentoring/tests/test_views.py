@@ -304,6 +304,13 @@ class BookingViewTests(TestCase):
         self.assertEqual(list(form.fields["course"].queryset), [mine])
         self.assertEqual(MentoringSession.objects.get().course, mine)
 
+    def test_slot_of_an_unverified_mentor_is_not_offered(self):
+        slot = AvailabilitySlotFactory(mentor__is_verified=False)
+
+        response = self.client.get(reverse("mentoring:slot_book", args=[slot.pk]))
+
+        self.assertRedirects(response, reverse("mentoring:mentor_directory"))
+
 
 class SessionViewsTests(TestCase):
     def setUp(self):
