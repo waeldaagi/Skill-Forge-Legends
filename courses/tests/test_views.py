@@ -70,9 +70,7 @@ class CourseCatalogueTests(TestCase):
         self.client.force_login(trainer)
 
         with self.captureOnCommitCallbacks(execute=True):
-            response = self.client.post(
-                reverse("courses:quiz_generate", kwargs={"pk": quiz.pk})
-            )
+            response = self.client.post(reverse("courses:quiz_generate", kwargs={"pk": quiz.pk}))
 
         quiz.refresh_from_db()
         self.assertRedirects(response, reverse("courses:quiz_manage", kwargs={"pk": quiz.pk}))

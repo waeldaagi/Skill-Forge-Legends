@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field
 
 from core.ai import AIFeature, complete_json, delimit_user_content, register_feature
-
 from courses.models import Choice, Question
 
 FEATURE = "quiz_generation"
