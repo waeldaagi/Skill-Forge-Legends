@@ -15,6 +15,7 @@ class AccountsConfig(AppConfig):
         "MENTOR": [("Mon profil", "accounts:profile")],
         "FORMATEUR": [("Mon profil", "accounts:profile")],
         "RECRUTEUR": [("Mon profil", "accounts:profile")],
-        "ADMIN": [("Administration", "admin:index"), ("Mon profil", "accounts:profile")],
+        # Le lien « Administration » est déjà déclaré par core.
+        "ADMIN": [("Mon profil", "accounts:profile")],
         "ETABLISSEMENT": [("Mon profil", "accounts:profile")],
     }
