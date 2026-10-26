@@ -26,4 +26,3 @@ class DropoutModelTests(SimpleTestCase):
             self.assertIn(prediction["level"], {"low", "medium", "high"})
             self.assertGreaterEqual(prediction["probability"], 0)
             self.assertLessEqual(prediction["probability"], 1)
-

@@ -87,8 +87,10 @@ def _matrix(rows: list[dict[str, Any]]) -> tuple[list[list[float]], list[int]]:
 
 
 def train_and_evaluate(
-    rows: list[dict[str, Any]], output_path: str | Path,
-    metrics_path: str | Path | None = None, seed: int = 42,
+    rows: list[dict[str, Any]],
+    output_path: str | Path,
+    metrics_path: str | Path | None = None,
+    seed: int = 42,
 ) -> dict[str, Any]:
     """Compare two classifiers, save the best one, and return evaluation metrics."""
     features, labels = _matrix(rows)

@@ -24,4 +24,3 @@ class Command(BaseCommand):
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(rows, indent=2), encoding="utf-8")
         self.stdout.write(self.style.SUCCESS(f"{len(rows)} observations écrites dans {output}."))
-

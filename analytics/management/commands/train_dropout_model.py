@@ -21,9 +21,7 @@ class Command(BaseCommand):
         if not dataset.exists():
             raise CommandError(f"Jeu de données introuvable : {dataset}")
         rows = json.loads(dataset.read_text(encoding="utf-8"))
-        result = train_and_evaluate(
-            rows, options["model"], options["metrics"], options["seed"]
-        )
+        result = train_and_evaluate(rows, options["model"], options["metrics"], options["seed"])
         best = result["models"][result["best_model"]]
         docs = Path(options["docs"])
         docs.parent.mkdir(parents=True, exist_ok=True)
@@ -51,6 +49,6 @@ class Command(BaseCommand):
             "et élevé (≥ 0,67).\n",
             encoding="utf-8",
         )
-        self.stdout.write(self.style.SUCCESS(
-            f"Modèle retenu : {result['best_model']} (F1={best['f1']})."
-        ))
+        self.stdout.write(
+            self.style.SUCCESS(f"Modèle retenu : {result['best_model']} (F1={best['f1']}).")
+        )

@@ -43,9 +43,7 @@ def dashboard_metrics(user):
     active_subscriptions = Subscription.objects.filter(
         user=user, status=Subscription.Status.ACTIVE, ends_at__gt=now
     )
-    successful_payments = Payment.objects.filter(
-        user=user, status=Payment.Status.SUCCEEDED
-    )
+    successful_payments = Payment.objects.filter(user=user, status=Payment.Status.SUCCEEDED)
     metrics = {
         "active_subscriptions": active_subscriptions.count(),
         "successful_payments": successful_payments.count(),
