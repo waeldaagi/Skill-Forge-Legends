@@ -2,12 +2,13 @@ from unittest import mock
 
 import redis
 from django.db import OperationalError, connection
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 PING = "redis.Redis.ping"
 
 
+@override_settings(CELERY_TASK_ALWAYS_EAGER=False)
 class HealthCheckTests(TestCase):
     url = reverse("core:health")
 
@@ -46,3 +47,15 @@ class HealthCheckTests(TestCase):
             response = self.client.get(self.url)
 
         self.assertIn("no-cache", response["Cache-Control"])
+
+
+class HealthCheckWithoutWorkerTests(TestCase):
+    url = reverse("core:health")
+
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_redis_is_not_required_when_tasks_run_in_the_web_process(self):
+        with mock.patch(PING, side_effect=AssertionError("Redis ne doit pas être interrogé")):
+            response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"status": "ok", "database": "ok", "redis": "not_used"})

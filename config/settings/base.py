@@ -98,6 +98,9 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
+# True sur un hébergement sans serveur de fichiers (Render gratuit) : Django sert lui-même les
+# fichiers envoyés. Acceptable pour une démo ; en production réelle, un stockage dédié.
+SERVE_MEDIA = env.bool("SERVE_MEDIA", default=False)
 
 # Les classes Bootstrap s'appellent « danger », pas « error ».
 MESSAGE_TAGS = {message_constants.ERROR: "danger"}

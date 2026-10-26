@@ -21,6 +21,7 @@ CSRF_FAILURE_MESSAGE = (
 )
 # Code de réponse qui demande à HTMX d'arrêter le polling (hx-trigger="every 2s").
 HTMX_STOP_POLLING = 286
+REDIS_NOT_USED = "not_used"
 
 
 class HomeView(TemplateView):
@@ -46,8 +47,11 @@ class AIJobStatusView(OwnerRequiredMixin, DetailView):
 @require_GET
 def health(request):
     """État de la base et de Redis, lu par le healthcheck Docker : 200 si tout répond, sinon 503."""
-    checks = {"database": _check_database(), "redis": _check_redis()}
-    healthy = all(state == "ok" for state in checks.values())
+    # Sans worker (offre gratuite de Render), les tâches tournent dans le processus web :
+    # Redis n'est pas utilisé et son absence ne rend pas le site indisponible.
+    redis_state = REDIS_NOT_USED if settings.CELERY_TASK_ALWAYS_EAGER else _check_redis()
+    checks = {"database": _check_database(), "redis": redis_state}
+    healthy = all(state in ("ok", REDIS_NOT_USED) for state in checks.values())
     return JsonResponse(
         {"status": "ok" if healthy else "degraded", **checks}, status=200 if healthy else 503
     )
