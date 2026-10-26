@@ -11,6 +11,7 @@ from django.views.decorators.http import require_GET
 from django.views.generic import DetailView, TemplateView
 
 from .ai.features import get_feature
+from .dashboard import dashboard_panels
 from .models import AIJob
 from .permissions import OwnerRequiredMixin
 
@@ -25,7 +26,15 @@ REDIS_NOT_USED = "not_used"
 
 
 class HomeView(TemplateView):
+    """Présentation pour un visiteur ; tableau de bord de son rôle pour un utilisateur connecté."""
+
     template_name = "core/home.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context["panels"] = dashboard_panels(self.request.user)
+        return context
 
 
 class AIJobStatusView(OwnerRequiredMixin, DetailView):
