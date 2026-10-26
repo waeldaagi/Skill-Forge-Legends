@@ -13,9 +13,9 @@ La CI GitHub Actions lance la même suite sur PostgreSQL 16 et Redis 7, refuse u
 
 Sont exclus de la mesure : migrations, settings, `manage.py`, `asgi.py`, `wsgi.py` et les dossiers `tests/` eux-mêmes.
 
-## Résultats au 26/10/2026 (Phases 0 à 2, paiements et analytics, déploiement)
+## Résultats au 26/10/2026 (Phases 0 à 4, déploiement)
 
-Commande : `pytest --cov`, sur SQLite, branche `integration/analytics`. Couverture des instructions et des branches.
+Commande : `pytest --cov`, sur SQLite, branche `integration/assessment`. Couverture des instructions et des branches.
 
 | App | Responsable | Tests | Instructions | Non couvertes | Couverture |
 |---|---|---|---|---|---|
@@ -24,13 +24,13 @@ Commande : `pytest --cov`, sur SQLite, branche `integration/analytics`. Couvertu
 | `community` | Wael | 83 | 679 | 5 | 98,9 % |
 | `accounts` | Taha | 32 | 213 | 1 | 98,7 % |
 | `courses` | Taha | 83 | 895 | 16 | 97,4 % |
-| `config` | — | — | 19 | 1 | 90,5 % |
+| `config` | — | — | 20 | 1 | 90,9 % |
 | `payments` | Ismail | 20 | 213 | 6 | 96,1 % |
 | `analytics` | Ismail | 16 | 210 | 7 | 94,4 % |
-| `assessment` | Hamdi | 0 | 8 | 0 | stub |
-| **Total** | | **448** | **3 351** | **42** | **98,1 %** |
+| `assessment` | Hamdi | 39 | 730 | 45 | 92,1 % |
+| **Total** | | **487** | **4 074** | **87** | **97,0 %** |
 
-Avant la correction des bugs relevés dans `docs/audit/integration-2026-10-25.md`, `courses/views.py` n'était couvert qu'à 65 % : les bugs se trouvaient précisément dans les parties non testées. Il l'est maintenant à 99 %. La suite tourne sans aucun avertissement de dépréciation (`pytest -W error::DeprecationWarning`). `assessment` ne contient encore que le stub de son contrat (Phase 3).
+Avant la correction des bugs relevés dans `docs/audit/integration-2026-10-25.md`, `courses/views.py` n'était couvert qu'à 65 % : les bugs se trouvaient précisément dans les parties non testées. Il l'est maintenant à 99 %. La suite tourne sans aucun avertissement de dépréciation (`pytest -W error::DeprecationWarning`). Les huit modules sont intégrés.
 
 ## Ce que les tests prouvent
 

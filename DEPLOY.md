@@ -50,7 +50,7 @@ Prérequis : un compte Render relié à GitHub, et la branche `main` à jour (fu
 | `DEMO_PASSWORD` | Mot de passe choisi | Si défini, `build.sh` lance `seed_demo` : un compte par rôle et les données de démo |
 | `DJANGO_SUPERUSER_USERNAME`, `_EMAIL`, `_PASSWORD` | Compte administrateur | Lus par `createsuperuser --noinput` ; ignorés si le compte existe déjà |
 
-`RENDER`, `RENDER_EXTERNAL_HOSTNAME` et `PORT` sont fournis par Render : il ne faut pas les définir.
+`RENDER`, `RENDER_EXTERNAL_HOSTNAME`, `RENDER_EXTERNAL_URL` et `PORT` sont fournis par Render : il ne faut pas les définir. `RENDER_EXTERNAL_URL` sert d'adresse au QR code du certificat de démo ; si le QR code d'un certificat créé par `seed_demo` mène à une adresse relative, définir `SITE_URL=https://<service>.onrender.com` puis redéployer.
 
 ## 5. Vérifier le déploiement
 

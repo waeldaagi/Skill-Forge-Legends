@@ -95,6 +95,11 @@ Même outil et même profil, sur les données de `seed_demo`, avec le compte de 
 | Offres, mes abonnements, mes paiements | Apprenante | 100 chacune |
 | Tableau de pilotage, avec graphique Chart.js et tableau des valeurs | Apprenante, établissement, administratrice | 100 chacun |
 | Analytics IA | Administratrice | 100 |
+| Certifications : catalogue, mes soumissions, détail d'une soumission | Apprenante | 100 chacune |
+| Revue d'une soumission, file des revues | Mentor | 100 chacune |
+| Certifications et critères (liste, formulaires) | Formatrice | 100 chacun |
+| Talents certifiés, profil d'un talent, contact | Recruteur | 100 chacun |
+| Vérification publique d'un certificat | Anonyme | 100 |
 
 Avant correction, les trois pages des paiements ouvraient un second `<main id="contenu">` dans celui de `base.html` : deux repères principaux et un identifiant en double. Lighthouse ne le signalait pas ; le contrôle automatique ci-dessous l'a trouvé.
 
