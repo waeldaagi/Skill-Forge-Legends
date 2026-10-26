@@ -6,11 +6,19 @@ from django.urls import reverse
 
 from accounts.models import User
 from accounts.tests.factories import UserFactory
-from courses.models import Chapter, Choice, Course, Question, Quiz, QuizAttempt, Resource
+from courses.models import (
+    Category,
+    Chapter,
+    Choice,
+    Course,
+    Question,
+    Quiz,
+    QuizAttempt,
+    Resource,
+)
 from courses.services import UNVERIFIED_TRAINER_MESSAGE, mark_chapter_completed
 
 from .factories import (
-    CategoryFactory,
     ChapterFactory,
     CourseFactory,
     QuizFactory,
@@ -40,7 +48,8 @@ def course_data(**overrides):
         "title": "APIs Django robustes",
         "description": "Construire une API claire.",
         "level": "BEGINNER",
-        "category": CategoryFactory(name="Développement web").pk,
+        # Catégorie créée par la migration 0005 (catégories par défaut).
+        "category": Category.objects.get(name="Développement web").pk,
         "status": "DRAFT",
     }
     data.update(overrides)
