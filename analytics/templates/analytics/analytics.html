@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Analytics IA{% endblock %}
+{% block content %}
+<main id="contenu" class="container py-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div><h1>Analytics IA</h1><p class="mb-0">Analyse technique et qualité des traitements intelligents.</p></div>
+    <a class="btn btn-outline-primary" href="{% url 'analytics:export' %}">Exporter en CSV</a>
+  </div>
+  <section class="card p-3 mb-4" aria-labelledby="ai-title">
+    <h2 id="ai-title" class="h4">Modèle de risque d'abandon</h2>
+    <p>Le modèle compare une régression logistique et une forêt aléatoire sur un jeu de données synthétique.</p>
+    <p class="mb-0">Les résultats détaillés sont disponibles dans la documentation IA du projet.</p>
+  </section>
+  {% if dropout.available %}<section class="card p-3 mb-4" aria-labelledby="dropout-stats-title">
+    <h2 id="dropout-stats-title" class="h4">Résultats du modèle dropout</h2>
+    <dl class="row mb-0">
+      <dt class="col-sm-6">Taux d'abandon synthétique</dt><dd class="col-sm-6">{{ dropout.dropout_rate }} %</dd>
+      <dt class="col-sm-6">Apprenants simulés</dt><dd class="col-sm-6">{{ dropout.dataset_size }}</dd>
+      <dt class="col-sm-6">Meilleur modèle</dt><dd class="col-sm-6">{{ dropout.best_model }}</dd>
+      <dt class="col-sm-6">F1-score</dt><dd class="col-sm-6">{{ dropout.f1 }}</dd>
+    </dl>
+  </section>{% endif %}
+  {% if metrics.users %}
+  <section class="card p-3" aria-labelledby="stats-title">
+    <h2 id="stats-title" class="h4">Qualité des appels IA</h2>
+    <dl class="row mb-0">
+      <dt class="col-sm-6">Nombre d'appels</dt><dd class="col-sm-6">{{ metrics.ai_calls }}</dd>
+      <dt class="col-sm-6">Latence moyenne</dt><dd class="col-sm-6">{{ metrics.ai_average_latency_ms }} ms</dd>
+      <dt class="col-sm-6">Latence p95</dt><dd class="col-sm-6">{{ metrics.ai_p95_latency_ms }} ms</dd>
+      <dt class="col-sm-6">Taux d'échec</dt><dd class="col-sm-6">{{ metrics.ai_failure_rate }} %</dd>
+    </dl>
+  </section>
+  {% else %}
+  <section class="alert alert-info" role="status">
+    Les statistiques détaillées des appels IA sont visibles avec un compte administrateur.
+  </section>
+  {% endif %}
+</main>
+{% endblock %}

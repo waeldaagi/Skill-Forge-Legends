@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Pilotage{% endblock %}
+{% block content %}
+<main id="contenu" class="container py-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div><h1>Tableau de pilotage</h1><p class="mb-0">Indicateurs de {{ role }}.</p></div>
+    <a class="btn btn-outline-primary" href="{% url 'analytics:export' %}">Exporter en CSV</a>
+  </div>
+  <div class="row g-3">
+    <article class="col-md-4"><div class="card h-100 p-3"><h2 class="h5">Abonnements actifs</h2><p class="display-6">{{ metrics.active_subscriptions }}</p></div></article>
+    <article class="col-md-4"><div class="card h-100 p-3"><h2 class="h5">Paiements réussis</h2><p class="display-6">{{ metrics.successful_payments }}</p></div></article>
+    <article class="col-md-4"><div class="card h-100 p-3"><h2 class="h5">Dépenses</h2><p class="display-6">{{ metrics.total_spent }} TND</p></div></article>
+    <article class="col-md-4"><div class="card h-100 p-3"><h2 class="h5">Progression des cours</h2><p class="display-6">{{ metrics.course_progress }} %</p></div></article>
+    <article class="col-md-4"><div class="card h-100 p-3"><h2 class="h5">Certificats</h2><p class="display-6">{{ metrics.certificates }}</p></div></article>
+    <article class="col-md-4"><div class="card h-100 p-3"><h2 class="h5">Sessions de mentorat</h2><p class="display-6">{{ metrics.mentoring_sessions }}</p></div></article>
+  </div>
+  <section class="mt-4" aria-labelledby="chart-title">
+    <h2 id="chart-title" class="h4">Vue graphique</h2>
+    <canvas id="analytics-chart" height="100" aria-label="Graphique des indicateurs" role="img"></canvas>
+    <details class="mt-2"><summary>Alternative accessible : tableau des valeurs</summary>
+      <table class="table table-sm"><caption>Indicateurs représentés dans le graphique</caption>
+        <thead><tr><th>Indicateur</th><th>Valeur</th></tr></thead>
+        <tbody><tr><td>Abonnements actifs</td><td>{{ metrics.active_subscriptions }}</td></tr>
+        <tr><td>Paiements réussis</td><td>{{ metrics.successful_payments }}</td></tr>
+        <tr><td>Certificats</td><td>{{ metrics.certificates }}</td></tr></tbody>
+      </table>
+    </details>
+  </section>
+  {% if metrics.users %}
+  <section class="mt-4"><h2>Vue administrateur</h2>
+    <p>{{ metrics.users }} utilisateurs, {{ metrics.platform_subscriptions }} abonnements actifs, {{ metrics.platform_revenue }} TND de revenus.</p>
+    <h3 class="h5">Statistiques IA</h3>
+    <p>{{ metrics.ai_calls }} appels, latence moyenne {{ metrics.ai_average_latency_ms }} ms,
+      p95 {{ metrics.ai_p95_latency_ms }} ms, échecs {{ metrics.ai_failure_rate }} %.</p>
+  </section>{% endif %}
+</main>
+{{ chart_data|json_script:"analytics-chart-data" }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
+<script>
+  window.addEventListener("load", function () {
+    const data = JSON.parse(document.getElementById("analytics-chart-data").textContent);
+    const canvas = document.getElementById("analytics-chart");
+    if (window.Chart && canvas) {
+      new Chart(canvas, {type: "bar", data: {labels: Object.keys(data), datasets: [{label: "Valeur", data: Object.values(data)}]}, options: {responsive: true}});
+    }
+  });
+</script>
+{% endblock %}
