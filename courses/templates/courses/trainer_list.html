@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Mes cours · SkillForge{% endblock %}
+
+{% block content %}
+<div class="sf-page-header">
+  <h1>Mes cours</h1>
+  <a class="btn btn-primary" href="{% url 'courses:create' %}">Créer un cours</a>
+</div>
+
+{% if not user.is_verified %}
+  <div class="alert alert-warning">
+    Votre profil de formateur n'est pas encore vérifié par un administrateur : vous pouvez préparer
+    vos cours en brouillon, mais pas publier un cours ni un quiz.
+  </div>
+{% endif %}
+
+{% if courses %}
+  <div class="sf-table-wrapper">
+    <table class="table align-middle">
+      <caption class="visually-hidden">Les cours dont vous êtes le formateur</caption>
+      <thead>
+        <tr>
+          <th scope="col">Cours</th>
+          <th scope="col">Catégorie</th>
+          <th scope="col">Chapitres</th>
+          <th scope="col">Statut</th>
+          <th scope="col"><span class="visually-hidden">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for course in courses %}
+          <tr>
+            <td><a href="{{ course.get_absolute_url }}">{{ course.title }}</a>{% if course.is_premium %} <span class="badge text-bg-warning">Premium</span>{% endif %}</td>
+            <td>{{ course.category }}</td>
+            <td>{{ course.chapter_count }}</td>
+            <td>{{ course.get_status_display }}</td>
+            <td class="text-end">
+              <a class="btn btn-sm btn-outline-primary" href="{% url 'courses:update' course.slug %}">Modifier<span class="visually-hidden"> le cours {{ course.title }}</span></a>
+              <a class="btn btn-sm btn-outline-danger" href="{% url 'courses:delete' course.slug %}">Supprimer<span class="visually-hidden"> le cours {{ course.title }}</span></a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p>Vous n'avez pas encore de cours. Créez votre premier cours : il restera en brouillon jusqu'à sa publication.</p>
+{% endif %}
+{% endblock %}

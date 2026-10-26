@@ -30,6 +30,10 @@ class SlotLocked(MentoringError):
     pass
 
 
+class MentorNotVerified(MentoringError):
+    pass
+
+
 class CancellationTooLate(MentoringError):
     pass
 
@@ -45,15 +49,29 @@ class ReviewNotAllowed(MentoringError):
 def mentor_directory():
     """Profils de mentor avec note moyenne, nombre d'avis et prochain créneau libre."""
     next_free_slot = free_slots(OuterRef("mentor")).order_by("start").values("start")[:1]
-    return MentorProfile.objects.select_related("mentor").annotate(
-        average_rating=Avg("mentor__availability_slots__sessions__review__rating"),
-        review_count=Count("mentor__availability_slots__sessions__review"),
-        next_free_slot=Subquery(next_free_slot),
+    # Cahier des charges : un mentor non vérifié par un administrateur ne publie rien.
+    verified = MentorProfile.objects.filter(mentor__is_verified=True, mentor__is_active=True)
+    return (
+        verified.select_related("mentor")
+        .prefetch_related("expertises")
+        .annotate(
+            average_rating=Avg("mentor__availability_slots__sessions__review__rating"),
+            review_count=Count("mentor__availability_slots__sessions__review"),
+            next_free_slot=Subquery(next_free_slot),
+        )
     )
 
 
 def free_slots(mentor):
     return AvailabilitySlot.objects.filter(mentor=mentor, is_booked=False, start__gt=timezone.now())
+
+
+def ensure_can_publish(mentor):
+    if not mentor.is_verified:
+        raise MentorNotVerified(
+            "Votre profil de mentor doit être vérifié par un administrateur "
+            "avant que vous publiiez des créneaux."
+        )
 
 
 def ensure_slot_editable(slot):
@@ -62,7 +80,7 @@ def ensure_slot_editable(slot):
 
 
 @transaction.atomic
-def book_slot(learner, slot, topic, blocker_description):
+def book_slot(learner, slot, topic, blocker_description, course=None):
     """Réserve le créneau pour l'apprenant et prévient les deux participants par e-mail."""
     # Verrou sur la ligne du créneau : si deux apprenants valident à la même seconde, le second
     # attend la fin de la transaction du premier, puis voit is_booked=True.
@@ -71,6 +89,8 @@ def book_slot(learner, slot, topic, blocker_description):
         .select_related("mentor")
         .get(pk=slot.pk)
     )
+    if not slot.mentor.is_verified:
+        raise SlotUnavailable("Ce mentor n'est pas encore vérifié : choisissez-en un autre.")
     if slot.is_booked or slot.start <= timezone.now():
         raise SlotUnavailable(
             "Ce créneau vient d'être réservé ou n'est plus disponible. Choisissez-en un autre."
@@ -78,7 +98,11 @@ def book_slot(learner, slot, topic, blocker_description):
     slot.is_booked = True
     slot.save(update_fields=["is_booked"])
     session = MentoringSession.objects.create(
-        slot=slot, learner=learner, topic=topic, blocker_description=blocker_description
+        slot=slot,
+        learner=learner,
+        course=course,
+        topic=topic,
+        blocker_description=blocker_description,
     )
     _notify(
         slot.mentor,

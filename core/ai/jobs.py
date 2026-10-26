@@ -45,8 +45,9 @@ def execute_ai_job(self, job_id):
         result = feature.run(job)
     except AIServiceError as exc:
         if exc.retryable and self.request.retries < self.max_retries:
-            # Backoff exponentiel (2 s puis 4 s) : le temps qu'une coupure passagère se résorbe.
-            raise self.retry(exc=exc, countdown=2 ** (self.request.retries + 1)) from exc
+            # Backoff progressif : Gemini peut renvoyer 503 pendant quelques secondes.
+            countdown = 5 * (self.request.retries + 1)
+            raise self.retry(exc=exc, countdown=countdown) from exc
         _fail(job, feature, exc.user_message)
     except Exception:
         # Bord du système : une erreur de programmation ne doit pas laisser le job « en cours ».

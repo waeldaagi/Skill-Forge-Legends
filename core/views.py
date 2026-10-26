@@ -11,6 +11,7 @@ from django.views.decorators.http import require_GET
 from django.views.generic import DetailView, TemplateView
 
 from .ai.features import get_feature
+from .dashboard import dashboard_panels
 from .models import AIJob
 from .permissions import OwnerRequiredMixin
 
@@ -21,10 +22,19 @@ CSRF_FAILURE_MESSAGE = (
 )
 # Code de réponse qui demande à HTMX d'arrêter le polling (hx-trigger="every 2s").
 HTMX_STOP_POLLING = 286
+REDIS_NOT_USED = "not_used"
 
 
 class HomeView(TemplateView):
+    """Présentation pour un visiteur ; tableau de bord de son rôle pour un utilisateur connecté."""
+
     template_name = "core/home.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context["panels"] = dashboard_panels(self.request.user)
+        return context
 
 
 class AIJobStatusView(OwnerRequiredMixin, DetailView):
@@ -46,8 +56,11 @@ class AIJobStatusView(OwnerRequiredMixin, DetailView):
 @require_GET
 def health(request):
     """État de la base et de Redis, lu par le healthcheck Docker : 200 si tout répond, sinon 503."""
-    checks = {"database": _check_database(), "redis": _check_redis()}
-    healthy = all(state == "ok" for state in checks.values())
+    # Sans worker (offre gratuite de Render), les tâches tournent dans le processus web :
+    # Redis n'est pas utilisé et son absence ne rend pas le site indisponible.
+    redis_state = REDIS_NOT_USED if settings.CELERY_TASK_ALWAYS_EAGER else _check_redis()
+    checks = {"database": _check_database(), "redis": redis_state}
+    healthy = all(state in ("ok", REDIS_NOT_USED) for state in checks.values())
     return JsonResponse(
         {"status": "ok" if healthy else "degraded", **checks}, status=200 if healthy else 503
     )

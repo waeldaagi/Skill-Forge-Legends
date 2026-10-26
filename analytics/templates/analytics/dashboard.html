@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Tableau de pilotage · SkillForge{% endblock %}
+{% block content %}
+<div class="sf-page-header">
+  <div>
+    <h1>Tableau de pilotage</h1>
+    <p class="text-muted mb-0">Indicateurs de votre compte {{ role|lower }}.</p>
+  </div>
+  <a class="btn btn-outline-primary" href="{% url 'analytics:export' %}">Exporter en CSV</a>
+</div>
+
+<section class="sf-panel mb-4" aria-labelledby="titre-indicateurs">
+  <h2 id="titre-indicateurs">Indicateurs</h2>
+  <dl class="sf-figures">
+    <div><dt>Abonnements actifs</dt><dd>{{ metrics.active_subscriptions }}</dd></div>
+    <div><dt>Paiements réussis</dt><dd>{{ metrics.successful_payments }}</dd></div>
+    <div><dt>Dépenses</dt><dd>{{ metrics.total_spent }} TND</dd></div>
+    <div><dt>Progression moyenne des cours</dt><dd>{{ metrics.course_progress }} %</dd></div>
+    <div><dt>Certificats</dt><dd>{{ metrics.certificates }}</dd></div>
+    <div><dt>Sessions de mentorat</dt><dd>{{ metrics.mentoring_sessions }}</dd></div>
+  </dl>
+</section>
+
+<section class="sf-panel mb-4" aria-labelledby="titre-graphique">
+  <h2 id="titre-graphique">Vue graphique</h2>
+  <div class="sf-chart">
+    <canvas id="analytics-chart" role="img" aria-label="Diagramme en barres : abonnements actifs, paiements réussis et certificats"></canvas>
+  </div>
+  <details>
+    <summary>Tableau des valeurs du graphique</summary>
+    <table class="table table-sm">
+      <caption class="visually-hidden">Valeurs représentées dans le graphique</caption>
+      <thead><tr><th scope="col">Indicateur</th><th scope="col">Valeur</th></tr></thead>
+      <tbody>
+        {% for label, value in chart_data.items %}<tr><td>{{ label }}</td><td>{{ value }}</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </details>
+</section>
+
+{% if metrics.users %}
+  <section class="sf-panel" aria-labelledby="titre-administrateur">
+    <h2 id="titre-administrateur">Vue administrateur</h2>
+    <p>{{ metrics.users }} utilisateurs, {{ metrics.platform_subscriptions }} abonnements actifs, {{ metrics.platform_revenue }} TND de revenus.</p>
+    <p>Appels à l'IA : {{ metrics.ai_calls }}, latence moyenne {{ metrics.ai_average_latency_ms }} ms, p95 {{ metrics.ai_p95_latency_ms }} ms, échecs {{ metrics.ai_failure_rate }} %.</p>
+    <a class="btn btn-outline-primary" href="{% url 'analytics:dashboard' %}">Voir les analytics IA</a>
+  </section>
+{% endif %}
+{{ chart_data|json_script:"analytics-chart-data" }}
+{% endblock %}
+{% block extra_js %}
+  <script src="{% static 'vendor/chartjs/chart.umd.min.js' %}" defer></script>
+  <script src="{% static 'analytics/pilotage.js' %}" defer></script>
+{% endblock %}

@@ -47,11 +47,8 @@ class Subscription(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
-        # Nom fixé par la migration 0001 : sans lui, Django en calcule un autre et réclame
-        # une migration de renommage.
-        indexes = [
-            models.Index(fields=["user", "status", "ends_at"], name="payments_s_user_id_7d7f1f_idx")
-        ]
+        # Nom calculé par Django ; la migration 0002 renomme l'index créé à la main en 0001.
+        indexes = [models.Index(fields=["user", "status", "ends_at"])]
 
     def __str__(self):
         return f"{self.user} — {self.plan}"

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }} · SkillForge{% endblock %}
+{% block content %}
+<div class="sf-form-page">
+  <p class="sf-eyebrow">Gestion du quiz</p>
+  <h1>{{ page_title }}</h1>
+  <p class="sf-form-intro">
+    Rédigez une question claire, puis indiquez les quatre réponses proposées et une seule bonne réponse.
+  </p>
+
+  <form method="post">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <section class="sf-form-section" aria-labelledby="question-content-title">
+      <h2 id="question-content-title">Contenu de la question</h2>
+      {{ form.statement.as_field_group }}
+      {{ form.explanation.as_field_group }}
+      {{ form.evidence.as_field_group }}
+      {{ form.order.as_field_group }}
+    </section>
+
+    <section class="sf-form-section" aria-labelledby="question-choices-title">
+      <h2 id="question-choices-title">Réponses proposées</h2>
+      <p class="form-text">Saisissez quatre réponses différentes, puis sélectionnez la bonne réponse.</p>
+      <div class="sf-choice-grid">
+        {{ form.choice_1.as_field_group }}
+        {{ form.choice_2.as_field_group }}
+        {{ form.choice_3.as_field_group }}
+        {{ form.choice_4.as_field_group }}
+      </div>
+      <div class="sf-correct-choice">
+        {{ form.correct_choice.as_field_group }}
+      </div>
+    </section>
+
+    <div class="sf-form-actions">
+      <button class="btn sf-btn-primary" type="submit">{{ submit_label }}</button>
+      {% if cancel_url %}<a class="btn btn-outline-secondary" href="{{ cancel_url }}">Annuler</a>{% endif %}
+    </div>
+  </form>
+</div>
+{% endblock %}

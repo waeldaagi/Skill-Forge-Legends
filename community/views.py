@@ -19,7 +19,8 @@ from .models import Reply, Report, Thread
 Role = User.Role
 FORUM_ROLES = (Role.APPRENANT, Role.MENTOR, Role.FORMATEUR, Role.ADMIN)
 MODERATOR_ROLES = (Role.ADMIN, Role.MENTOR)
-PUBLISHED_MESSAGE = "Il sera visible par tous après la vérification automatique."
+# Formulation neutre : la même phrase suit « Votre sujet » et « Votre réponse ».
+PUBLISHED_MESSAGE = "Les autres membres y accéderont après la vérification automatique."
 
 
 def thread_url(thread, reply=None):
@@ -45,6 +46,10 @@ class ThreadListView(ForumAccessMixin, ListView):
         threads = services.visible_threads(self.request.user)
         if query := filters.get("q"):
             threads = threads.filter(Q(title__icontains=query) | Q(content__icontains=query))
+        if course := filters.get("course"):
+            threads = threads.filter(course=course)
+        if tag := filters.get("tag"):
+            threads = threads.filter(tags=tag)
         if filters.get("resolu") == "oui":
             threads = threads.filter(is_resolved=True)
         elif filters.get("resolu") == "non":

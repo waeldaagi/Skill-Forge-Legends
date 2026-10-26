@@ -29,7 +29,16 @@ class HomeViewTests(TestCase):
         response = self.client.get(reverse("core:home"))
 
         self.assertContains(response, f'href="{reverse("accounts:login")}"')
+        self.assertContains(response, f'href="{reverse("accounts:register")}"')
         self.assertNotContains(response, "Se déconnecter")
+
+    def test_anonymous_visitor_reaches_the_public_catalogue(self):
+        response = self.client.get(reverse("core:home"))
+
+        self.assertIn(
+            {"label": "Catalogue des cours", "url": reverse("courses:list"), "is_current": False},
+            response.context["nav_links"],
+        )
 
 
 class RoleNavigationTests(TestCase):

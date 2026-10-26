@@ -40,7 +40,8 @@ def visible_threads(user):
     approved_replies = Q(replies__moderation_status=ModerationStatus.APPROUVE)
     return (
         Thread.objects.filter(Q(moderation_status=ModerationStatus.APPROUVE) | Q(author=user))
-        .select_related("author")
+        .select_related("author", "course")
+        .prefetch_related("tags")
         .annotate(reply_count=Count("replies", filter=approved_replies))
         # Ordre explicite : une requête agrégée (GROUP BY) n'applique pas Meta.ordering.
         .order_by("-created_at")
@@ -75,16 +76,19 @@ def moderation_queue():
 
 
 @transaction.atomic
-def create_thread(author, title, content):
-    thread = Thread.objects.create(author=author, title=title, content=content)
+def create_thread(author, title, content, course=None, tags=()):
+    thread = Thread.objects.create(author=author, title=title, content=content, course=course)
+    thread.tags.set(tags)
     request_moderation(thread)
     return thread
 
 
 @transaction.atomic
-def update_thread(thread, title, content):
+def update_thread(thread, title, content, course=None, tags=()):
     thread.title = title
     thread.content = content
+    thread.course = course
+    thread.tags.set(tags)
     request_moderation(thread)
 
 
@@ -113,8 +117,13 @@ def request_moderation(post):
     post.save()
 
 
+def is_published_automatically(label, confidence):
+    """Règle de publication sans modérateur, partagée par la production et l'évaluation."""
+    return label == ModerationLabel.OK and confidence >= MIN_CONFIDENCE_TO_PUBLISH
+
+
 def apply_ai_verdict(post, label, confidence, reason):
-    publish = label == ModerationLabel.OK and confidence >= MIN_CONFIDENCE_TO_PUBLISH
+    publish = is_published_automatically(label, confidence)
     post.moderation_status = ModerationStatus.APPROUVE if publish else ModerationStatus.SIGNALE
     post.moderation_label = label
     post.moderation_confidence = confidence

@@ -4,8 +4,10 @@ from datetime import timedelta
 
 from django.utils import timezone
 
-from accounts.models import User
+from accounts.models import Skill, User
 from core.demo import create_demo_user
+from courses.models import Course
+from courses.services import enroll_learner
 
 from .models import AvailabilitySlot, MentoringSession, MentorProfile, SessionReview
 
@@ -27,27 +29,42 @@ def seed(accounts):
     hamza = create_demo_user("hamza.khelifi", "Hamza", "Khelifi", Role.MENTOR)
     rania = create_demo_user("rania.bouzid", "Rania", "Bouzid", Role.APPRENANT)
 
-    for mentor, title, years in [
-        (skander, "Développeur back-end Django et PostgreSQL", 8),
-        (nour, "Ingénieure DevOps : Docker, CI et déploiement", 7),
-        (hamza, "Développeur front-end, accessibilité web", 5),
+    for mentor, title, years, skills in [
+        (
+            skander,
+            "Développeur back-end Django et PostgreSQL",
+            8,
+            ["Django", "PostgreSQL", "Tests"],
+        ),
+        (nour, "Ingénieure DevOps : Docker, CI et déploiement", 7, ["Docker", "Déploiement"]),
+        (hamza, "Développeur front-end, accessibilité web", 5, ["HTMX", "Accessibilité web"]),
     ]:
-        MentorProfile.objects.update_or_create(
+        # Un administrateur a vérifié ces mentors : sans cela, ils n'apparaîtraient pas.
+        mentor.is_verified = True
+        mentor.save(update_fields=["is_verified"])
+        profile, _ = MentorProfile.objects.update_or_create(
             mentor=mentor, defaults={"title": title, "years_of_experience": years}
         )
+        profile.expertises.set([Skill.objects.get_or_create(name=name)[0] for name in skills])
 
     for mentor in (skander, nour, hamza):
         for days in range(1, 7):
             for hour in (10, 14):
                 _slot(mentor, at(days, hour))
 
-    _session(
+    django_course = Course.objects.filter(slug="django-du-modele-au-deploiement").first()
+    if django_course:
+        enroll_learner(yasmine, django_course)
+    confirmed = _session(
         yasmine,
         _slot(skander, at(1, 14)),
         "Erreur NoReverseMatch avec un namespace d'URL",
         "Mon template appelle {% url 'courses:detail' %} et Django lève NoReverseMatch.",
         Status.CONFIRMEE,
     )
+    if django_course and confirmed.course_id is None:
+        confirmed.course = django_course
+        confirmed.save(update_fields=["course"])
     _session(
         yasmine,
         _slot(nour, at(2, 10)),

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Catalogue des cours · SkillForge{% endblock %}
+{% block content %}
+<h1>Catalogue des cours</h1>
+<p class="text-muted">Des cours découpés en chapitres, avec des quiz et le suivi de votre progression.</p>
+
+<form method="get" class="sf-filters" role="search" aria-label="Rechercher un cours">
+  {{ filter_form }}
+  <button class="btn btn-outline-primary" type="submit">Rechercher</button>
+</form>
+
+{% if courses %}
+  <ul class="sf-cards list-unstyled">
+    {% for course in courses %}
+      <li class="sf-card">
+        {% if course.image %}
+          <img class="sf-card__image" src="{{ course.image.url }}" alt="Illustration du cours {{ course.title }}">
+        {% endif %}
+        <p class="text-muted">{{ course.category }} · {{ course.get_level_display }}{% if course.is_premium %} · <span class="badge text-bg-warning">Premium</span>{% endif %}</p>
+        <h2>{{ course.title }}</h2>
+        <p>{{ course.description|truncatewords:25 }}</p>
+        <a class="btn btn-outline-primary" href="{{ course.get_absolute_url }}">Voir le cours<span class="visually-hidden"> {{ course.title }}</span></a>
+      </li>
+    {% endfor %}
+  </ul>
+  {% include "core/partials/pagination.html" %}
+{% else %}
+  <p>Aucun cours ne correspond à cette recherche. Retirez un filtre ou essayez un autre mot.</p>
+{% endif %}
+{% endblock %}

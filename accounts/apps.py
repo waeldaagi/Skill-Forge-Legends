@@ -10,3 +10,4 @@ class AccountsConfig(AppConfig):
     role_permissions = {
         "ADMIN": ["accounts.view_user", "accounts.add_user", "accounts.change_user"],
     }
+    # Pas de role_navigation : le nom de l'utilisateur, dans l'en-tête, mène à son profil.

@@ -272,6 +272,18 @@ class DirectoryAndSlotTests(TestCase):
         with self.assertRaises(SlotLocked):
             services.ensure_slot_editable(AvailabilitySlotFactory(is_booked=True))
 
+    def test_directory_hides_mentors_not_yet_verified(self):
+        verified = MentorProfileFactory()
+        MentorProfileFactory(mentor__is_verified=False)
+
+        self.assertEqual(list(services.mentor_directory()), [verified])
+
+    def test_slot_of_an_unverified_mentor_cannot_be_booked(self):
+        slot = AvailabilitySlotFactory(mentor__is_verified=False)
+
+        with self.assertRaisesMessage(SlotUnavailable, "pas encore vérifié"):
+            services.book_slot(UserFactory(role=User.Role.APPRENANT), slot, "Docker", "Bloqué.")
+
 
 class ReminderTaskTests(TestCase):
     def test_reminder_is_skipped_when_the_session_was_cancelled(self):
