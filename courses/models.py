@@ -56,7 +56,9 @@ class Course(models.Model):
     slug = models.SlugField("slug", max_length=200, unique=True, editable=False)
     description = models.TextField("description")
     level = models.CharField("niveau", max_length=20, choices=Level.choices)
-    category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="courses")
+    category = models.ForeignKey(
+        Category, on_delete=models.PROTECT, related_name="courses", verbose_name="catégorie"
+    )
     trainer = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,

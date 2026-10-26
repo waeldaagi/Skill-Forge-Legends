@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ page_title }} · SkillForge{% endblock %}
 {% block content %}
+<div class="sf-form-page">
 <h1>{{ page_title }}</h1>
 <form method="post">
   {% csrf_token %}
@@ -10,4 +11,5 @@
     {% if cancel_url %}<a class="btn btn-outline-secondary" href="{{ cancel_url }}">Annuler</a>{% endif %}
   </div>
 </form>
+</div>
 {% endblock %}
