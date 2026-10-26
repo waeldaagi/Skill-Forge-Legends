@@ -93,6 +93,8 @@ Même outil et même profil, sur les données de `seed_demo`, avec le compte de 
 | Profil | Apprenante | 100 |
 | Création d'un cours | Formatrice | 100 |
 | Offres, mes abonnements, mes paiements | Apprenante | 100 chacune |
+| Tableau de pilotage, avec graphique Chart.js et tableau des valeurs | Apprenante, établissement, administratrice | 100 chacun |
+| Analytics IA | Administratrice | 100 |
 
 Avant correction, les trois pages des paiements ouvraient un second `<main id="contenu">` dans celui de `base.html` : deux repères principaux et un identifiant en double. Lighthouse ne le signalait pas ; le contrôle automatique ci-dessous l'a trouvé.
 

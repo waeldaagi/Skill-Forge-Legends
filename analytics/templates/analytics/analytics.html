@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Analytics IA · SkillForge{% endblock %}
+{% block content %}
+<div class="sf-page-header">
+  <div>
+    <h1>Analytics IA</h1>
+    <p class="text-muted mb-0">Qualité du modèle de risque d'abandon et des appels à l'IA.</p>
+  </div>
+  <a class="btn btn-outline-primary" href="{% url 'analytics:export' %}">Exporter en CSV</a>
+</div>
+
+<div class="sf-dashboard">
+  <section class="sf-panel" aria-labelledby="titre-modele">
+    <h2 id="titre-modele">Modèle de risque d'abandon</h2>
+    {% if dropout.available %}
+      <p>Régression logistique et forêt aléatoire comparées sur un jeu de données synthétique ; détails dans <code>docs/ia/dropout.md</code>.</p>
+      <dl class="sf-figures">
+        <div><dt>Apprenants simulés</dt><dd>{{ dropout.dataset_size }}</dd></div>
+        <div><dt>Taux d'abandon synthétique</dt><dd>{{ dropout.dropout_rate }} %</dd></div>
+        <div><dt>F1 du modèle retenu</dt><dd>{{ dropout.f1 }}</dd></div>
+      </dl>
+      <p>Modèle retenu : {{ dropout.best_model }}.</p>
+    {% else %}
+      <p>Aucun résultat d'entraînement. Lancez <code>python manage.py train_dropout_model</code>.</p>
+    {% endif %}
+  </section>
+
+  <section class="sf-panel" aria-labelledby="titre-appels">
+    <h2 id="titre-appels">Qualité des appels à l'IA</h2>
+    <dl class="sf-figures">
+      <div><dt>Appels</dt><dd>{{ metrics.ai_calls }}</dd></div>
+      <div><dt>Latence moyenne</dt><dd>{{ metrics.ai_average_latency_ms }} ms</dd></div>
+      <div><dt>Latence p95</dt><dd>{{ metrics.ai_p95_latency_ms }} ms</dd></div>
+      <div><dt>Taux d'échec</dt><dd>{{ metrics.ai_failure_rate }} %</dd></div>
+    </dl>
+    {% if metrics.ai_by_feature %}
+      <ul class="sf-panel__list">
+        {% for feature, failure_rate in metrics.ai_by_feature.items %}<li>{{ feature }} : {{ failure_rate }} % d'échecs</li>{% endfor %}
+      </ul>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

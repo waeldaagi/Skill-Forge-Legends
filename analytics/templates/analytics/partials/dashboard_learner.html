@@ -1,0 +1,9 @@
+<section class="sf-panel" aria-labelledby="panneau-indicateurs">
+  <h2 id="panneau-indicateurs">Mes indicateurs</h2>
+  <dl class="sf-figures">
+    <div><dt>Abonnements actifs</dt><dd>{{ panel.metrics.active_subscriptions }}</dd></div>
+    <div><dt>Progression moyenne</dt><dd>{{ panel.metrics.course_progress }} %</dd></div>
+    <div><dt>Certificats</dt><dd>{{ panel.metrics.certificates }}</dd></div>
+  </dl>
+  <a class="btn btn-outline-primary" href="{% url 'pilotage' %}">Ouvrir le tableau de pilotage</a>
+</section>

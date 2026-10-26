@@ -3,6 +3,8 @@ from django.contrib import admin
 from django.urls import include, path, re_path
 from django.views.static import serve
 
+from analytics.views import PilotageView
+
 urlpatterns = [
     path("", include("core.urls")),
     path("admin/", admin.site.urls),
@@ -12,7 +14,8 @@ urlpatterns = [
     path("communaute/", include("community.urls")),
     path("evaluation/", include("assessment.urls")),
     path("paiements/", include("payments.urls")),
-    path("pilotage/", include("analytics.urls")),
+    path("analytics/", include("analytics.urls")),
+    path("pilotage/", PilotageView.as_view(), name="pilotage"),
 ]
 
 # static() ne sert rien quand DEBUG est faux : serve() est branché directement.

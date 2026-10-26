@@ -480,6 +480,12 @@ h4, h5, h6 { font-size: 1rem; }
   background: var(--sf-warning-subtle);
   color: var(--sf-warning-text);
 }
+/* Graphique Chart.js : pleine largeur, hauteur fixe (maintainAspectRatio: false). */
+.sf-chart {
+  position: relative;
+  width: 100%;
+  height: 260px;
+}
 .sf-figures {
   display: flex;
   flex-wrap: wrap;
