@@ -97,11 +97,14 @@ coverage run manage.py test && coverage report && coverage html
 
 ## Déploiement
 
-Prévu en Phase 5. L'URL publique sera indiquée ici.
+Sur Render, avec PostgreSQL, WhiteNoise et gunicorn : `render.yaml` (Blueprint) et `build.sh`. Marche à suivre, variables d'environnement et limites de l'offre gratuite : `DEPLOY.md`.
+
+URL publique : à indiquer après le premier déploiement.
 
 ## Documentation
 
 - `CLAUDE.md` : règles du projet, contrats entre modules, socle IA, commandes de référence.
+- `DEPLOY.md` : déploiement sur Render, étape par étape.
 - `docs/accessibilite.md` : structure accessible des pages et tableau des contrastes.
 - `docs/modules/` : une fiche par module (objectif, modèle, URLs, choix techniques, questions du jury).
 - `docs/ia/` : un rapport par fonctionnalité IA, avec les métriques mesurées (à partir de la Phase 1).

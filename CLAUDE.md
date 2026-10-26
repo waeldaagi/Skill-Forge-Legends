@@ -160,7 +160,8 @@ docker compose up -d                            # PostgreSQL 16 et Redis 7
 
 ## Pièges connus
 
-- `config.settings.prod` exige `SECRET_KEY` et `ALLOWED_HOSTS` dans l'environnement.
+- `config.settings.prod` exige `SECRET_KEY` et `ALLOWED_HOSTS` dans l'environnement. Sur Render, `RENDER_EXTERNAL_HOSTNAME` remplace `ALLOWED_HOSTS` (déploiement : `DEPLOY.md`, `render.yaml`, `build.sh`).
+- Sans worker Celery (`CELERY_TASK_ALWAYS_EAGER=True`), `/health/` ne contrôle pas Redis et répond `"redis": "not_used"`.
 - Fichiers JS/CSS tiers ajoutés dans `static/vendor/` : retirer la ligne `sourceMappingURL` si le fichier `.map` n'est pas fourni, sinon `collectstatic` échoue avec le stockage manifeste.
 - `.gitattributes` impose LF dans le dépôt : le futur script d'entrée Docker en dépend.
 - Sous Windows, écrire `127.0.0.1` et non `localhost` dans `DATABASE_URL` et `REDIS_URL` : `localhost` est d'abord résolu en `::1`, que Docker Desktop ne publie pas, et la connexion reste bloquée sans délai d'expiration.
