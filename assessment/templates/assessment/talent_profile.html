@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Profil public{% endblock %}
+{% block content %}
+<h1>Profil public - {{ learner }}</h1>
+<p>{{ learner.bio|default:"Aucune biographie." }}</p>
+<h2>Compétences</h2>
+<ul>
+  {% for skill in learner.skills.all %}
+    <li>{{ skill.name }}</li>
+  {% empty %}
+    <li>Aucune compétence.</li>
+  {% endfor %}
+</ul>
+<h2>Certificats vérifiés</h2>
+<ul>
+  {% for certificate in certificates %}
+    <li>{{ certificate.certification.title }} - {{ certificate.issued_at|date:"d/m/Y" }}</li>
+  {% empty %}
+    <li>Aucun certificat vérifié.</li>
+  {% endfor %}
+</ul>
+<p><a class="btn btn-primary" href="{% url 'assessment:talent_contact' learner.pk %}">Contacter</a></p>
+{% endblock %}

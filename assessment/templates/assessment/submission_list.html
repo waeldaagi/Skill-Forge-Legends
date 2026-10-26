@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Mes soumissions{% endblock %}
+{% block content %}
+<h1>Mes soumissions</h1>
+<ul class="list-group">
+  {% for submission in submissions %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span>{{ submission.certification.title }} - tentative {{ submission.attempt_number }} - {{ submission.get_status_display }}</span>
+      <a href="{% url 'assessment:submission_detail' submission.pk %}">Détails</a>
+    </li>
+  {% empty %}
+    <li class="list-group-item">Aucune soumission.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
