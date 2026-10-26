@@ -88,6 +88,20 @@ Le déploiement a été simulé dans un conteneur `python:3.12-slim` relié à u
 | Hôte inconnu | 400 |
 | Connexion, sujet de forum, réinitialisation du mot de passe, avatar | Sujet publié par la modération (`mock`), e-mail écrit dans le journal, avatar servi en 200 |
 
+## 8 bis. Contrôle du site en ligne (26/10/2026)
+
+Service `https://skillforge-9g4n.onrender.com`, déployé par le Blueprint depuis `develop`.
+
+| Contrôle | Résultat |
+|---|---|
+| `/health/` | 200 : base « ok », Redis « not_used » |
+| Accueil, catalogue, détail d'un cours, connexion, inscription, offres | 200, entre 0,2 et 0,4 s une fois le service réveillé |
+| Page inexistante | 404 personnalisée |
+| Requête en HTTP | 301 vers HTTPS |
+| En-têtes | HSTS (un an, `preload`), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, cookies `Secure` |
+| Pages réservées (`/pilotage/`, `/admin/`, mentorat) | Redirection vers la connexion |
+| Lighthouse, 5 pages publiques | 100 en performance, accessibilité, bonnes pratiques et SEO |
+
 ## 9. Variante : pile Docker sur un serveur
 
 Pour un serveur avec Docker (machine virtuelle Azure for Students, par exemple), `docker-compose.prod.yml` démarre cinq services : `web` (gunicorn), `worker` et `beat` (Celery), `db` (PostgreSQL 16) et `redis` (Redis 7). Contrairement à l'offre gratuite de Render, les tâches IA passent par le worker et ne bloquent pas la requête.

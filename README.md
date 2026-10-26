@@ -99,7 +99,7 @@ coverage run manage.py test && coverage report && coverage html
 
 Sur Render, avec PostgreSQL, WhiteNoise et gunicorn : `render.yaml` (Blueprint) et `build.sh`. Marche à suivre, variables d'environnement et limites de l'offre gratuite : `DEPLOY.md`.
 
-URL publique : à indiquer après le premier déploiement.
+URL publique : https://skillforge-9g4n.onrender.com (offre gratuite de Render : la première visite après une période d'inactivité attend environ une minute).
 
 ## Documentation
 
