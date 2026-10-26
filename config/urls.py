@@ -4,7 +4,6 @@ from django.urls import include, path, re_path
 from django.views.static import serve
 
 from analytics.views import PilotageView
-
 from assessment import views as assessment_views
 
 urlpatterns = [

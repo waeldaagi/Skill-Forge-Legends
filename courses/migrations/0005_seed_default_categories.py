@@ -41,7 +41,7 @@ def noop_reverse(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("courses", "0003_alter_course_image_alter_resource_file"),
+        ("courses", "0004_course_category_verbose_name"),
     ]
 
     operations = [
