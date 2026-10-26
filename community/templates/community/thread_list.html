@@ -29,7 +29,12 @@
       <tbody>
         {% for thread in threads %}
           <tr>
-            <td><a href="{% url 'community:thread_detail' thread.pk %}">{{ thread.title }}</a></td>
+            <td>
+              <a href="{% url 'community:thread_detail' thread.pk %}">{{ thread.title }}</a>
+              {% if thread.course or thread.tags.all %}
+                <br><span class="small text-muted">{% if thread.course %}{{ thread.course }}{% if thread.tags.all %} · {% endif %}{% endif %}{{ thread.tags.all|join:", " }}</span>
+              {% endif %}
+            </td>
             <td>{{ thread.author }}</td>
             <td>{{ thread.reply_count }}</td>
             <td>

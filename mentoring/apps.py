@@ -5,6 +5,7 @@ class MentoringConfig(AppConfig):
     name = "mentoring"
     verbose_name = "Mentorat en direct"
     demo_seeder = "mentoring.demo.seed"
+    dashboard_panel = "mentoring.dashboard.panel"
 
     # Lus par le context processor de navigation et par « setup_roles » (voir accounts/apps.py).
     role_navigation = {

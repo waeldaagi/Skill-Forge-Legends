@@ -33,9 +33,9 @@ Le jeu contient des cas choisis pour piéger une approche par mots-clés :
 
 ## 3. Résultats
 
-Mesure du 25/10/2026 à 18 h 15, commande `python manage.py evaluate_moderation --provider gemini --pause 2`.
+Mesure du 26/10/2026 à 02 h 17, commande `python manage.py evaluate_moderation --provider gemini --pause 2`.
 
-Fournisseur `gemini`, modèle `gemini-3.5-flash-lite`, prompt `moderation-v1`, 80 messages, 0 échec d'appel. Quatre appels ont reçu une erreur HTTP passagère et ont réussi au nouvel essai.
+Fournisseur `gemini`, modèle `gemini-3.5-flash-lite`, prompt `moderation-v1`, 80 messages, 0 échec d'appel. Une première mesure, le 25/10/2026 à 18 h 15, avait donné exactement les mêmes étiquettes pour les 80 messages : le classement est stable d'une exécution à l'autre.
 
 | Classe | Précision | Rappel | F1 | Effectif |
 |---|---|---|---|---|
@@ -61,11 +61,22 @@ Comparaison avec la baseline par mots-clés (`community/ai/moderation.py`, `keyw
 | IA (Gemini) | 1,000 | 1,000 |
 | Mots-clés | 0,650 | 0,663 |
 
+Décision de publication, avec la règle de production (`is_published_automatically` : étiquette `OK` et confiance d'au moins 0,6) :
+
+| Indicateur | Nombre | Taux |
+|---|---|---|
+| Publiés sans modérateur | 20 | 25,0 % |
+| Envoyés en relecture humaine | 60 | 75,0 % |
+| Messages conformes envoyés en relecture | 0 | 0,0 % des 20 messages conformes |
+| Messages non conformes publiés à tort | 0 | 0,0 % des 60 messages non conformes |
+
+Avec la baseline par mots-clés (fournisseur `mock`), 27 des 60 messages non conformes seraient publiés à tort, soit 45,0 %.
+
 Latence d'un classement (appel réussi, relance éventuelle pour JSON invalide comprise) :
 
 | Moyenne | Médiane | p95 | Maximum |
 |---|---|---|---|
-| 1 160 ms | 1 130 ms | 1 476 ms | 1 712 ms |
+| 1 120 ms | 1 072 ms | 1 434 ms | 1 671 ms |
 
 ## 4. Lecture des résultats
 
@@ -82,6 +93,6 @@ La latence, autour d'une seconde, est acceptable pour une vérification faite en
 ## 5. Limites et améliorations
 
 - **Relire les étiquettes** (à faire par l'étudiant responsable) et ajouter une quarantaine de messages vraiment ambigus : ironie, critique vive mais polie, auto-promotion légère d'un projet personnel, messages en dialecte ou en franco-arabe.
-- **Mesurer la confiance.** La commande évalue l'étiquette, pas la confiance. Le taux de messages `OK` sous le seuil de 0,6, donc envoyés en relecture humaine, n'est pas encore mesuré ; c'est lui qui fixe la charge réelle des modérateurs.
-- **Répéter la mesure.** Une seule exécution : relancer trois fois permettrait de vérifier que le classement est stable d'un appel à l'autre.
+- **Charge des modérateurs.** Mesurée depuis le 26/10/2026 : aucun message conforme n'est tombé sous le seuil de 0,6. Sur des messages ambigus, ce taux montera ; c'est lui qu'il faudra suivre.
+- **Répéter la mesure.** Deux exécutions, à huit heures d'intervalle, donnent les mêmes 80 étiquettes. Une troisième, après l'ajout de messages ambigus, dira si cette stabilité tient.
 - **Suivre la production.** `AICallLog` enregistre la durée et le résultat de chaque appel ; le tableau de bord administrateur (Phase 4) affichera la latence p95 et le taux d'échec de la fonctionnalité `moderation`.

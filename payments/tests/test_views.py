@@ -167,3 +167,25 @@ class PaymentViewTests(TestCase):
         response = self.client.get(reverse("payments:invoice_download", args=[payment.invoice.pk]))
 
         self.assertEqual(response.status_code, 404)
+
+
+class PaymentScenarioTests(TestCase):
+    def test_plan_page_offers_the_refused_payment_scenario(self):
+        Plan.objects.create(name="Premium", slug="premium", price="29.900", duration_days=30)
+        self.client.force_login(UserFactory())
+
+        response = self.client.get(reverse("payments:plans"))
+
+        self.assertContains(response, 'name="scenario" value="failure"')
+
+    def test_refused_payment_creates_no_subscription(self):
+        plan = Plan.objects.create(name="Premium", slug="premium", price="29.900", duration_days=30)
+        user = UserFactory()
+        self.client.force_login(user)
+
+        response = self.client.post(
+            reverse("payments:checkout", args=[plan.slug]), {"scenario": "failure"}, follow=True
+        )
+
+        self.assertContains(response, "Le paiement de démonstration a échoué.")
+        self.assertFalse(Subscription.objects.filter(user=user).exists())

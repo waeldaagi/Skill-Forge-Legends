@@ -7,12 +7,13 @@ from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from kombu.exceptions import OperationalError
 
-from accounts.models import User
+from accounts.models import Skill, User
 from accounts.tests.factories import UserFactory
 from community.models import ModerationStatus, Reply, Report, Thread, Vote
 from community.services import HUMAN_REVIEW_REASON
 from community.tests.factories import ReplyFactory, ReportFactory, ThreadFactory
 from core.ai.jobs import execute_ai_job
+from courses.tests.factories import CourseFactory
 
 Status = ModerationStatus
 REDIS_DOWN = OperationalError("Error 10061 connecting to 127.0.0.1:6379.")
@@ -75,6 +76,20 @@ class ThreadListViewTests(TestCase):
 
         self.assertEqual(list(response.context["threads"]), [open_thread])
 
+    def test_filter_on_a_course_and_on_a_tag(self):
+        course = CourseFactory()
+        htmx = Skill.objects.create(name="HTMX")
+        about_course = ThreadFactory(course=course)
+        tagged = ThreadFactory()
+        tagged.tags.add(htmx)
+        ThreadFactory()
+
+        by_course = self.client.get(self.url, {"course": course.pk})
+        by_tag = self.client.get(self.url, {"tag": htmx.pk})
+
+        self.assertEqual(list(by_course.context["threads"]), [about_course])
+        self.assertEqual(list(by_tag.context["threads"]), [tagged])
+
 
 class ThreadWritingViewTests(TestCase):
     def setUp(self):
@@ -134,6 +149,33 @@ class ThreadWritingViewTests(TestCase):
 
         thread.refresh_from_db()
         self.assertTrue(thread.is_resolved)
+
+    def test_question_keeps_its_course_and_tags(self):
+        course = CourseFactory()
+        django = Skill.objects.create(name="Django")
+
+        with self.captureOnCommitCallbacks(execute=True):
+            self.client.post(
+                reverse("community:thread_create"),
+                {
+                    "title": "Tests de vues",
+                    "content": "Comment tester une vue protégée ?",
+                    "course": course.pk,
+                    "tags": [django.pk],
+                },
+            )
+
+        thread = Thread.objects.get()
+        self.assertEqual(thread.course, course)
+        self.assertEqual(list(thread.tags.all()), [django])
+
+    def test_only_published_courses_are_offered(self):
+        published = CourseFactory()
+        CourseFactory(status="DRAFT")
+
+        form = self.client.get(reverse("community:thread_create")).context["form"]
+
+        self.assertEqual(list(form.fields["course"].queryset), [published])
 
 
 class ReplyViewTests(TestCase):

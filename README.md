@@ -62,7 +62,7 @@ Créés par `python manage.py seed_demo`. Mot de passe : la valeur de `DEMO_PASS
 |---|---|---|
 | Apprenant | `yasmine.trabelsi` | Annuaire des mentors, réservation, sessions, forum |
 | Mentor | `skander.jaziri` | Créneaux, demande à confirmer, salle de visio, file de modération |
-| Formateur | `mariem.gharbi` | Forum (cours et quiz en Phase 1) |
+| Formateur | `mariem.gharbi` | Cours « Django : du modèle au déploiement », quiz et génération par l'IA, forum |
 | Recruteur | `oussema.mejri` | Espace recruteur (Phase 3) |
 | Administrateur | `ines.hammami` | Admin Django, file de modération |
 | Établissement | `khalil.chaabane` | Tableau de bord (Phase 4) |
@@ -93,15 +93,20 @@ coverage run manage.py test && coverage report && coverage html
 
 `manage.py test` et `pytest` utilisent les mêmes réglages (`config.settings.test`) : Celery synchrone, fournisseur d'IA `mock`, aucun appel réseau.
 
-État au 25/10/2026 (Phase 2) : 276 tests, couverture de 98 %. Détail par app : `docs/tests.md`. La CI GitHub Actions refuse une couverture inférieure à 75 %.
+État au 26/10/2026 (Phases 0 à 2, paiements et analytics, déploiement) : 448 tests, couverture de 98 %. Détail par app : `docs/tests.md`. La CI GitHub Actions refuse une couverture inférieure à 75 %.
 
 ## Déploiement
 
-Prévu en Phase 5. L'URL publique sera indiquée ici.
+Sur Render, avec PostgreSQL, WhiteNoise et gunicorn : `render.yaml` (Blueprint) et `build.sh`. Marche à suivre, variables d'environnement et limites de l'offre gratuite : `DEPLOY.md`.
+
+URL publique : à indiquer après le premier déploiement.
 
 ## Documentation
 
 - `CLAUDE.md` : règles du projet, contrats entre modules, socle IA, commandes de référence.
+- `DEPLOY.md` : déploiement sur Render, étape par étape.
+- `docs/securite.md` : exigences de sécurité de la grille et leurs preuves.
+- `docs/tests.md` : résultats des tests par app et ce que chaque fichier prouve.
 - `docs/accessibilite.md` : structure accessible des pages et tableau des contrastes.
 - `docs/modules/` : une fiche par module (objectif, modèle, URLs, choix techniques, questions du jury).
 - `docs/ia/` : un rapport par fonctionnalité IA, avec les métriques mesurées (à partir de la Phase 1).

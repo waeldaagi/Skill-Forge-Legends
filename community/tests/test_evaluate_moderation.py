@@ -58,3 +58,14 @@ class EvaluateModerationCommandTests(TestCase):
 
         self.assertIn("3 échec(s) d'appel", report)
         self.assertIn("Aucun appel réussi", report)
+
+    def test_report_measures_the_human_review_load_with_the_production_rule(self):
+        report = self.run_command()
+
+        published, reviewed = (
+            int(line.split("|")[2])
+            for line in report.splitlines()
+            if line.startswith(("| Publiés sans modérateur", "| Envoyés en relecture humaine"))
+        )
+        self.assertEqual(published + reviewed, 80)
+        self.assertIn("| Messages non conformes publiés à tort |", report)

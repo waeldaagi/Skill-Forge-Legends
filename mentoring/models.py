@@ -42,6 +42,9 @@ class MentorProfile(models.Model):
     years_of_experience = models.PositiveSmallIntegerField(
         "années d'expérience", validators=[MaxValueValidator(50)]
     )
+    expertises = models.ManyToManyField(
+        "accounts.Skill", blank=True, related_name="mentor_profiles", verbose_name="expertises"
+    )
 
     class Meta:
         verbose_name = "profil de mentor"
@@ -129,6 +132,14 @@ class MentoringSession(models.Model):
         related_name="mentoring_sessions",
         limit_choices_to={"role": User.Role.APPRENANT},
         verbose_name="apprenant",
+    )
+    course = models.ForeignKey(
+        "courses.Course",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="mentoring_sessions",
+        verbose_name="cours concerné",
     )
     topic = models.CharField("sujet", max_length=150)
     blocker_description = models.TextField("description du blocage", max_length=2000)

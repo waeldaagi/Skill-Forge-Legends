@@ -1,0 +1,13 @@
+<section class="sf-panel" aria-labelledby="panneau-sessions">
+  <h2 id="panneau-sessions">Mes prochaines sessions</h2>
+  {% if panel.sessions %}
+    <ul class="sf-panel__list">
+      {% for session in panel.sessions %}
+        <li><a href="{% url 'mentoring:session_detail' session.pk %}">{{ session.slot.period }}</a>, avec {{ session.slot.mentor }} · {{ session.get_status_display }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Aucune session prévue. Réservez un créneau quand vous bloquez sur un exercice ou un projet.</p>
+  {% endif %}
+  <a class="btn btn-outline-primary" href="{% url 'mentoring:mentor_directory' %}">Trouver un mentor</a>
+</section>

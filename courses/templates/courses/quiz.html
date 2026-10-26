@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}{{ quiz.title }} · SkillForge{% endblock %}
+{% block content %}
+<p><a href="{% url 'courses:chapter' quiz.chapter.pk %}">Retour au chapitre</a></p>
+<h1>{{ quiz.title }}</h1>
+{% if can_submit %}
+<p>Répondez aux questions, puis consultez votre score.</p>
+{% else %}
+<p class="alert alert-info">Aperçu du quiz : seuls les apprenants peuvent y répondre.</p>
+{% endif %}
+<form method="post">
+  {% csrf_token %}
+  {% for question in quiz.questions.all %}
+    <fieldset class="sf-form-section">
+      <legend class="sf-question">{{ forloop.counter }}. {{ question.statement }}</legend>
+      {% for choice in question.choices.all %}
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="question-{{ question.pk }}" value="{{ choice.pk }}" id="choice-{{ choice.pk }}" required>
+          <label class="form-check-label" for="choice-{{ choice.pk }}">{{ choice.text }}</label>
+        </div>
+      {% endfor %}
+    </fieldset>
+  {% empty %}
+    <p>Ce quiz ne contient pas encore de question.</p>
+  {% endfor %}
+  {% if can_submit and quiz.questions.all %}
+    <button class="btn sf-btn-primary" type="submit">Terminer le quiz</button>
+  {% endif %}
+</form>
+{% if latest_attempt %}
+  <section class="mt-4" aria-labelledby="correction-title">
+    <h2 id="correction-title">Votre dernier corrigé</h2>
+    <p>Score : {{ latest_attempt.score }} %</p>
+    {% for question in quiz.questions.all %}
+      <div class="sf-form-section">
+        <h3 class="sf-question">{{ forloop.counter }}. {{ question.statement }}</h3>
+        <p><strong>Bonne réponse&nbsp;:</strong> {% for choice in question.choices.all %}{% if choice.is_correct %}{{ choice.text }}{% endif %}{% endfor %}</p>
+        <p><strong>Explication&nbsp;:</strong> {{ question.explanation }}</p>
+        <p class="mb-0"><strong>Extrait du chapitre&nbsp;:</strong> {{ question.evidence }}</p>
+      </div>
+    {% endfor %}
+  </section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,72 @@
+# Pile de production : web (gunicorn), worker et beat Celery, PostgreSQL, Redis.
+#   docker compose -f docker-compose.prod.yml up -d --build
+# Variables lues dans .env (ou dans le fichier désigné par ENV_FILE) : voir DEPLOY.md, section 9.
+x-django: &django
+  build: .
+  env_file: ${ENV_FILE:-.env}
+  environment:
+    DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    REDIS_URL: redis://redis:6379/0
+    CELERY_TASK_ALWAYS_EAGER: "False"
+  volumes:
+    - media:/app/media
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+  restart: unless-stopped
+
+services:
+  web:
+    <<: *django
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      REDIS_URL: redis://redis:6379/0
+      CELERY_TASK_ALWAYS_EAGER: "False"
+      RUN_MIGRATIONS: "1"
+    ports:
+      - "8000:8000"
+    healthcheck:
+      # En-tête X-Forwarded-Proto : sans lui, SECURE_SSL_REDIRECT répondrait 301.
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen(u.Request('http://localhost:8000/health/', headers={'X-Forwarded-Proto': 'https'}), timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+
+  worker:
+    <<: *django
+    command: celery -A config worker -l info
+
+  beat:
+    <<: *django
+    command: celery -A config beat -l info --schedule /tmp/celerybeat-schedule
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:7
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  media:

@@ -1,0 +1,16 @@
+<section class="sf-panel" aria-labelledby="panneau-cours">
+  <h2 id="panneau-cours">Mes cours</h2>
+  {% if panel.courses %}
+    <ul class="sf-panel__list">
+      {% for item in panel.courses %}
+        <li>
+          <a href="{{ item.course.get_absolute_url }}">{{ item.course.title }}</a> · {{ item.progress }} %
+          <progress class="sf-progress" value="{{ item.progress }}" max="100" aria-label="Progression dans le cours {{ item.course.title }}">{{ item.progress }} %</progress>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Vous ne suivez encore aucun cours. Inscrivez-vous à un cours du catalogue pour suivre votre progression ici.</p>
+  {% endif %}
+  <a class="btn btn-outline-primary" href="{% url 'courses:list' %}">Parcourir le catalogue</a>
+</section>

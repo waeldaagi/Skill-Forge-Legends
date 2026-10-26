@@ -52,6 +52,64 @@ Contrôles complémentaires :
 - bouton de vote « Utile » : `aria-pressed` indique l'état, un texte masqué nomme l'auteur de la réponse, et l'`id` stable permet à HTMX de rendre le focus au bouton après le remplacement ;
 - file de modération : chaque formulaire de rejet a ses propres `id`, pour qu'un libellé reste lié à un seul champ (test `test_each_rejection_form_has_its_own_field_ids`).
 
+## Audit du 25/10/2026 (Phase 1 corrigée : cours et comptes)
+
+Même outil et même profil, sur les données de `seed_demo`, avec le compte de l'apprenante Yasmine Trabelsi ou de la formatrice Mariem Gharbi.
+
+| Page | Compte | Score |
+|---|---|---|
+| Mes cours | Formatrice | 100 |
+| Détail d'un cours, boutons de gestion | Formatrice | 100 |
+| Détail d'un cours, progression (`<progress>` natif) | Apprenante | 100 |
+| Chapitre avec vidéo YouTube intégrée | Apprenante | 100 |
+| Chapitre, boutons de gestion des ressources | Formatrice | 100 |
+| Modification d'un chapitre | Formatrice | 100 |
+| Gestion d'un quiz | Formatrice | 100 |
+| Suppression d'un quiz (confirmation) | Formatrice | 100 |
+| Modification d'une question | Formatrice | 100 |
+| Quiz, aperçu sans bouton d'envoi | Formatrice | 100 |
+| Quiz à passer | Apprenante | 100 |
+| Connexion, avec « Mot de passe oublié ? » | Anonyme | 100 |
+| Profil | Apprenante | 100 |
+| Rejoindre un établissement | Apprenante | 100 |
+
+Contrôles complémentaires :
+
+- « Mes cours » défilait horizontalement à 375 px : les textes `visually-hidden` des cellules, en position absolue, sortaient de la zone défilante du tableau. `.sf-table-wrapper` porte maintenant `position: relative` ; plus aucun défilement horizontal, mesuré par script ;
+- l'iframe vidéo porte un titre (« Vidéo du chapitre … ») et `referrerpolicy="strict-origin-when-cross-origin"`, sans quoi YouTube refuse la lecture (erreur 153, constatée sur capture) ;
+- chaque bouton « Modifier » ou « Supprimer » d'une liste complète son nom par un texte masqué (« Supprimer le chapitre Modéliser une fonctionnalité »).
+
+## Audit du 26/10/2026 (Phase 5 : intégration, tableaux de bord, paiements)
+
+Même outil et même profil, sur les données de `seed_demo`, avec le compte de chaque rôle.
+
+| Page | Compte | Score |
+|---|---|---|
+| Accueil, présentation | Anonyme | 100 |
+| Tableau de bord | Apprenante, mentor, formatrice, administratrice, recruteur | 100 chacun |
+| Catalogue des cours (filtres, cartes, pagination) | Anonyme | 100 |
+| Chapitre, avec liens vers le chapitre précédent et le suivant | Apprenante | 100 |
+| Quiz | Apprenante | 100 |
+| Profil | Apprenante | 100 |
+| Création d'un cours | Formatrice | 100 |
+| Offres, mes abonnements, mes paiements | Apprenante | 100 chacune |
+| Tableau de pilotage, avec graphique Chart.js et tableau des valeurs | Apprenante, établissement, administratrice | 100 chacun |
+| Analytics IA | Administratrice | 100 |
+
+Avant correction, les trois pages des paiements ouvraient un second `<main id="contenu">` dans celui de `base.html` : deux repères principaux et un identifiant en double. Lighthouse ne le signalait pas ; le contrôle automatique ci-dessous l'a trouvé.
+
+Contrôle automatique de toutes les pages (script puppeteer, 375 px de large) : pour chaque profil, chaque lien interne est suivi, et chaque page est vérifiée (défilement horizontal, un seul `<h1>`, un seul `<main>`, aucun style en ligne, images avec `alt`, boutons nommés). Résultat : 199 pages parcourues pour les six rôles et l'anonyme, aucune anomalie.
+
+Parcours au clavier seul (Tab, Entrée et saisie, sans souris), script puppeteer :
+
+| Parcours | Résultat |
+|---|---|
+| Réserver un créneau : annuaire, « Voir les créneaux », « Réserver ce créneau », champs Sujet et Description, « Envoyer la demande » | Demande enregistrée, message « Demande envoyée. Le mentor doit maintenant la confirmer. » |
+| Répondre à un sujet du forum : champ de réponse, « Publier ma réponse » | Réponse enregistrée, en attente de la vérification automatique |
+| Lien d'évitement | Premier élément atteint par Tab ; Entrée mène à `#contenu` |
+
+Sur les 58 éléments atteints par Tab, tous affichent un contour de focus d'au moins 3 px.
+
 ## Structure commune des pages
 
 `templates/base.html` fournit à chaque page :
@@ -118,6 +176,7 @@ Seuils : 4,5:1 pour le texte courant, 3:1 pour un texte de 24 px et plus et pour
 | `#B91C1C` erreur | `#FEE2E2` fond erreur | Alerte d'erreur | 5,30 | Conforme |
 | `#FFFFFF` blanc | `#B91C1C` erreur | Bouton de suppression | 6,47 | Conforme |
 | `#B91C1C` erreur | `#FFFFFF` surface | Bouton contour « Supprimer », « Refuser », « Annuler » | 6,47 | Conforme |
+| `#475569` secondaire | `#F8FAFC` fond de page | Bouton contour secondaire (`btn-outline-secondary`, au lieu du gris Bootstrap à 4,48) | 7,24 | Conforme |
 | `#92400E` avertissement | `#FEF3C7` | Statut « Demandée » | 6,37 | Conforme |
 | `#15803D` succès | `#DCFCE7` | Statut « Confirmée » | 4,57 | Conforme, marge faible |
 | `#1F2937` texte | `#F1F5F9` | Statut « Terminée » | 13,40 | Conforme |

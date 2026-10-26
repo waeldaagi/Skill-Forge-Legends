@@ -15,6 +15,10 @@
   <dd>{{ session.slot.mentor }}</dd>
   <dt>Apprenant</dt>
   <dd>{{ session.learner }}</dd>
+  {% if session.course %}
+    <dt>Cours concerné</dt>
+    <dd><a href="{{ session.course.get_absolute_url }}">{{ session.course }}</a></dd>
+  {% endif %}
   <dt>Description du blocage</dt>
   <dd>{{ session.blocker_description }}</dd>
   {% if session.mentor_notes %}

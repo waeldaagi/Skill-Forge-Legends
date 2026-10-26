@@ -51,15 +51,18 @@ Skills du projet (`.claude/skills/`), à charger **avant** d'écrire :
 
 - **Permissions par rôle** : chaque app déclare dans son `AppConfig` un attribut `role_permissions = {"MENTOR": ["mentoring.add_availabilityslot", ...]}`. `python manage.py setup_roles` agrège ces déclarations, crée un groupe par rôle (nommé comme la valeur du rôle) et lui attribue ces permissions. La commande peut être relancée sans risque.
 - **Groupes** : un utilisateur rejoint le groupe de son rôle à sa création et en change quand son rôle change (`accounts.User.save`). Le rôle `ADMIN` donne `is_staff`. Les groupes ne s'éditent pas à la main dans l'admin.
-- **Navigation** : chaque app déclare dans son `AppConfig` un attribut `role_navigation = {"MENTOR": [("Mes créneaux", "mentoring:slot_list")]}`. Le context processor `core.context_processors.navigation` construit le menu.
+- **Navigation** : chaque app déclare dans son `AppConfig` un attribut `role_navigation = {"MENTOR": [("Mes créneaux", "mentoring:slot_list")]}`. Le context processor `core.context_processors.navigation` construit le menu. La clé `"ANONYME"` donne les liens d'un visiteur non connecté.
 - **Contrôle d'accès** (`core.permissions`) :
   - `RoleRequiredMixin` avec `allowed_roles` : un anonyme est redirigé vers la connexion, un rôle non autorisé reçoit 403 ;
   - `role_required(*roles)` : même règle pour une vue fonction ;
   - `OwnerRequiredMixin` avec `owner_field` : filtre le queryset, l'objet d'autrui donne 404.
 - **Formulaires** : `FORM_RENDERER = "core.forms.SkillForgeFormRenderer"`. `{{ form }}` produit les libellés, les classes Bootstrap, la mention « (obligatoire) », `aria-invalid` et `aria-describedby`. Aucune classe CSS n'est à poser dans les formulaires.
+- **Champs URL et fichiers** : un ModelForm avec un `URLField` déclare `formfield_callback = https_url_formfield` (`core.forms`) dans sa `Meta` : une URL sans protocole devient `https://`, comme dans Django 6.0. Tout `FileField` ou `ImageField` porte `core.validators.validate_upload_size` (5 Mo) en plus de `FileExtensionValidator`.
 - **E-mails** : `core.services.queue_email(subject, message, recipient_list)`. L'e-mail est confié à Celery après la validation de la transaction. Pour un envoi différé (rappel 1 h avant), utiliser `core.tasks.send_email.apply_async(..., eta=...)`.
 - **Erreurs** : gabarits `templates/403.html`, `404.html`, `500.html`, `403_csrf.html`. Le message d'une `PermissionDenied` s'affiche sur la page 403 : il doit être rédigé pour l'utilisateur.
+- **Profils vérifiés** : un mentor ou un formateur non vérifié (`User.is_verified`, coché par un administrateur dans l'admin) ne publie rien. Mentorat : `mentoring.services.ensure_can_publish`, annuaire et réservation filtrés. Cours : `CourseForm` refuse le statut « Publié » et `PublishQuizView` la publication d'un quiz (`courses.services.UNVERIFIED_TRAINER_MESSAGE`).
 - **Gabarits** : hériter de `base.html`, un seul `<h1>`, aucun style en ligne, classes et jetons de `static/css/theme.css` (`sf-page-header`, `sf-filters`, `sf-cards`, `sf-details`, `sf-actions`, `sf-status--<statut>`). Listes paginées : `{% include "core/partials/pagination.html" %}`, qui conserve les filtres. Une liste `annotate(Count(...))` a besoin d'un `order_by` explicite : une requête agrégée ignore `Meta.ordering`.
+- **Tableau de bord** : l'accueil d'un utilisateur connecté affiche les panneaux de son rôle. Chaque app déclare dans son `AppConfig` un attribut `dashboard_panel = "<app>.dashboard.panel"` ; `panel(user)` renvoie un dict avec la clé `template` (gabarit `<app>/partials/dashboard_<rôle>.html`, une `<section class="sf-panel">` titrée en `<h2>`), ou `None` si le rôle n'a rien à voir.
 - **Données de démo** : chaque app déclare dans son `AppConfig` un attribut `demo_seeder = "<app>.demo.seed"`. `seed(accounts)` reçoit les comptes de démo par rôle, crée ses données sans dupliquer (`get_or_create`) et renvoie un résumé d'une ligne. Comptes secondaires : `core.demo.create_demo_user`. Jamais d'appel à l'IA dans un seed.
 
 ## Socle IA (`core/ai/`)
@@ -116,8 +119,8 @@ Dans les tests, `run_ai_job` n'exécute la tâche qu'à la validation de la tran
 | Contrat | Signature | État |
 |---|---|---|
 | `core.permissions` | `RoleRequiredMixin`, `role_required`, `OwnerRequiredMixin` | Implémenté |
-| `courses.services` | `user_can_access_course(user, course) -> bool`, `course_progress(user, course) -> int` (0 à 100), `is_course_completed(user, course) -> bool` | Stub jusqu'à la Phase 1 |
-| `payments.services` | `has_active_subscription(user) -> bool` | Stub (`True`) jusqu'à la Phase 4 |
+| `courses.services` | `user_can_access_course(user, course) -> bool`, `can_read_course(user, course) -> bool` (le formateur relit son propre cours), `course_progress(user, course) -> int` (0 à 100), `is_course_completed(user, course) -> bool`, `enroll_learner(user, course)` | Implémenté (Phase 1) |
+| `payments.services` | `has_active_subscription(user) -> bool` | Implémenté (Phase 4) |
 | `assessment.services` | `verified_certificates(user)` : certificats non révoqués | Stub (liste vide) jusqu'à la Phase 3 |
 | `core.ai` | `run_ai_job(...) -> AIJob`, `complete_json(...)` | Implémenté |
 
@@ -154,11 +157,13 @@ python manage.py makemigrations --check --dry-run
 python manage.py evaluate_<feature> --provider <réel>
 python manage.py check --deploy --settings=config.settings.prod   # exige ALLOWED_HOSTS
 docker compose up -d                            # PostgreSQL 16 et Redis 7
+docker compose -f docker-compose.prod.yml up -d --build   # pile de production (DEPLOY.md, section 9)
 ```
 
 ## Pièges connus
 
-- `config.settings.prod` exige `SECRET_KEY` et `ALLOWED_HOSTS` dans l'environnement.
+- `config.settings.prod` exige `SECRET_KEY` et `ALLOWED_HOSTS` dans l'environnement. Sur Render, `RENDER_EXTERNAL_HOSTNAME` remplace `ALLOWED_HOSTS` (déploiement : `DEPLOY.md`, `render.yaml`, `build.sh`).
+- Sans worker Celery (`CELERY_TASK_ALWAYS_EAGER=True`), `/health/` ne contrôle pas Redis et répond `"redis": "not_used"`.
 - Fichiers JS/CSS tiers ajoutés dans `static/vendor/` : retirer la ligne `sourceMappingURL` si le fichier `.map` n'est pas fourni, sinon `collectstatic` échoue avec le stockage manifeste.
 - `.gitattributes` impose LF dans le dépôt : le futur script d'entrée Docker en dépend.
 - Sous Windows, écrire `127.0.0.1` et non `localhost` dans `DATABASE_URL` et `REDIS_URL` : `localhost` est d'abord résolu en `::1`, que Docker Desktop ne publie pas, et la connexion reste bloquée sans délai d'expiration.

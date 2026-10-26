@@ -17,6 +17,9 @@
       <li class="sf-card">
         <h2>{{ profile.mentor }}</h2>
         <p>{{ profile.title }} · {{ profile.years_of_experience }} an{{ profile.years_of_experience|pluralize }} d'expérience</p>
+        {% if profile.expertises.all %}
+          <p class="text-muted">Expertises&nbsp;: {{ profile.expertises.all|join:", " }}</p>
+        {% endif %}
         <p class="text-muted">
           {% if profile.review_count %}
             Note moyenne&nbsp;: {{ profile.average_rating|floatformat:1 }}/5 sur {{ profile.review_count }} avis

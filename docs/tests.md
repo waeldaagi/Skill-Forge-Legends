@@ -13,24 +13,24 @@ La CI GitHub Actions lance la même suite sur PostgreSQL 16 et Redis 7, refuse u
 
 Sont exclus de la mesure : migrations, settings, `manage.py`, `asgi.py`, `wsgi.py` et les dossiers `tests/` eux-mêmes.
 
-## Résultats au 25/10/2026 (Phase 2 : mentorat et communauté)
+## Résultats au 26/10/2026 (Phases 0 à 2, paiements et analytics, déploiement)
 
-Commande : `pytest --cov`, sur SQLite ; la même suite passe sous PostgreSQL 16. Couverture des instructions et des branches.
+Commande : `pytest --cov`, sur SQLite, branche `integration/analytics`. Couverture des instructions et des branches.
 
-| App | Tests | Instructions | Non couvertes | Couverture |
-|---|---|---|---|---|
-| `core` | 76 | 445 | 2 | 99,2 % |
-| `accounts` | 19 | 87 | 0 | 100 % |
-| `mentoring` | 103 | 560 | 4 | 99,0 % |
-| `community` | 78 | 633 | 6 | 98,6 % |
-| `config` | — | 18 | 1 | 90,0 % |
-| `courses` | 0 | 12 | 6 | 50,0 % |
-| `assessment` | 0 | 8 | 2 | 75,0 % |
-| `payments` | 0 | 8 | 2 | 75,0 % |
-| `analytics` | 0 | 6 | 0 | 100 % |
-| **Total** | **276** | **1 777** | **23** | **98,4 %** |
+| App | Responsable | Tests | Instructions | Non couvertes | Couverture |
+|---|---|---|---|---|---|
+| `core` | Wael | 104 | 498 | 2 | 99,5 % |
+| `mentoring` | Wael | 110 | 616 | 4 | 99,0 % |
+| `community` | Wael | 83 | 679 | 5 | 98,9 % |
+| `accounts` | Taha | 32 | 213 | 1 | 98,7 % |
+| `courses` | Taha | 83 | 895 | 16 | 97,4 % |
+| `config` | — | — | 19 | 1 | 90,5 % |
+| `payments` | Ismail | 20 | 213 | 6 | 96,1 % |
+| `analytics` | Ismail | 16 | 210 | 7 | 94,4 % |
+| `assessment` | Hamdi | 0 | 8 | 0 | stub |
+| **Total** | | **448** | **3 351** | **42** | **98,1 %** |
 
-`courses`, `assessment`, `payments` et `analytics` ne contiennent encore que leur configuration et les stubs des contrats entre modules. Ces stubs seront remplacés par leur responsable, avec ses propres tests (Phases 1, 3 et 4).
+Avant la correction des bugs relevés dans `docs/audit/integration-2026-10-25.md`, `courses/views.py` n'était couvert qu'à 65 % : les bugs se trouvaient précisément dans les parties non testées. Il l'est maintenant à 99 %. La suite tourne sans aucun avertissement de dépréciation (`pytest -W error::DeprecationWarning`). `assessment` ne contient encore que le stub de son contrat (Phase 3).
 
 ## Ce que les tests prouvent
 
@@ -38,7 +38,16 @@ Commande : `pytest --cov`, sur SQLite ; la même suite passe sous PostgreSQL 16.
 |---|---|
 | `accounts/tests/test_models.py` | Le groupe suit le rôle à la création et au changement de rôle ; seul le rôle ADMIN ouvre l'admin Django ; `createsuperuser` crée un administrateur. |
 | `accounts/tests/test_commands.py` | `setup_roles` crée un groupe par rôle, donne les permissions déclarées, peut être relancée, refuse une permission ou un rôle inconnus. |
-| `accounts/tests/test_views.py` | Connexion, mot de passe faux, déconnexion. |
+| `accounts/tests/test_views.py` | Connexion, mot de passe faux, déconnexion ; lien « Mot de passe oublié » et envoi du lien ; e-mail obligatoire à l'inscription ; modification du profil, avatar trop lourd refusé ; profil public visible seulement s'il est activé ; établissement rejoint par un apprenant, code faux refusé, autres rôles refusés (403). |
+| `courses/tests/test_permissions.py` | 26 URL × 6 rôles et l'anonyme ; pages du formateur sur le cours d'un autre : 404 ; inscription, chapitre terminé et réponse à un quiz réservés à l'apprenant. |
+| `courses/tests/test_views.py` | Quiz premium refusé sans abonnement ; réponse forgée comptée fausse sans erreur ; progression affichée ; vidéo intégrée ou proposée en lien ; formateur non vérifié qui ne publie rien ; « Mes cours », brouillon visible de son seul formateur ; slug stable et unique ; CRUD des chapitres, ressources, quiz et questions ; ordre déjà pris et choix identiques refusés sans erreur ; fichier de plus de 5 Mo refusé ; chaque page du formateur s'ouvre. |
+| `courses/tests/test_models.py` | Slug numéroté pour un titre déjà pris, conservé au renommage ; lien d'intégration YouTube et Vimeo, refus des autres sites. |
+| `courses/tests/test_ai.py` | Schéma de génération : choix identiques, choix trop long et énoncés en double refusés ; une erreur d'écriture laisse les anciennes questions intactes. |
+| `core/tests/test_site_crawl.py` | Sur les données de `seed_demo`, chaque lien affiché est suivi pour les six rôles et l'anonyme : aucune erreur 500, aucun lien cassé (404), aucun lien vers une page interdite (403). |
+| `core/tests/test_url_protection.py` | Les 81 URL nommées, découvertes automatiquement : hors des 13 pages publiques, un anonyme est renvoyé vers la connexion. |
+| `core/tests/test_dashboard.py` | Accueil de chaque rôle : cours et progression, sessions à venir, demandes à traiter, file de modération ; présentation pour un visiteur. |
+| `core/tests/test_prod_settings.py` | Réglages de production : nom d'hôte Render ajouté à `ALLOWED_HOSTS` et aux origines CSRF, `DEBUG` faux, arrêt si aucun hôte hors Render. |
+| `core/tests/test_validators.py` | Limite de 5 Mo (exactement 5 Mo accepté, au-delà refusé, fichier déjà stocké jamais relu) ; URL sans protocole complétée en https. |
 | `core/tests/test_permissions.py` | Chaque mixin, pour chaque rôle autorisé et refusé ; l'objet d'un autre utilisateur donne 404. |
 | `core/tests/test_ai_client.py` | Sortie validée par pydantic ; journalisation sans donnée personnelle ; timeout, erreurs HTTP et service injoignable ; une seule relance sur réponse invalide ; consigne anti-injection. |
 | `core/tests/test_ai_gemini.py` | Clé dans l'en-tête, JSON imposé, modèle configurable, erreur 503, réponse bloquée, clé absente (réponses HTTP simulées). |

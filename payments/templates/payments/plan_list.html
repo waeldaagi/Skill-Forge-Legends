@@ -1,10 +1,49 @@
 {% extends "base.html" %}
-{% block title %}Offres{% endblock %}
+{% block title %}Offres · SkillForge{% endblock %}
 {% block content %}
-<main id="contenu" class="container py-4"><h1>Choisir une offre</h1>
-<p>Les paiements sont simulés : aucune donnée bancaire n’est demandée.</p>
-<div class="row g-4">{% for plan in plans %}<article class="col-md-4"><div class="card h-100 p-3">
-<h2 class="h3">{{ plan.name }}</h2><p class="fs-4">{{ plan.price }} TND</p><p>{{ plan.duration_days }} jours</p><p>{{ plan.benefits|linebreaksbr }}</p>
-{% if user.is_authenticated %}{% if plan.active_subscription_id %}<form method="post" action="{% url 'payments:cancel' plan.active_subscription_id %}">{% csrf_token %}<button class="btn btn-outline-danger">Annuler</button></form><p class="text-success mt-2">Abonnement actif</p>{% else %}<form method="post" action="{% url 'payments:checkout' plan.slug %}">{% csrf_token %}<button class="btn btn-primary">Payer (mode démo)</button></form>{% endif %}{% else %}<a class="btn btn-primary" href="{% url 'accounts:login' %}?next={{ request.path }}">Se connecter</a>{% endif %}
-</div></article>{% empty %}<p>Aucune offre active pour le moment.</p>{% endfor %}</div></main>
+<div class="sf-page-header">
+  <h1>Choisir une offre</h1>
+  {% if user.is_authenticated %}
+    <div class="sf-actions">
+      <a class="btn btn-outline-primary" href="{% url 'payments:subscriptions' %}">Mes abonnements</a>
+      <a class="btn btn-outline-primary" href="{% url 'payments:payments' %}">Mes paiements</a>
+    </div>
+  {% endif %}
+</div>
+<p>Les paiements sont simulés : aucune donnée bancaire n’est demandée. Un abonnement actif ouvre les cours premium.</p>
+<div class="row g-4">
+  {% for plan in plans %}
+    <article class="col-md-6 col-lg-4">
+      <div class="card h-100">
+        <div class="card-body d-flex flex-column">
+          <h2 class="h3">{{ plan.name }}</h2>
+          <p class="fs-4 mb-1">{{ plan.price }} TND</p>
+          <p class="text-muted">{{ plan.duration_days }} jours</p>
+          {% if plan.benefits %}<p>{{ plan.benefits|linebreaksbr }}</p>{% endif %}
+          <div class="mt-auto">
+            {% if user.is_authenticated %}
+              {% if plan.active_subscription_id %}
+                <p class="text-success fw-semibold">Abonnement actif</p>
+                <form method="post" action="{% url 'payments:cancel' plan.active_subscription_id %}">
+                  {% csrf_token %}
+                  <button class="btn btn-outline-danger" type="submit">Annuler l’abonnement<span class="visually-hidden"> {{ plan.name }}</span></button>
+                </form>
+              {% else %}
+                <form method="post" action="{% url 'payments:checkout' plan.slug %}" class="sf-actions mb-0">
+                  {% csrf_token %}
+                  <button class="btn btn-primary" type="submit">Payer (mode démo)<span class="visually-hidden"> l’offre {{ plan.name }}</span></button>
+                  <button class="btn btn-outline-secondary" type="submit" name="scenario" value="failure">Simuler un paiement refusé<span class="visually-hidden"> pour l’offre {{ plan.name }}</span></button>
+                </form>
+              {% endif %}
+            {% else %}
+              <a class="btn btn-primary" href="{% url 'accounts:login' %}?next={{ request.path }}">Se connecter pour s’abonner</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </article>
+  {% empty %}
+    <p>Aucune offre n’est proposée pour le moment.</p>
+  {% endfor %}
+</div>
 {% endblock %}

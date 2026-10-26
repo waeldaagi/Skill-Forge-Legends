@@ -1,0 +1,23 @@
+<section class="sf-panel" aria-labelledby="panneau-mentorat">
+  <h2 id="panneau-mentorat">Mon mentorat</h2>
+  {% if not user.is_verified %}
+    <p class="sf-panel__warning">Votre profil n'est pas encore vérifié par un administrateur : vos créneaux ne sont pas publiés.</p>
+  {% elif not panel.has_profile %}
+    <p class="sf-panel__warning">Les apprenants ne vous trouvent pas encore dans l'annuaire : <a href="{% url 'mentoring:profile_edit' %}">complétez votre profil de mentor</a>.</p>
+  {% endif %}
+  <dl class="sf-figures">
+    <div><dt>Demandes à traiter</dt><dd>{{ panel.pending_count }}</dd></div>
+    <div><dt>Créneaux libres</dt><dd>{{ panel.free_slot_count }}</dd></div>
+  </dl>
+  {% if panel.sessions %}
+    <ul class="sf-panel__list">
+      {% for session in panel.sessions %}
+        <li><a href="{% url 'mentoring:session_detail' session.pk %}">{{ session.slot.period }}</a>, avec {{ session.learner }} · {{ session.get_status_display }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  <div class="sf-actions">
+    <a class="btn btn-primary" href="{% url 'mentoring:session_list' %}">Voir mes sessions</a>
+    <a class="btn btn-outline-primary" href="{% url 'mentoring:slot_list' %}">Gérer mes créneaux</a>
+  </div>
+</section>
