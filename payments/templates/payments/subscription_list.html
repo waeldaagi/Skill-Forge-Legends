@@ -1,6 +1,45 @@
 {% extends "base.html" %}
-{% block title %}Mes abonnements{% endblock %}
+{% block title %}Mes abonnements · SkillForge{% endblock %}
 {% block content %}
-<main id="contenu" class="container py-4"><h1>Mes abonnements</h1>
-{% for subscription in subscriptions %}<article class="card p-3 mb-3"><h2 class="h3">{{ subscription.plan.name }}</h2><p>{{ subscription.get_status_display }} — jusqu’au {{ subscription.ends_at|date:"d/m/Y" }}</p>{% if subscription.status == "ACTIVE" %}<form method="post" action="{% url 'payments:cancel' subscription.pk %}">{% csrf_token %}<button class="btn btn-outline-danger">Annuler</button></form>{% endif %}</article>{% empty %}<p>Vous n’avez pas encore d’abonnement.</p>{% endfor %}</main>
+<div class="sf-page-header">
+  <h1>Mes abonnements</h1>
+  <div class="sf-actions">
+    <a class="btn btn-outline-primary" href="{% url 'payments:plans' %}">Voir les offres</a>
+    <a class="btn btn-outline-primary" href="{% url 'payments:payments' %}">Mes paiements</a>
+  </div>
+</div>
+{% if subscriptions %}
+  <div class="sf-table-wrapper">
+    <table class="table align-middle">
+      <caption class="visually-hidden">Vos abonnements actifs</caption>
+      <thead>
+        <tr>
+          <th scope="col">Offre</th>
+          <th scope="col">État</th>
+          <th scope="col">Fin</th>
+          <th scope="col"><span class="visually-hidden">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for subscription in subscriptions %}
+          <tr>
+            <td>{{ subscription.plan.name }}</td>
+            <td>{{ subscription.get_status_display }}</td>
+            <td>{{ subscription.ends_at|date:"j E Y" }}</td>
+            <td class="text-end">
+              {% if subscription.status == "ACTIVE" %}
+                <form method="post" action="{% url 'payments:cancel' subscription.pk %}">
+                  {% csrf_token %}
+                  <button class="btn btn-sm btn-outline-danger" type="submit">Annuler<span class="visually-hidden"> l’abonnement {{ subscription.plan.name }}</span></button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p>Vous n’avez pas d’abonnement actif. Choisissez une offre pour accéder aux cours premium.</p>
+{% endif %}
 {% endblock %}
