@@ -11,7 +11,10 @@
     preuve évaluée par l'IA et validée par un mentor.
   </p>
   {% if not user.is_authenticated %}
-    <a class="btn btn-primary" href="{% url 'accounts:login' %}">Se connecter</a>
+    <div class="sf-actions">
+      <a class="btn btn-primary" href="{% url 'accounts:register' %}">Créer un compte</a>
+      <a class="btn btn-outline-primary" href="{% url 'courses:list' %}">Parcourir le catalogue</a>
+    </div>
   {% endif %}
 </section>
 

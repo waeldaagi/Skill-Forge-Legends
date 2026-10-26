@@ -7,6 +7,7 @@ class CoursesConfig(AppConfig):
     demo_seeder = "courses.demo.seed"
 
     role_navigation = {
+        "ANONYME": [("Catalogue des cours", "courses:list")],
         "APPRENANT": [("Catalogue des cours", "courses:list")],
         "FORMATEUR": [
             ("Catalogue des cours", "courses:list"),

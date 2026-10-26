@@ -51,7 +51,7 @@ Skills du projet (`.claude/skills/`), à charger **avant** d'écrire :
 
 - **Permissions par rôle** : chaque app déclare dans son `AppConfig` un attribut `role_permissions = {"MENTOR": ["mentoring.add_availabilityslot", ...]}`. `python manage.py setup_roles` agrège ces déclarations, crée un groupe par rôle (nommé comme la valeur du rôle) et lui attribue ces permissions. La commande peut être relancée sans risque.
 - **Groupes** : un utilisateur rejoint le groupe de son rôle à sa création et en change quand son rôle change (`accounts.User.save`). Le rôle `ADMIN` donne `is_staff`. Les groupes ne s'éditent pas à la main dans l'admin.
-- **Navigation** : chaque app déclare dans son `AppConfig` un attribut `role_navigation = {"MENTOR": [("Mes créneaux", "mentoring:slot_list")]}`. Le context processor `core.context_processors.navigation` construit le menu.
+- **Navigation** : chaque app déclare dans son `AppConfig` un attribut `role_navigation = {"MENTOR": [("Mes créneaux", "mentoring:slot_list")]}`. Le context processor `core.context_processors.navigation` construit le menu. La clé `"ANONYME"` donne les liens d'un visiteur non connecté.
 - **Contrôle d'accès** (`core.permissions`) :
   - `RoleRequiredMixin` avec `allowed_roles` : un anonyme est redirigé vers la connexion, un rôle non autorisé reçoit 403 ;
   - `role_required(*roles)` : même règle pour une vue fonction ;
