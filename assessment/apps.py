@@ -4,16 +4,16 @@ from django.apps import AppConfig
 class AssessmentConfig(AppConfig):
     name = "assessment"
     verbose_name = "Évaluation et preuve"
+    demo_seeder = "assessment.demo.seed"
 
     role_navigation = {
         "APPRENANT": [("Certifications", "assessment:certification_catalog")],
         "FORMATEUR": [
             ("Certifications", "assessment:certification_list"),
-            ("Revue humaine", "assessment:review_queue"),
+            ("Revues", "assessment:review_queue"),
         ],
-        "MENTOR": [("Revue humaine", "assessment:review_queue")],
+        "MENTOR": [("Revues", "assessment:review_queue")],
         "RECRUTEUR": [("Talents certifiés", "assessment:talent_search")],
-        "ADMIN": [("Talents certifiés", "assessment:talent_search")],
     }
 
     role_permissions = {

@@ -5,6 +5,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.files.base import ContentFile
 from django.db import transaction
 from django.db.models import Q
+from django.urls import reverse
 from django.utils import timezone
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfgen import canvas
@@ -17,6 +18,8 @@ from core.services import queue_email
 from .models import AIEvaluation, Certificate, HumanReview, Submission
 
 SIMILARITY_THRESHOLD = 0.85
+# Statuts qui attendent la décision d'un mentor ou d'un formateur.
+REVIEWABLE_STATUSES = (Submission.Status.EVALUEE_IA, Submission.Status.EN_REVUE)
 
 
 def verified_certificates(user):
@@ -85,7 +88,9 @@ def _similarity_score(submission):
 
     previous = list(
         Submission.objects.filter(certification=submission.certification)
-        .exclude(pk=submission.pk)
+        # Les tentatives du même apprenant sont exclues : améliorer sa propre réponse
+        # n'est pas du plagiat.
+        .exclude(learner=submission.learner)
         .values_list("text_response", flat=True)
     )
     previous = [text.strip() for text in previous if text and text.strip()]
@@ -151,7 +156,9 @@ def keep_for_human_review(submission):
 
 
 @transaction.atomic
-def finalize_human_review(submission, reviewer, final_score, decision, comment, overrides_ai):
+def finalize_human_review(
+    submission, reviewer, final_score, decision, comment, overrides_ai, site_url=""
+):
     review, _ = HumanReview.objects.update_or_create(
         submission=submission,
         defaults={
@@ -172,12 +179,12 @@ def finalize_human_review(submission, reviewer, final_score, decision, comment, 
 
     certificate = None
     if decision == HumanReview.Decision.REUSSIE:
-        certificate = issue_certificate(submission)
+        certificate = issue_certificate(submission, site_url)
     return review, certificate
 
 
 @transaction.atomic
-def issue_certificate(submission):
+def issue_certificate(submission, site_url=""):
     certificate, created = Certificate.objects.get_or_create(
         submission=submission,
         defaults={
@@ -187,7 +194,7 @@ def issue_certificate(submission):
         },
     )
     if created or not certificate.pdf:
-        pdf_bytes = generate_certificate_pdf(certificate)
+        pdf_bytes = generate_certificate_pdf(certificate, site_url)
         certificate.pdf.save(
             f"certificate-{certificate.public_id}.pdf",
             ContentFile(pdf_bytes),
@@ -196,7 +203,9 @@ def issue_certificate(submission):
     return certificate
 
 
-def generate_certificate_pdf(certificate):
+def generate_certificate_pdf(certificate, site_url=""):
+    """PDF du certificat. site_url (« https://skillforge.onrender.com/ ») rend le QR code
+    utilisable depuis un téléphone : une URL relative ne s'ouvre pas une fois scannée."""
     buffer = BytesIO()
     pdf = canvas.Canvas(buffer)
     pdf.setTitle("Certificat SkillForge")
@@ -210,9 +219,10 @@ def generate_certificate_pdf(certificate):
     pdf.drawString(70, 700, f"Date : {timezone.localdate().isoformat()}")
     pdf.drawString(70, 680, f"Identifiant : {certificate.public_id}")
 
-    verify_url = f"/certificats/verifier/{certificate.public_id}/"
-    api_url = f"/api/certificats/{certificate.public_id}/"
-    qr = qrcode.make(api_url)
+    base = site_url.rstrip("/")
+    verify_url = base + reverse("certificate_verify_public", args=[certificate.public_id])
+    api_url = base + reverse("certificate_api_public", args=[certificate.public_id])
+    qr = qrcode.make(verify_url)
     qr_buffer = BytesIO()
     qr.save(qr_buffer, format="PNG")
     qr_buffer.seek(0)

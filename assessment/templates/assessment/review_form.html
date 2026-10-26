@@ -1,14 +1,41 @@
 {% extends "base.html" %}
-{% block title %}Revue soumission{% endblock %}
+{% block title %}Revue de la soumission · SkillForge{% endblock %}
 {% block content %}
-<h1>Revue humaine - {{ submission.learner }}</h1>
-<p><strong>Certification :</strong> {{ submission.certification.title }}</p>
+<h1>Revue de la soumission de {{ submission.learner }}</h1>
+<p>Certification : {{ submission.certification.title }} · tentative {{ submission.attempt_number }} · score de réussite {{ submission.certification.passing_score }}/100</p>
+
+<section class="sf-panel mb-4" aria-labelledby="titre-preuve">
+  <h2 id="titre-preuve">Preuve soumise</h2>
+  {% if submission.text_response %}<div>{{ submission.text_response|linebreaks }}</div>{% endif %}
+  {% if submission.repository_url %}<p>Dépôt : <a href="{{ submission.repository_url }}" rel="noopener" target="_blank">{{ submission.repository_url }}<span class="visually-hidden"> (nouvel onglet)</span></a></p>{% endif %}
+  {% if submission.attachment %}<p><a href="{{ submission.attachment.url }}" download>Télécharger le fichier joint</a></p>{% endif %}
+</section>
+
 {% if submission.ai_evaluation %}
-  <p><strong>Score IA :</strong> {{ submission.ai_evaluation.total_score }}/100</p>
+  <section class="sf-panel mb-4" aria-labelledby="titre-avis-ia">
+    <h2 id="titre-avis-ia">Avis de l'IA : {{ submission.ai_evaluation.total_score }}/100</h2>
+    {% if submission.ai_evaluation.criteria_scores %}
+      <div class="sf-table-wrapper">
+        <table class="table align-middle">
+          <caption class="visually-hidden">Score de l'IA par critère</caption>
+          <thead><tr><th scope="col">Critère</th><th scope="col">Score</th><th scope="col">Justification</th></tr></thead>
+          <tbody>
+            {% for name, detail in submission.ai_evaluation.criteria_scores.items %}
+              <tr><td>{{ name }}</td><td>{{ detail.score }}</td><td>{{ detail.justification }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+    {% if submission.ai_evaluation.suspected_fraud %}
+      <p class="sf-panel__warning">Fraude suspectée : {{ submission.ai_evaluation.fraud_reasons|linebreaksbr }}</p>
+    {% endif %}
+  </section>
 {% endif %}
-<form method="post">
+
+<form method="post" class="sf-form-page mx-0">
   {% csrf_token %}
   {{ form }}
-  <button type="submit" class="btn btn-primary">Valider la revue</button>
+  <button type="submit" class="btn btn-primary">Enregistrer la décision</button>
 </form>
 {% endblock %}

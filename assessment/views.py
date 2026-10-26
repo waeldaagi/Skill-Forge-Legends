@@ -1,5 +1,7 @@
+from functools import cached_property
+
 from django.contrib import messages
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db.models import Prefetch
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
@@ -19,8 +21,10 @@ from .forms import (
 )
 from .models import Certificate, Certification, Criterion, Submission
 from .services import (
+    REVIEWABLE_STATUSES,
     contact_candidate,
     finalize_human_review,
+    learner_can_submit,
     recruiter_candidates,
     submit_submission,
     verified_certificates,
@@ -40,14 +44,21 @@ class CertificationListView(RoleRequiredMixin, ListView):
         )
 
 
-class CertificationCreateView(RoleRequiredMixin, CreateView):
+class TrainerCertificationFormMixin:
+    """Le formulaire ne propose que les cours du formateur connecté."""
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["trainer"] = self.request.user
+        return kwargs
+
+
+class CertificationCreateView(RoleRequiredMixin, TrainerCertificationFormMixin, CreateView):
     allowed_roles = (Role.FORMATEUR,)
     form_class = CertificationForm
     template_name = "assessment/certification_form.html"
 
     def form_valid(self, form):
-        if form.instance.course.trainer_id != self.request.user.pk:
-            raise PermissionDenied("Vous ne pouvez créer une certification que sur vos cours.")
         messages.success(self.request, "Certification créée.")
         return super().form_valid(form)
 
@@ -55,7 +66,7 @@ class CertificationCreateView(RoleRequiredMixin, CreateView):
         return reverse("assessment:criterion_create", kwargs={"certification_pk": self.object.pk})
 
 
-class CertificationUpdateView(RoleRequiredMixin, UpdateView):
+class CertificationUpdateView(RoleRequiredMixin, TrainerCertificationFormMixin, UpdateView):
     allowed_roles = (Role.FORMATEUR,)
     model = Certification
     form_class = CertificationForm
@@ -86,16 +97,16 @@ class CriterionCreateView(RoleRequiredMixin, CreateView):
     form_class = CriterionForm
     template_name = "assessment/criterion_form.html"
 
-    def dispatch(self, request, *args, **kwargs):
-        self.certification = get_object_or_404(
-            Certification, pk=kwargs["certification_pk"], course__trainer=request.user
+    @cached_property
+    def certification(self):
+        # Chargée après le contrôle de rôle : un anonyme est redirigé, un autre rôle reçoit 403.
+        return get_object_or_404(
+            Certification, pk=self.kwargs["certification_pk"], course__trainer=self.request.user
         )
-        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        if "instance" not in kwargs or kwargs["instance"] is None:
-            kwargs["instance"] = Criterion(certification=self.certification)
+        kwargs["instance"] = Criterion(certification=self.certification)
         return kwargs
 
     def form_valid(self, form):
@@ -162,17 +173,22 @@ class CertificationCatalogView(RoleRequiredMixin, ListView):
             )
         )
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # « Soumettre » n'est proposé que si le cours est terminé (règle du service).
+        for certification in context["certifications"]:
+            certification.can_submit = learner_can_submit(self.request.user, certification)
+        return context
+
 
 class SubmissionCreateView(RoleRequiredMixin, FormView):
     allowed_roles = (Role.APPRENANT,)
     form_class = SubmissionForm
     template_name = "assessment/submission_form.html"
 
-    def dispatch(self, request, *args, **kwargs):
-        self.certification = get_object_or_404(
-            Certification, pk=kwargs["certification_pk"], is_active=True
-        )
-        return super().dispatch(request, *args, **kwargs)
+    @cached_property
+    def certification(self):
+        return get_object_or_404(Certification, pk=self.kwargs["certification_pk"], is_active=True)
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(certification=self.certification, **kwargs)
@@ -186,7 +202,10 @@ class SubmissionCreateView(RoleRequiredMixin, FormView):
                 repository_url=form.cleaned_data["repository_url"],
                 attachment=form.cleaned_data["attachment"],
             )
-        except Exception as exc:
+        except ValidationError as exc:
+            form.add_error(None, " ".join(exc.messages))
+            return self.form_invalid(form)
+        except PermissionDenied as exc:
             form.add_error(None, str(exc))
             return self.form_invalid(form)
         messages.success(self.request, "Soumission envoyée. L'évaluation IA démarre.")
@@ -231,31 +250,35 @@ class SubmissionReviewView(RoleRequiredMixin, FormView):
     template_name = "assessment/review_form.html"
     form_class = HumanReviewForm
 
-    def dispatch(self, request, *args, **kwargs):
-        queryset = Submission.objects.select_related("certification__course", "ai_evaluation")
-        self.submission = get_object_or_404(queryset, pk=kwargs["pk"])
-        if (
-            request.user.role == Role.FORMATEUR
-            and self.submission.certification.course.trainer_id != request.user.pk
-        ):
-            raise PermissionDenied(
-                "Vous ne pouvez relire que les soumissions de vos certifications."
-            )
-        return super().dispatch(request, *args, **kwargs)
+    @cached_property
+    def submission(self):
+        # Seules les soumissions en attente se relisent : une décision rendue ne change plus
+        # (un certificat a pu être délivré). Un formateur ne relit que ses certifications.
+        queryset = Submission.objects.select_related(
+            "learner", "certification__course", "ai_evaluation"
+        ).filter(status__in=REVIEWABLE_STATUSES)
+        if self.request.user.role == Role.FORMATEUR:
+            queryset = queryset.filter(certification__course__trainer=self.request.user)
+        return get_object_or_404(queryset, pk=self.kwargs["pk"])
+
+    def get_initial(self):
+        # Le relecteur part du score proposé par l'IA, qu'il confirme ou corrige.
+        evaluation = getattr(self.submission, "ai_evaluation", None)
+        return {"final_score": evaluation.total_score} if evaluation else {}
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(submission=self.submission, **kwargs)
 
     def form_valid(self, form):
-        review, certificate = finalize_human_review(
+        _review, certificate = finalize_human_review(
             submission=self.submission,
             reviewer=self.request.user,
             final_score=form.cleaned_data["final_score"],
             decision=form.cleaned_data["decision"],
             comment=form.cleaned_data["comment"],
             overrides_ai=form.cleaned_data["overrides_ai"],
+            site_url=self.request.build_absolute_uri("/"),
         )
-        del review
         if certificate:
             messages.success(self.request, "Revue validée. Certificat délivré.")
         else:
@@ -326,9 +349,9 @@ class RecruiterContactView(RoleRequiredMixin, FormView):
     form_class = RecruiterContactForm
     template_name = "assessment/recruiter_contact.html"
 
-    def dispatch(self, request, *args, **kwargs):
-        self.learner = get_object_or_404(recruiter_candidates(), pk=kwargs["pk"])
-        return super().dispatch(request, *args, **kwargs)
+    @cached_property
+    def learner(self):
+        return get_object_or_404(recruiter_candidates(), pk=self.kwargs["pk"])
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(learner=self.learner, **kwargs)

@@ -2,15 +2,26 @@ from django import forms
 
 from accounts.models import Skill
 from core.forms import https_url_formfield
+from courses.models import Course
+from courses.services import UNVERIFIED_TRAINER_MESSAGE
 
 from .models import Certification, Criterion, HumanReview, Submission
 
 
 class CertificationForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, trainer, **kwargs):
         super().__init__(*args, **kwargs)
+        self.trainer = trainer
+        self.fields["course"].queryset = Course.objects.filter(trainer=trainer)
         if self.instance.pk is None:
             self.fields["is_active"].initial = False
+
+    def clean_is_active(self):
+        # Activer une certification la publie : interdit à un formateur non vérifié.
+        is_active = self.cleaned_data["is_active"]
+        if is_active and not self.trainer.is_verified:
+            raise forms.ValidationError(UNVERIFIED_TRAINER_MESSAGE)
+        return is_active
 
     class Meta:
         model = Certification
@@ -34,6 +45,13 @@ class SubmissionForm(forms.ModelForm):
 
 
 class HumanReviewForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["decision"].choices = [
+            ("", "Choisissez une décision"),
+            *HumanReview.Decision.choices,
+        ]
+
     class Meta:
         model = HumanReview
         fields = ["final_score", "decision", "comment", "overrides_ai"]
