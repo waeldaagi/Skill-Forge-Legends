@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Contacter le candidat{% endblock %}
+{% block content %}
+<h1>Contacter {{ learner }}</h1>
+<form method="post">
+  {% csrf_token %}
+  {{ form }}
+  <button type="submit" class="btn btn-primary">Envoyer</button>
+</form>
+{% endblock %}

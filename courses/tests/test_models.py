@@ -35,7 +35,8 @@ class SlugTests(TestCase):
         CategoryFactory(name="C++")
         CategoryFactory(name="C#")
 
-        self.assertEqual(sorted(Category.objects.values_list("slug", flat=True)), ["c", "c-2"])
+        slugs = Category.objects.filter(name__in=["C++", "C#"]).values_list("slug", flat=True)
+        self.assertEqual(sorted(slugs), ["c", "c-2"])
 
 
 class VideoEmbedTests(SimpleTestCase):
