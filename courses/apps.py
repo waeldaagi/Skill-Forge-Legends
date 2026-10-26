@@ -8,10 +8,10 @@ class CoursesConfig(AppConfig):
     dashboard_panel = "courses.dashboard.panel"
 
     role_navigation = {
-        "ANONYME": [("Catalogue des cours", "courses:list")],
-        "APPRENANT": [("Catalogue des cours", "courses:list")],
+        "ANONYME": [("Cours", "courses:list")],
+        "APPRENANT": [("Cours", "courses:list")],
         "FORMATEUR": [
-            ("Catalogue des cours", "courses:list"),
+            ("Cours", "courses:list"),
             ("Mes cours", "courses:trainer_courses"),
         ],
     }
