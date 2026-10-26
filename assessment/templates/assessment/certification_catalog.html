@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Catalogue certifications{% endblock %}
+{% block content %}
+<h1>Catalogue des certifications</h1>
+<ul class="list-group">
+  {% for certification in certifications %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span>{{ certification.title }} ({{ certification.course.title }})</span>
+      {% with certificate=certification.learner_certificates.0 %}
+        {% if certificate and certificate.pdf %}
+          <span class="d-flex gap-2">
+            <a class="btn btn-sm btn-success" href="{{ certificate.pdf.url }}">Télécharger le certificat</a>
+            <a class="btn btn-sm btn-outline-primary" href="{% url 'assessment:certificate_verify' certificate.public_id %}">Vérifier</a>
+          </span>
+        {% else %}
+          <a class="btn btn-sm btn-primary" href="{% url 'assessment:submission_create' certification.pk %}">Soumettre une preuve</a>
+        {% endif %}
+      {% endwith %}
+    </li>
+  {% empty %}
+    <li class="list-group-item">Aucune certification active.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

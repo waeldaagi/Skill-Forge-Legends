@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load ai_status %}
+{% block title %}Détail soumission{% endblock %}
+{% block content %}
+<h1>Détail de la soumission</h1>
+<p><strong>Certification :</strong> {{ submission.certification.title }}</p>
+<p><strong>Statut :</strong> {{ submission.get_status_display }}</p>
+{% if submission.ai_job %}
+  {% ai_job_status submission.ai_job %}
+{% endif %}
+{% if submission.ai_evaluation %}
+  <h2>Feedback IA</h2>
+  <p><strong>Score :</strong> {{ submission.ai_evaluation.total_score }}/100</p>
+  <p><strong>Points forts :</strong><br>{{ submission.ai_evaluation.strengths|linebreaksbr }}</p>
+  <p><strong>Axes d'amélioration :</strong><br>{{ submission.ai_evaluation.improvement_axes|linebreaksbr }}</p>
+  {% if submission.ai_evaluation.suspected_fraud %}
+    <p class="text-danger"><strong>Fraude suspectée :</strong><br>{{ submission.ai_evaluation.fraud_reasons|linebreaksbr }}</p>
+  {% endif %}
+{% endif %}
+{% if submission.certificate and not submission.certificate.is_revoked %}
+  <p><a href="{{ submission.certificate.pdf.url }}">Télécharger le certificat</a></p>
+{% endif %}
+{% endblock %}
