@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Rejoindre un établissement · SkillForge{% endblock %}
 {% block content %}
+<div class="sf-form-page">
 <h1>Rejoindre un établissement</h1>
 <p>Demandez le code à votre établissement avant de continuer.</p>
 <form method="post">
@@ -8,4 +9,5 @@
   {{ form }}
   <button class="btn sf-btn-primary" type="submit">Rejoindre l’établissement</button>
 </form>
+</div>
 {% endblock %}

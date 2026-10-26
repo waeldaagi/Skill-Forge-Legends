@@ -1,15 +1,25 @@
 {% extends "base.html" %}
-{% block title %}Profil · SkillForge{% endblock %}
+{% block title %}Profil de {{ profile_user.get_full_name|default:profile_user.username }} · SkillForge{% endblock %}
 {% block content %}
-<h1>Profil de {{ profile_user.get_full_name|default:profile_user.username }}</h1>
-{% if profile_user.bio %}<p>{{ profile_user.bio }}</p>{% endif %}
-<dl>
-  <dt>Rôle</dt><dd>{{ profile_user.get_role_display }}</dd>
-  {% if profile_user == user and profile_user.etablissement %}<dt>Établissement</dt><dd>{{ profile_user.etablissement }}</dd>{% endif %}
-  <dt>Compétences</dt><dd>{% for skill in profile_user.skills.all %}{{ skill.name }}{% if not forloop.last %}, {% endif %}{% empty %}Aucune compétence renseignée.{% endfor %}</dd>
-</dl>
-{% if profile_user == user %}
-<a class="btn sf-btn-primary" href="{% url 'accounts:profile_edit' %}">Modifier mon profil</a>
-{% if user.role == "APPRENANT" %}<a class="btn btn-outline-secondary" href="{% url 'accounts:join_institution' %}">Rejoindre un établissement</a>{% endif %}
+<div class="sf-page-header">
+  <h1>Profil de {{ profile_user.get_full_name|default:profile_user.username }}</h1>
+  {% if profile_user == user %}
+    <div class="sf-actions">
+      <a class="btn btn-primary" href="{% url 'accounts:profile_edit' %}">Modifier mon profil</a>
+      {% if user.role == "APPRENANT" %}<a class="btn btn-outline-secondary" href="{% url 'accounts:join_institution' %}">Rejoindre un établissement</a>{% endif %}
+    </div>
+  {% endif %}
+</div>
+{% if profile_user.avatar %}
+  <img class="sf-avatar" src="{{ profile_user.avatar.url }}" alt="Photo de {{ profile_user.get_full_name|default:profile_user.username }}">
 {% endif %}
+{% if profile_user.bio %}<p>{{ profile_user.bio }}</p>{% endif %}
+<dl class="sf-details">
+  <dt>Rôle</dt><dd>{{ profile_user.get_role_display }}{% if profile_user.is_verified %} (profil vérifié){% endif %}</dd>
+  <dt>Compétences</dt><dd>{% for skill in profile_user.skills.all %}{{ skill.name }}{% if not forloop.last %}, {% endif %}{% empty %}Aucune compétence renseignée.{% endfor %}</dd>
+  {% if profile_user == user %}
+    <dt>Établissement</dt><dd>{{ profile_user.etablissement|default:"Aucun" }}</dd>
+    <dt>Visibilité</dt><dd>{% if profile_user.is_public_profile %}Profil public : visible des recruteurs{% else %}Profil privé{% endif %}</dd>
+  {% endif %}
+</dl>
 {% endblock %}
