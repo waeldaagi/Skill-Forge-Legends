@@ -117,8 +117,13 @@ def request_moderation(post):
     post.save()
 
 
+def is_published_automatically(label, confidence):
+    """Règle de publication sans modérateur, partagée par la production et l'évaluation."""
+    return label == ModerationLabel.OK and confidence >= MIN_CONFIDENCE_TO_PUBLISH
+
+
 def apply_ai_verdict(post, label, confidence, reason):
-    publish = label == ModerationLabel.OK and confidence >= MIN_CONFIDENCE_TO_PUBLISH
+    publish = is_published_automatically(label, confidence)
     post.moderation_status = ModerationStatus.APPROUVE if publish else ModerationStatus.SIGNALE
     post.moderation_label = label
     post.moderation_confidence = confidence
