@@ -79,6 +79,35 @@ Contrôles complémentaires :
 - l'iframe vidéo porte un titre (« Vidéo du chapitre … ») et `referrerpolicy="strict-origin-when-cross-origin"`, sans quoi YouTube refuse la lecture (erreur 153, constatée sur capture) ;
 - chaque bouton « Modifier » ou « Supprimer » d'une liste complète son nom par un texte masqué (« Supprimer le chapitre Modéliser une fonctionnalité »).
 
+## Audit du 26/10/2026 (Phase 5 : intégration, tableaux de bord, paiements)
+
+Même outil et même profil, sur les données de `seed_demo`, avec le compte de chaque rôle.
+
+| Page | Compte | Score |
+|---|---|---|
+| Accueil, présentation | Anonyme | 100 |
+| Tableau de bord | Apprenante, mentor, formatrice, administratrice, recruteur | 100 chacun |
+| Catalogue des cours (filtres, cartes, pagination) | Anonyme | 100 |
+| Chapitre, avec liens vers le chapitre précédent et le suivant | Apprenante | 100 |
+| Quiz | Apprenante | 100 |
+| Profil | Apprenante | 100 |
+| Création d'un cours | Formatrice | 100 |
+| Offres, mes abonnements, mes paiements | Apprenante | 100 chacune |
+
+Avant correction, les trois pages des paiements ouvraient un second `<main id="contenu">` dans celui de `base.html` : deux repères principaux et un identifiant en double. Lighthouse ne le signalait pas ; le contrôle automatique ci-dessous l'a trouvé.
+
+Contrôle automatique de toutes les pages (script puppeteer, 375 px de large) : pour chaque profil, chaque lien interne est suivi, et chaque page est vérifiée (défilement horizontal, un seul `<h1>`, un seul `<main>`, aucun style en ligne, images avec `alt`, boutons nommés). Résultat : 199 pages parcourues pour les six rôles et l'anonyme, aucune anomalie.
+
+Parcours au clavier seul (Tab, Entrée et saisie, sans souris), script puppeteer :
+
+| Parcours | Résultat |
+|---|---|
+| Réserver un créneau : annuaire, « Voir les créneaux », « Réserver ce créneau », champs Sujet et Description, « Envoyer la demande » | Demande enregistrée, message « Demande envoyée. Le mentor doit maintenant la confirmer. » |
+| Répondre à un sujet du forum : champ de réponse, « Publier ma réponse » | Réponse enregistrée, en attente de la vérification automatique |
+| Lien d'évitement | Premier élément atteint par Tab ; Entrée mène à `#contenu` |
+
+Sur les 58 éléments atteints par Tab, tous affichent un contour de focus d'au moins 3 px.
+
 ## Structure commune des pages
 
 `templates/base.html` fournit à chaque page :
