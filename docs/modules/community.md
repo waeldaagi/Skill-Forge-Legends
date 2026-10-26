@@ -110,8 +110,8 @@ flowchart LR
 - **Cas d'usage :** décider si un message peut être publié sans attendre un modérateur.
 - **Prompt :** `community/ai/prompts.py` (version `moderation-v1`). Il décrit les quatre catégories avec des exemples de frontières (une critique technique polie est `OK`, un message toxique et hors sujet est `TOXIQUE`) et demande un motif sans recopier d'insulte.
 - **Sortie :** `ModerationOutput` : `label` parmi `OK`, `SPAM`, `TOXIQUE`, `HORS_SUJET`, `confidence` entre 0 et 1, `reason` en une phrase.
-- **Métriques** (25/10/2026, `gemini-3.5-flash-lite`, 80 messages) : exactitude et F1 macro de 1,000, contre 0,650 et 0,663 pour la baseline par mots-clés ; latence moyenne de 1 160 ms, p95 de 1 476 ms.
-- **Limites :** jeu de 80 messages écrits pour le projet, à relire ; ironie et dialecte absents ; taux de relecture humaine (confiance sous 0,6) pas encore mesuré.
+- **Métriques** (26/10/2026, `gemini-3.5-flash-lite`, 80 messages, mêmes étiquettes que la mesure du 25/10) : exactitude et F1 macro de 1,000, contre 0,650 et 0,663 pour la baseline par mots-clés ; aucun message non conforme publié à tort (45 % avec les mots-clés), aucun message conforme envoyé en relecture ; latence moyenne de 1 120 ms, p95 de 1 434 ms.
+- **Limites :** jeu de 80 messages écrits pour le projet, à relire ; ironie et dialecte absents.
 
 Rapport complet : `docs/ia/moderation.md`.
 
