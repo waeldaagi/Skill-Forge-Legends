@@ -121,6 +121,10 @@ CELERY_BEAT_SCHEDULE = {
 
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="SkillForge <no-reply@skillforge.tn>")
 
+# Adresse publique du site, pour les liens hors requête (QR code des certificats créés par
+# seed_demo). Render fournit RENDER_EXTERNAL_URL.
+SITE_URL = env("SITE_URL", default=env("RENDER_EXTERNAL_URL", default=""))
+
 # Mot de passe commun des comptes créés par « seed_demo » ; jamais de valeur par défaut.
 DEMO_PASSWORD = env("DEMO_PASSWORD", default="")
 
