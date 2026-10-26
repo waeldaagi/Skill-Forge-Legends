@@ -24,6 +24,11 @@ PUBLIC_URLS = {
     "courses:list",
     "courses:detail",
     "payments:plans",
+    # Vérification d'un certificat (QR code) : publique par nature.
+    "certificate_verify_public",
+    "certificate_api_public",
+    "assessment:certificate_verify",
+    "assessment:certificate_api",
 }
 # Admin Django : son propre contrôle d'accès, testé par Django.
 SKIPPED_NAMESPACES = {"admin"}

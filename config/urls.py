@@ -4,10 +4,21 @@ from django.urls import include, path, re_path
 from django.views.static import serve
 
 from analytics.views import PilotageView
+from assessment import views as assessment_views
 
 urlpatterns = [
     path("", include("core.urls")),
     path("admin/", admin.site.urls),
+    path(
+        "certificats/verifier/<uuid:public_id>/",
+        assessment_views.CertificateVerifyView.as_view(),
+        name="certificate_verify_public",
+    ),
+    path(
+        "api/certificats/<uuid:public_id>/",
+        assessment_views.CertificateAPIView.as_view(),
+        name="certificate_api_public",
+    ),
     path("comptes/", include("accounts.urls")),
     path("cours/", include("courses.urls")),
     path("mentorat/", include("mentoring.urls")),

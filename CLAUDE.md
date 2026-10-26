@@ -121,7 +121,7 @@ Dans les tests, `run_ai_job` n'exécute la tâche qu'à la validation de la tran
 | `core.permissions` | `RoleRequiredMixin`, `role_required`, `OwnerRequiredMixin` | Implémenté |
 | `courses.services` | `user_can_access_course(user, course) -> bool`, `can_read_course(user, course) -> bool` (le formateur relit son propre cours), `course_progress(user, course) -> int` (0 à 100), `is_course_completed(user, course) -> bool`, `enroll_learner(user, course)` | Implémenté (Phase 1) |
 | `payments.services` | `has_active_subscription(user) -> bool` | Implémenté (Phase 4) |
-| `assessment.services` | `verified_certificates(user)` : certificats non révoqués | Stub (liste vide) jusqu'à la Phase 3 |
+| `assessment.services` | `verified_certificates(user)` : certificats non révoqués | Implémenté (Phase 3) |
 | `core.ai` | `run_ai_job(...) -> AIJob`, `complete_json(...)` | Implémenté |
 
 `analytics` lit les autres apps en lecture seule (services et requêtes ORM) et n'y écrit jamais.

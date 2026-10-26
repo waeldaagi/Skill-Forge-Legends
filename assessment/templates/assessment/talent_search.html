@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Talents certifiés · SkillForge{% endblock %}
+{% block content %}
+<h1>Talents certifiés</h1>
+<p class="text-muted">Profils publics des apprenants titulaires d'au moins un certificat vérifié.</p>
+<form method="get" class="sf-filters" role="search" aria-label="Rechercher un talent">
+  {{ form }}
+  <button type="submit" class="btn btn-outline-primary">Rechercher</button>
+</form>
+{% if learners %}
+  <ul class="sf-cards list-unstyled">
+    {% for learner in learners %}
+      <li class="sf-card">
+        <h2>{{ learner }}</h2>
+        <p class="text-muted">Compétences : {{ learner.skills.all|join:", "|default:"non renseignées" }}</p>
+        <p>Certificats : {% for certificate in learner.certificates.all %}{% if not certificate.is_revoked %}{{ certificate.certification.title }}{% if not forloop.last %}, {% endif %}{% endif %}{% endfor %}</p>
+        <a class="btn btn-outline-primary" href="{% url 'assessment:talent_profile' learner.pk %}">Voir le profil<span class="visually-hidden"> de {{ learner }}</span></a>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>Aucun talent ne correspond à cette recherche. Retirez un filtre ou essayez une autre compétence.</p>
+{% endif %}
+{% endblock %}

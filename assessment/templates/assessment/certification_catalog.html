@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Certifications · SkillForge{% endblock %}
+{% block content %}
+<div class="sf-page-header">
+  <h1>Catalogue des certifications</h1>
+  <a class="btn btn-outline-primary" href="{% url 'assessment:submission_list' %}">Mes soumissions</a>
+</div>
+<p class="text-muted">Une preuve est évaluée selon une grille de critères, d'abord par l'IA, puis validée par un mentor ou un formateur.</p>
+{% if certifications %}
+  <ul class="sf-cards list-unstyled">
+    {% for certification in certifications %}
+      <li class="sf-card">
+        <p class="text-muted">{{ certification.course.title }}</p>
+        <h2>{{ certification.title }}</h2>
+        <p>Score de réussite : {{ certification.passing_score }}/100 · {{ certification.max_attempts }} tentative{{ certification.max_attempts|pluralize }} au plus</p>
+        {% with certificate=certification.learner_certificates.0 %}
+          {% if certificate and certificate.pdf %}
+            <div class="sf-actions mb-0">
+              <a class="btn btn-sm btn-primary" href="{{ certificate.pdf.url }}">Télécharger le certificat<span class="visually-hidden"> {{ certification.title }}</span></a>
+              <a class="btn btn-sm btn-outline-primary" href="{% url 'certificate_verify_public' certificate.public_id %}">Vérifier<span class="visually-hidden"> le certificat {{ certification.title }}</span></a>
+            </div>
+          {% elif certification.can_submit %}
+            <a class="btn btn-primary" href="{% url 'assessment:submission_create' certification.pk %}">Soumettre une preuve<span class="visually-hidden"> pour {{ certification.title }}</span></a>
+          {% else %}
+            <p class="sf-panel__warning">Terminez tous les chapitres du cours <a href="{{ certification.course.get_absolute_url }}">{{ certification.course.title }}</a> pour soumettre une preuve.</p>
+          {% endif %}
+        {% endwith %}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>Aucune certification n'est ouverte pour le moment.</p>
+{% endif %}
+{% endblock %}

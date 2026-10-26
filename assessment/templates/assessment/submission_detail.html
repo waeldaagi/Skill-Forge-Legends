@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load ai_status %}
+{% block title %}Ma soumission · SkillForge{% endblock %}
+{% block content %}
+<p><a href="{% url 'assessment:submission_list' %}">Mes soumissions</a></p>
+<h1>{{ submission.certification.title }}</h1>
+<p>Tentative {{ submission.attempt_number }} · statut : {{ submission.get_status_display }}</p>
+{% if submission.ai_job %}
+  {% ai_job_status submission.ai_job %}
+{% endif %}
+
+{% if submission.human_review %}
+  <section class="sf-panel mb-4" aria-labelledby="titre-decision">
+    <h2 id="titre-decision">Décision de {{ submission.human_review.reviewer }} : {{ submission.human_review.final_score }}/100, {{ submission.human_review.get_decision_display|lower }}</h2>
+    <p>{{ submission.human_review.comment|linebreaksbr }}</p>
+    {% if submission.certificate and not submission.certificate.is_revoked %}
+      <div class="sf-actions mb-0">
+        <a class="btn btn-primary" href="{{ submission.certificate.pdf.url }}">Télécharger le certificat</a>
+        <a class="btn btn-outline-primary" href="{% url 'certificate_verify_public' submission.certificate.public_id %}">Page de vérification publique</a>
+      </div>
+    {% endif %}
+  </section>
+{% endif %}
+
+{% if submission.ai_evaluation %}
+  <section class="sf-panel" aria-labelledby="titre-avis-ia">
+    <h2 id="titre-avis-ia">Avis de l'IA : {{ submission.ai_evaluation.total_score }}/100</h2>
+    <p class="text-muted">Évaluation automatique, validée ensuite par un mentor ou un formateur.</p>
+    {% if submission.ai_evaluation.criteria_scores %}
+      <div class="sf-table-wrapper">
+        <table class="table align-middle">
+          <caption class="visually-hidden">Score de l'IA par critère</caption>
+          <thead><tr><th scope="col">Critère</th><th scope="col">Score</th><th scope="col">Justification</th></tr></thead>
+          <tbody>
+            {% for name, detail in submission.ai_evaluation.criteria_scores.items %}
+              <tr><td>{{ name }}</td><td>{{ detail.score }}</td><td>{{ detail.justification }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+    {% if submission.ai_evaluation.strengths %}<p><strong>Points forts&nbsp;:</strong> {{ submission.ai_evaluation.strengths|linebreaksbr }}</p>{% endif %}
+    {% if submission.ai_evaluation.improvement_axes %}<p><strong>Axes d'amélioration&nbsp;:</strong> {{ submission.ai_evaluation.improvement_axes|linebreaksbr }}</p>{% endif %}
+    {% if submission.ai_evaluation.suspected_fraud %}
+      <p class="sf-panel__warning">Fraude suspectée : {{ submission.ai_evaluation.fraud_reasons|linebreaksbr }}</p>
+    {% endif %}
+  </section>
+{% endif %}
+{% endblock %}

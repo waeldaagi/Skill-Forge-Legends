@@ -36,7 +36,7 @@ class HomeViewTests(TestCase):
         response = self.client.get(reverse("core:home"))
 
         self.assertIn(
-            {"label": "Catalogue des cours", "url": reverse("courses:list"), "is_current": False},
+            {"label": "Cours", "url": reverse("courses:list"), "is_current": False},
             response.context["nav_links"],
         )
 

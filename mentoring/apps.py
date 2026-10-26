@@ -10,13 +10,12 @@ class MentoringConfig(AppConfig):
     # Lus par le context processor de navigation et par « setup_roles » (voir accounts/apps.py).
     role_navigation = {
         "APPRENANT": [
-            ("Trouver un mentor", "mentoring:mentor_directory"),
+            ("Mentors", "mentoring:mentor_directory"),
             ("Mes sessions", "mentoring:session_list"),
         ],
         "MENTOR": [
             ("Mes créneaux", "mentoring:slot_list"),
             ("Mes sessions", "mentoring:session_list"),
-            ("Profil de mentor", "mentoring:profile_edit"),
         ],
     }
     role_permissions = {

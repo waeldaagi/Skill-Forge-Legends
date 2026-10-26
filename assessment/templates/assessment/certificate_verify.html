@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Vérification certificat{% endblock %}
+{% block content %}
+<h1>Vérification du certificat</h1>
+{% if certificate.is_revoked %}
+  <p class="text-danger">Ce certificat est révoqué.</p>
+{% else %}
+  <p><strong>Apprenant :</strong> {{ certificate.learner }}</p>
+  <p><strong>Certification :</strong> {{ certificate.certification.title }}</p>
+  <p><strong>Date :</strong> {{ certificate.issued_at }}</p>
+{% endif %}
+{% endblock %}

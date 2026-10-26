@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Mes soumissions · SkillForge{% endblock %}
+{% block content %}
+<div class="sf-page-header">
+  <h1>Mes soumissions</h1>
+  <a class="btn btn-outline-primary" href="{% url 'assessment:certification_catalog' %}">Catalogue des certifications</a>
+</div>
+{% if submissions %}
+  <div class="sf-table-wrapper">
+    <table class="table align-middle">
+      <caption class="visually-hidden">Vos soumissions de preuves</caption>
+      <thead><tr><th scope="col">Certification</th><th scope="col">Tentative</th><th scope="col">Statut</th><th scope="col"><span class="visually-hidden">Détail</span></th></tr></thead>
+      <tbody>
+        {% for submission in submissions %}
+          <tr>
+            <td>{{ submission.certification.title }}</td>
+            <td>{{ submission.attempt_number }}</td>
+            <td>{{ submission.get_status_display }}</td>
+            <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{% url 'assessment:submission_detail' submission.pk %}">Voir<span class="visually-hidden"> la tentative {{ submission.attempt_number }} de {{ submission.certification.title }}</span></a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p>Vous n'avez encore soumis aucune preuve. Terminez un cours, puis choisissez une certification dans le catalogue.</p>
+{% endif %}
+{% endblock %}

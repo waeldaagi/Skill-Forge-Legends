@@ -1,0 +1,1082 @@
+[
+    {
+        "id":  1,
+        "passing_score":  70,
+        "certification_title":  "Django - Workflow mentorat",
+        "instructions":  "Implémenter un flux mentorat avec permissions et validations.",
+        "human_score":  77,
+        "criteria":  [
+                         {
+                             "weight":  35,
+                             "description":  "Modèles et contraintes",
+                             "name":  "Conception"
+                         },
+                         {
+                             "weight":  35,
+                             "description":  "Lisibilité et robustesse",
+                             "name":  "Qualité du code"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Cas limites et erreurs",
+                             "name":  "Validation"
+                         }
+                     ],
+        "text_response":  "Implémentation complète avec services, validations, tests unitaires et tests de permissions. Tentative 1.",
+        "human_decision":  "REUSSIE",
+        "repository_url":  "https://github.com/example/skillforge-proof-1"
+    },
+    {
+        "id":  2,
+        "passing_score":  70,
+        "certification_title":  "Django - CRUD robuste",
+        "instructions":  "Créer un CRUD sécurisé avec tests.",
+        "human_score":  78,
+        "criteria":  [
+                         {
+                             "weight":  40,
+                             "description":  "Services et vues fines",
+                             "name":  "Architecture"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Tests utiles et permissions",
+                             "name":  "Tests"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Validation et accès",
+                             "name":  "Sécurité"
+                         }
+                     ],
+        "text_response":  "Implémentation complète avec services, validations, tests unitaires et tests de permissions. Tentative 2.",
+        "human_decision":  "REUSSIE",
+        "repository_url":  "https://github.com/example/skillforge-proof-2"
+    },
+    {
+        "id":  3,
+        "passing_score":  70,
+        "certification_title":  "Django - Workflow mentorat",
+        "instructions":  "Implémenter un flux mentorat avec permissions et validations.",
+        "human_score":  79,
+        "criteria":  [
+                         {
+                             "weight":  35,
+                             "description":  "Modèles et contraintes",
+                             "name":  "Conception"
+                         },
+                         {
+                             "weight":  35,
+                             "description":  "Lisibilité et robustesse",
+                             "name":  "Qualité du code"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Cas limites et erreurs",
+                             "name":  "Validation"
+                         }
+                     ],
+        "text_response":  "Implémentation complète avec services, validations, tests unitaires et tests de permissions. Tentative 3.",
+        "human_decision":  "REUSSIE",
+        "repository_url":  ""
+    },
+    {
+        "id":  4,
+        "passing_score":  70,
+        "certification_title":  "Django - CRUD robuste",
+        "instructions":  "Créer un CRUD sécurisé avec tests.",
+        "human_score":  80,
+        "criteria":  [
+                         {
+                             "weight":  40,
+                             "description":  "Services et vues fines",
+                             "name":  "Architecture"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Tests utiles et permissions",
+                             "name":  "Tests"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Validation et accès",
+                             "name":  "Sécurité"
+                         }
+                     ],
+        "text_response":  "Implémentation complète avec services, validations, tests unitaires et tests de permissions. Tentative 4.",
+        "human_decision":  "REUSSIE",
+        "repository_url":  "https://github.com/example/skillforge-proof-4"
+    },
+    {
+        "id":  5,
+        "passing_score":  70,
+        "certification_title":  "Django - Workflow mentorat",
+        "instructions":  "Implémenter un flux mentorat avec permissions et validations.",
+        "human_score":  81,
+        "criteria":  [
+                         {
+                             "weight":  35,
+                             "description":  "Modèles et contraintes",
+                             "name":  "Conception"
+                         },
+                         {
+                             "weight":  35,
+                             "description":  "Lisibilité et robustesse",
+                             "name":  "Qualité du code"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Cas limites et erreurs",
+                             "name":  "Validation"
+                         }
+                     ],
+        "text_response":  "Implémentation complète avec services, validations, tests unitaires et tests de permissions. Tentative 5.",
+        "human_decision":  "REUSSIE",
+        "repository_url":  "https://github.com/example/skillforge-proof-5"
+    },
+    {
+        "id":  6,
+        "passing_score":  70,
+        "certification_title":  "Django - CRUD robuste",
+        "instructions":  "Créer un CRUD sécurisé avec tests.",
+        "human_score":  82,
+        "criteria":  [
+                         {
+                             "weight":  40,
+                             "description":  "Services et vues fines",
+                             "name":  "Architecture"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Tests utiles et permissions",
+                             "name":  "Tests"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Validation et accès",
+                             "name":  "Sécurité"
+                         }
+                     ],
+        "text_response":  "Implémentation complète avec services, validations, tests unitaires et tests de permissions. Tentative 6.",
+        "human_decision":  "REUSSIE",
+        "repository_url":  ""
+    },
+    {
+        "id":  7,
+        "passing_score":  70,
+        "certification_title":  "Django - Workflow mentorat",
+        "instructions":  "Implémenter un flux mentorat avec permissions et validations.",
+        "human_score":  63,
+        "criteria":  [
+                         {
+                             "weight":  35,
+                             "description":  "Modèles et contraintes",
+                             "name":  "Conception"
+                         },
+                         {
+                             "weight":  35,
+                             "description":  "Lisibilité et robustesse",
+                             "name":  "Qualité du code"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Cas limites et erreurs",
+                             "name":  "Validation"
+                         }
+                     ],
+        "text_response":  "Implémentation complète avec services, validations, tests unitaires et tests de permissions. Tentative 7.",
+        "human_decision":  "ECHOUEE",
+        "repository_url":  "https://github.com/example/skillforge-proof-7"
+    },
+    {
+        "id":  8,
+        "passing_score":  70,
+        "certification_title":  "Django - CRUD robuste",
+        "instructions":  "Créer un CRUD sécurisé avec tests.",
+        "human_score":  84,
+        "criteria":  [
+                         {
+                             "weight":  40,
+                             "description":  "Services et vues fines",
+                             "name":  "Architecture"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Tests utiles et permissions",
+                             "name":  "Tests"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Validation et accès",
+                             "name":  "Sécurité"
+                         }
+                     ],
+        "text_response":  "Implémentation complète avec services, validations, tests unitaires et tests de permissions. Tentative 8.",
+        "human_decision":  "REUSSIE",
+        "repository_url":  "https://github.com/example/skillforge-proof-8"
+    },
+    {
+        "id":  9,
+        "passing_score":  70,
+        "certification_title":  "Django - Workflow mentorat",
+        "instructions":  "Implémenter un flux mentorat avec permissions et validations.",
+        "human_score":  85,
+        "criteria":  [
+                         {
+                             "weight":  35,
+                             "description":  "Modèles et contraintes",
+                             "name":  "Conception"
+                         },
+                         {
+                             "weight":  35,
+                             "description":  "Lisibilité et robustesse",
+                             "name":  "Qualité du code"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Cas limites et erreurs",
+                             "name":  "Validation"
+                         }
+                     ],
+        "text_response":  "Implémentation complète avec services, validations, tests unitaires et tests de permissions. Tentative 9.",
+        "human_decision":  "REUSSIE",
+        "repository_url":  ""
+    },
+    {
+        "id":  10,
+        "passing_score":  70,
+        "certification_title":  "Django - CRUD robuste",
+        "instructions":  "Créer un CRUD sécurisé avec tests.",
+        "human_score":  86,
+        "criteria":  [
+                         {
+                             "weight":  40,
+                             "description":  "Services et vues fines",
+                             "name":  "Architecture"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Tests utiles et permissions",
+                             "name":  "Tests"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Validation et accès",
+                             "name":  "Sécurité"
+                         }
+                     ],
+        "text_response":  "Implémentation complète avec services, validations, tests unitaires et tests de permissions. Tentative 10.",
+        "human_decision":  "REUSSIE",
+        "repository_url":  "https://github.com/example/skillforge-proof-10"
+    },
+    {
+        "id":  11,
+        "passing_score":  70,
+        "certification_title":  "Django - Workflow mentorat",
+        "instructions":  "Implémenter un flux mentorat avec permissions et validations.",
+        "human_score":  87,
+        "criteria":  [
+                         {
+                             "weight":  35,
+                             "description":  "Modèles et contraintes",
+                             "name":  "Conception"
+                         },
+                         {
+                             "weight":  35,
+                             "description":  "Lisibilité et robustesse",
+                             "name":  "Qualité du code"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Cas limites et erreurs",
+                             "name":  "Validation"
+                         }
+                     ],
+        "text_response":  "Implémentation complète avec services, validations, tests unitaires et tests de permissions. Tentative 11.",
+        "human_decision":  "REUSSIE",
+        "repository_url":  "https://github.com/example/skillforge-proof-11"
+    },
+    {
+        "id":  12,
+        "passing_score":  70,
+        "certification_title":  "Django - CRUD robuste",
+        "instructions":  "Créer un CRUD sécurisé avec tests.",
+        "human_score":  88,
+        "criteria":  [
+                         {
+                             "weight":  40,
+                             "description":  "Services et vues fines",
+                             "name":  "Architecture"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Tests utiles et permissions",
+                             "name":  "Tests"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Validation et accès",
+                             "name":  "Sécurité"
+                         }
+                     ],
+        "text_response":  "Implémentation complète avec services, validations, tests unitaires et tests de permissions. Tentative 12.",
+        "human_decision":  "REUSSIE",
+        "repository_url":  ""
+    },
+    {
+        "id":  13,
+        "passing_score":  70,
+        "certification_title":  "Django - Workflow mentorat",
+        "instructions":  "Implémenter un flux mentorat avec permissions et validations.",
+        "human_score":  89,
+        "criteria":  [
+                         {
+                             "weight":  35,
+                             "description":  "Modèles et contraintes",
+                             "name":  "Conception"
+                         },
+                         {
+                             "weight":  35,
+                             "description":  "Lisibilité et robustesse",
+                             "name":  "Qualité du code"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Cas limites et erreurs",
+                             "name":  "Validation"
+                         }
+                     ],
+        "text_response":  "Implémentation complète avec services, validations, tests unitaires et tests de permissions. Tentative 13.",
+        "human_decision":  "REUSSIE",
+        "repository_url":  "https://github.com/example/skillforge-proof-13"
+    },
+    {
+        "id":  14,
+        "passing_score":  70,
+        "certification_title":  "Django - CRUD robuste",
+        "instructions":  "Créer un CRUD sécurisé avec tests.",
+        "human_score":  90,
+        "criteria":  [
+                         {
+                             "weight":  40,
+                             "description":  "Services et vues fines",
+                             "name":  "Architecture"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Tests utiles et permissions",
+                             "name":  "Tests"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Validation et accès",
+                             "name":  "Sécurité"
+                         }
+                     ],
+        "text_response":  "Implémentation complète avec services, validations, tests unitaires et tests de permissions. Tentative 14.",
+        "human_decision":  "REUSSIE",
+        "repository_url":  "https://github.com/example/skillforge-proof-14"
+    },
+    {
+        "id":  15,
+        "passing_score":  70,
+        "certification_title":  "Django - Workflow mentorat",
+        "instructions":  "Implémenter un flux mentorat avec permissions et validations.",
+        "human_score":  63,
+        "criteria":  [
+                         {
+                             "weight":  35,
+                             "description":  "Modèles et contraintes",
+                             "name":  "Conception"
+                         },
+                         {
+                             "weight":  35,
+                             "description":  "Lisibilité et robustesse",
+                             "name":  "Qualité du code"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Cas limites et erreurs",
+                             "name":  "Validation"
+                         }
+                     ],
+        "text_response":  "Implémentation complète avec services, validations, tests unitaires et tests de permissions. Tentative 15.",
+        "human_decision":  "ECHOUEE",
+        "repository_url":  ""
+    },
+    {
+        "id":  16,
+        "passing_score":  70,
+        "certification_title":  "Django - CRUD robuste",
+        "instructions":  "Créer un CRUD sécurisé avec tests.",
+        "human_score":  77,
+        "criteria":  [
+                         {
+                             "weight":  40,
+                             "description":  "Services et vues fines",
+                             "name":  "Architecture"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Tests utiles et permissions",
+                             "name":  "Tests"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Validation et accès",
+                             "name":  "Sécurité"
+                         }
+                     ],
+        "text_response":  "Implémentation complète avec services, validations, tests unitaires et tests de permissions. Tentative 16.",
+        "human_decision":  "REUSSIE",
+        "repository_url":  "https://github.com/example/skillforge-proof-16"
+    },
+    {
+        "id":  17,
+        "passing_score":  70,
+        "certification_title":  "Django - Workflow mentorat",
+        "instructions":  "Implémenter un flux mentorat avec permissions et validations.",
+        "human_score":  78,
+        "criteria":  [
+                         {
+                             "weight":  35,
+                             "description":  "Modèles et contraintes",
+                             "name":  "Conception"
+                         },
+                         {
+                             "weight":  35,
+                             "description":  "Lisibilité et robustesse",
+                             "name":  "Qualité du code"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Cas limites et erreurs",
+                             "name":  "Validation"
+                         }
+                     ],
+        "text_response":  "Implémentation complète avec services, validations, tests unitaires et tests de permissions. Tentative 17.",
+        "human_decision":  "REUSSIE",
+        "repository_url":  "https://github.com/example/skillforge-proof-17"
+    },
+    {
+        "id":  18,
+        "passing_score":  70,
+        "certification_title":  "Django - CRUD robuste",
+        "instructions":  "Créer un CRUD sécurisé avec tests.",
+        "human_score":  79,
+        "criteria":  [
+                         {
+                             "weight":  40,
+                             "description":  "Services et vues fines",
+                             "name":  "Architecture"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Tests utiles et permissions",
+                             "name":  "Tests"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Validation et accès",
+                             "name":  "Sécurité"
+                         }
+                     ],
+        "text_response":  "Implémentation complète avec services, validations, tests unitaires et tests de permissions. Tentative 18.",
+        "human_decision":  "REUSSIE",
+        "repository_url":  ""
+    },
+    {
+        "id":  19,
+        "passing_score":  70,
+        "certification_title":  "Django - Workflow mentorat",
+        "instructions":  "Implémenter un flux mentorat avec permissions et validations.",
+        "human_score":  80,
+        "criteria":  [
+                         {
+                             "weight":  35,
+                             "description":  "Modèles et contraintes",
+                             "name":  "Conception"
+                         },
+                         {
+                             "weight":  35,
+                             "description":  "Lisibilité et robustesse",
+                             "name":  "Qualité du code"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Cas limites et erreurs",
+                             "name":  "Validation"
+                         }
+                     ],
+        "text_response":  "Implémentation complète avec services, validations, tests unitaires et tests de permissions. Tentative 19.",
+        "human_decision":  "REUSSIE",
+        "repository_url":  "https://github.com/example/skillforge-proof-19"
+    },
+    {
+        "id":  20,
+        "passing_score":  70,
+        "certification_title":  "Django - CRUD robuste",
+        "instructions":  "Créer un CRUD sécurisé avec tests.",
+        "human_score":  81,
+        "criteria":  [
+                         {
+                             "weight":  40,
+                             "description":  "Services et vues fines",
+                             "name":  "Architecture"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Tests utiles et permissions",
+                             "name":  "Tests"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Validation et accès",
+                             "name":  "Sécurité"
+                         }
+                     ],
+        "text_response":  "Implémentation complète avec services, validations, tests unitaires et tests de permissions. Tentative 20.",
+        "human_decision":  "REUSSIE",
+        "repository_url":  "https://github.com/example/skillforge-proof-20"
+    },
+    {
+        "id":  21,
+        "passing_score":  70,
+        "certification_title":  "Django - Workflow mentorat",
+        "instructions":  "Implémenter un flux mentorat avec permissions et validations.",
+        "human_score":  43,
+        "criteria":  [
+                         {
+                             "weight":  35,
+                             "description":  "Modèles et contraintes",
+                             "name":  "Conception"
+                         },
+                         {
+                             "weight":  35,
+                             "description":  "Lisibilité et robustesse",
+                             "name":  "Qualité du code"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Cas limites et erreurs",
+                             "name":  "Validation"
+                         }
+                     ],
+        "text_response":  "Travail incomplet, indices de copie et plagiat, peu de justifications. Tentative 21.",
+        "human_decision":  "ECHOUEE",
+        "repository_url":  ""
+    },
+    {
+        "id":  22,
+        "passing_score":  70,
+        "certification_title":  "Django - CRUD robuste",
+        "instructions":  "Créer un CRUD sécurisé avec tests.",
+        "human_score":  44,
+        "criteria":  [
+                         {
+                             "weight":  40,
+                             "description":  "Services et vues fines",
+                             "name":  "Architecture"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Tests utiles et permissions",
+                             "name":  "Tests"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Validation et accès",
+                             "name":  "Sécurité"
+                         }
+                     ],
+        "text_response":  "Travail incomplet, indices de copie et plagiat, peu de justifications. Tentative 22.",
+        "human_decision":  "ECHOUEE",
+        "repository_url":  ""
+    },
+    {
+        "id":  23,
+        "passing_score":  70,
+        "certification_title":  "Django - Workflow mentorat",
+        "instructions":  "Implémenter un flux mentorat avec permissions et validations.",
+        "human_score":  45,
+        "criteria":  [
+                         {
+                             "weight":  35,
+                             "description":  "Modèles et contraintes",
+                             "name":  "Conception"
+                         },
+                         {
+                             "weight":  35,
+                             "description":  "Lisibilité et robustesse",
+                             "name":  "Qualité du code"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Cas limites et erreurs",
+                             "name":  "Validation"
+                         }
+                     ],
+        "text_response":  "Travail incomplet, indices de copie et plagiat, peu de justifications. Tentative 23.",
+        "human_decision":  "ECHOUEE",
+        "repository_url":  ""
+    },
+    {
+        "id":  24,
+        "passing_score":  70,
+        "certification_title":  "Django - CRUD robuste",
+        "instructions":  "Créer un CRUD sécurisé avec tests.",
+        "human_score":  46,
+        "criteria":  [
+                         {
+                             "weight":  40,
+                             "description":  "Services et vues fines",
+                             "name":  "Architecture"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Tests utiles et permissions",
+                             "name":  "Tests"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Validation et accès",
+                             "name":  "Sécurité"
+                         }
+                     ],
+        "text_response":  "Travail incomplet, indices de copie et plagiat, peu de justifications. Tentative 24.",
+        "human_decision":  "ECHOUEE",
+        "repository_url":  "https://github.com/example/incomplete-24"
+    },
+    {
+        "id":  25,
+        "passing_score":  70,
+        "certification_title":  "Django - Workflow mentorat",
+        "instructions":  "Implémenter un flux mentorat avec permissions et validations.",
+        "human_score":  47,
+        "criteria":  [
+                         {
+                             "weight":  35,
+                             "description":  "Modèles et contraintes",
+                             "name":  "Conception"
+                         },
+                         {
+                             "weight":  35,
+                             "description":  "Lisibilité et robustesse",
+                             "name":  "Qualité du code"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Cas limites et erreurs",
+                             "name":  "Validation"
+                         }
+                     ],
+        "text_response":  "Réponse très courte, pas de preuves concrètes ni tests exécutables.",
+        "human_decision":  "ECHOUEE",
+        "repository_url":  ""
+    },
+    {
+        "id":  26,
+        "passing_score":  70,
+        "certification_title":  "Django - CRUD robuste",
+        "instructions":  "Créer un CRUD sécurisé avec tests.",
+        "human_score":  48,
+        "criteria":  [
+                         {
+                             "weight":  40,
+                             "description":  "Services et vues fines",
+                             "name":  "Architecture"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Tests utiles et permissions",
+                             "name":  "Tests"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Validation et accès",
+                             "name":  "Sécurité"
+                         }
+                     ],
+        "text_response":  "Travail incomplet, indices de copie et plagiat, peu de justifications. Tentative 26.",
+        "human_decision":  "ECHOUEE",
+        "repository_url":  ""
+    },
+    {
+        "id":  27,
+        "passing_score":  70,
+        "certification_title":  "Django - Workflow mentorat",
+        "instructions":  "Implémenter un flux mentorat avec permissions et validations.",
+        "human_score":  49,
+        "criteria":  [
+                         {
+                             "weight":  35,
+                             "description":  "Modèles et contraintes",
+                             "name":  "Conception"
+                         },
+                         {
+                             "weight":  35,
+                             "description":  "Lisibilité et robustesse",
+                             "name":  "Qualité du code"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Cas limites et erreurs",
+                             "name":  "Validation"
+                         }
+                     ],
+        "text_response":  "Travail incomplet, indices de copie et plagiat, peu de justifications. Tentative 27.",
+        "human_decision":  "ECHOUEE",
+        "repository_url":  ""
+    },
+    {
+        "id":  28,
+        "passing_score":  70,
+        "certification_title":  "Django - CRUD robuste",
+        "instructions":  "Créer un CRUD sécurisé avec tests.",
+        "human_score":  50,
+        "criteria":  [
+                         {
+                             "weight":  40,
+                             "description":  "Services et vues fines",
+                             "name":  "Architecture"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Tests utiles et permissions",
+                             "name":  "Tests"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Validation et accès",
+                             "name":  "Sécurité"
+                         }
+                     ],
+        "text_response":  "Travail incomplet, indices de copie et plagiat, peu de justifications. Tentative 28.",
+        "human_decision":  "ECHOUEE",
+        "repository_url":  "https://github.com/example/incomplete-28"
+    },
+    {
+        "id":  29,
+        "passing_score":  70,
+        "certification_title":  "Django - Workflow mentorat",
+        "instructions":  "Implémenter un flux mentorat avec permissions et validations.",
+        "human_score":  51,
+        "criteria":  [
+                         {
+                             "weight":  35,
+                             "description":  "Modèles et contraintes",
+                             "name":  "Conception"
+                         },
+                         {
+                             "weight":  35,
+                             "description":  "Lisibilité et robustesse",
+                             "name":  "Qualité du code"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Cas limites et erreurs",
+                             "name":  "Validation"
+                         }
+                     ],
+        "text_response":  "Travail incomplet, indices de copie et plagiat, peu de justifications. Tentative 29.",
+        "human_decision":  "ECHOUEE",
+        "repository_url":  ""
+    },
+    {
+        "id":  30,
+        "passing_score":  70,
+        "certification_title":  "Django - CRUD robuste",
+        "instructions":  "Créer un CRUD sécurisé avec tests.",
+        "human_score":  52,
+        "criteria":  [
+                         {
+                             "weight":  40,
+                             "description":  "Services et vues fines",
+                             "name":  "Architecture"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Tests utiles et permissions",
+                             "name":  "Tests"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Validation et accès",
+                             "name":  "Sécurité"
+                         }
+                     ],
+        "text_response":  "Travail incomplet, indices de copie et plagiat, peu de justifications. Tentative 30.",
+        "human_decision":  "ECHOUEE",
+        "repository_url":  ""
+    },
+    {
+        "id":  31,
+        "passing_score":  70,
+        "certification_title":  "Django - Workflow mentorat",
+        "instructions":  "Implémenter un flux mentorat avec permissions et validations.",
+        "human_score":  53,
+        "criteria":  [
+                         {
+                             "weight":  35,
+                             "description":  "Modèles et contraintes",
+                             "name":  "Conception"
+                         },
+                         {
+                             "weight":  35,
+                             "description":  "Lisibilité et robustesse",
+                             "name":  "Qualité du code"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Cas limites et erreurs",
+                             "name":  "Validation"
+                         }
+                     ],
+        "text_response":  "Réponse très courte, pas de preuves concrètes ni tests exécutables.",
+        "human_decision":  "ECHOUEE",
+        "repository_url":  ""
+    },
+    {
+        "id":  32,
+        "passing_score":  70,
+        "certification_title":  "Django - CRUD robuste",
+        "instructions":  "Créer un CRUD sécurisé avec tests.",
+        "human_score":  38,
+        "criteria":  [
+                         {
+                             "weight":  40,
+                             "description":  "Services et vues fines",
+                             "name":  "Architecture"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Tests utiles et permissions",
+                             "name":  "Tests"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Validation et accès",
+                             "name":  "Sécurité"
+                         }
+                     ],
+        "text_response":  "Travail incomplet, indices de copie et plagiat, peu de justifications. Tentative 32.",
+        "human_decision":  "ECHOUEE",
+        "repository_url":  "https://github.com/example/incomplete-32"
+    },
+    {
+        "id":  33,
+        "passing_score":  70,
+        "certification_title":  "Django - Workflow mentorat",
+        "instructions":  "Implémenter un flux mentorat avec permissions et validations.",
+        "human_score":  75,
+        "criteria":  [
+                         {
+                             "weight":  35,
+                             "description":  "Modèles et contraintes",
+                             "name":  "Conception"
+                         },
+                         {
+                             "weight":  35,
+                             "description":  "Lisibilité et robustesse",
+                             "name":  "Qualité du code"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Cas limites et erreurs",
+                             "name":  "Validation"
+                         }
+                     ],
+        "text_response":  "Travail incomplet, indices de copie et plagiat, peu de justifications. Tentative 33.",
+        "human_decision":  "REUSSIE",
+        "repository_url":  ""
+    },
+    {
+        "id":  34,
+        "passing_score":  70,
+        "certification_title":  "Django - CRUD robuste",
+        "instructions":  "Créer un CRUD sécurisé avec tests.",
+        "human_score":  40,
+        "criteria":  [
+                         {
+                             "weight":  40,
+                             "description":  "Services et vues fines",
+                             "name":  "Architecture"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Tests utiles et permissions",
+                             "name":  "Tests"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Validation et accès",
+                             "name":  "Sécurité"
+                         }
+                     ],
+        "text_response":  "Réponse très courte, pas de preuves concrètes ni tests exécutables.",
+        "human_decision":  "ECHOUEE",
+        "repository_url":  ""
+    },
+    {
+        "id":  35,
+        "passing_score":  70,
+        "certification_title":  "Django - Workflow mentorat",
+        "instructions":  "Implémenter un flux mentorat avec permissions et validations.",
+        "human_score":  41,
+        "criteria":  [
+                         {
+                             "weight":  35,
+                             "description":  "Modèles et contraintes",
+                             "name":  "Conception"
+                         },
+                         {
+                             "weight":  35,
+                             "description":  "Lisibilité et robustesse",
+                             "name":  "Qualité du code"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Cas limites et erreurs",
+                             "name":  "Validation"
+                         }
+                     ],
+        "text_response":  "Travail incomplet, indices de copie et plagiat, peu de justifications. Tentative 35.",
+        "human_decision":  "ECHOUEE",
+        "repository_url":  ""
+    },
+    {
+        "id":  36,
+        "passing_score":  70,
+        "certification_title":  "Django - CRUD robuste",
+        "instructions":  "Créer un CRUD sécurisé avec tests.",
+        "human_score":  42,
+        "criteria":  [
+                         {
+                             "weight":  40,
+                             "description":  "Services et vues fines",
+                             "name":  "Architecture"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Tests utiles et permissions",
+                             "name":  "Tests"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Validation et accès",
+                             "name":  "Sécurité"
+                         }
+                     ],
+        "text_response":  "Travail incomplet, indices de copie et plagiat, peu de justifications. Tentative 36.",
+        "human_decision":  "ECHOUEE",
+        "repository_url":  "https://github.com/example/incomplete-36"
+    },
+    {
+        "id":  37,
+        "passing_score":  70,
+        "certification_title":  "Django - Workflow mentorat",
+        "instructions":  "Implémenter un flux mentorat avec permissions et validations.",
+        "human_score":  43,
+        "criteria":  [
+                         {
+                             "weight":  35,
+                             "description":  "Modèles et contraintes",
+                             "name":  "Conception"
+                         },
+                         {
+                             "weight":  35,
+                             "description":  "Lisibilité et robustesse",
+                             "name":  "Qualité du code"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Cas limites et erreurs",
+                             "name":  "Validation"
+                         }
+                     ],
+        "text_response":  "Travail incomplet, indices de copie et plagiat, peu de justifications. Tentative 37.",
+        "human_decision":  "ECHOUEE",
+        "repository_url":  ""
+    },
+    {
+        "id":  38,
+        "passing_score":  70,
+        "certification_title":  "Django - CRUD robuste",
+        "instructions":  "Créer un CRUD sécurisé avec tests.",
+        "human_score":  80,
+        "criteria":  [
+                         {
+                             "weight":  40,
+                             "description":  "Services et vues fines",
+                             "name":  "Architecture"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Tests utiles et permissions",
+                             "name":  "Tests"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Validation et accès",
+                             "name":  "Sécurité"
+                         }
+                     ],
+        "text_response":  "Travail incomplet, indices de copie et plagiat, peu de justifications. Tentative 38.",
+        "human_decision":  "REUSSIE",
+        "repository_url":  ""
+    },
+    {
+        "id":  39,
+        "passing_score":  70,
+        "certification_title":  "Django - Workflow mentorat",
+        "instructions":  "Implémenter un flux mentorat avec permissions et validations.",
+        "human_score":  45,
+        "criteria":  [
+                         {
+                             "weight":  35,
+                             "description":  "Modèles et contraintes",
+                             "name":  "Conception"
+                         },
+                         {
+                             "weight":  35,
+                             "description":  "Lisibilité et robustesse",
+                             "name":  "Qualité du code"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Cas limites et erreurs",
+                             "name":  "Validation"
+                         }
+                     ],
+        "text_response":  "Travail incomplet, indices de copie et plagiat, peu de justifications. Tentative 39.",
+        "human_decision":  "ECHOUEE",
+        "repository_url":  ""
+    },
+    {
+        "id":  40,
+        "passing_score":  70,
+        "certification_title":  "Django - CRUD robuste",
+        "instructions":  "Créer un CRUD sécurisé avec tests.",
+        "human_score":  46,
+        "criteria":  [
+                         {
+                             "weight":  40,
+                             "description":  "Services et vues fines",
+                             "name":  "Architecture"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Tests utiles et permissions",
+                             "name":  "Tests"
+                         },
+                         {
+                             "weight":  30,
+                             "description":  "Validation et accès",
+                             "name":  "Sécurité"
+                         }
+                     ],
+        "text_response":  "Travail incomplet, indices de copie et plagiat, peu de justifications. Tentative 40.",
+        "human_decision":  "ECHOUEE",
+        "repository_url":  "https://github.com/example/incomplete-40"
+    }
+]
