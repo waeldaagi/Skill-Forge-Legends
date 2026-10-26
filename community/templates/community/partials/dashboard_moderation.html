@@ -1,0 +1,9 @@
+<section class="sf-panel" aria-labelledby="panneau-moderation">
+  <h2 id="panneau-moderation">Modération du forum</h2>
+  {% if panel.pending_count %}
+    <p>{{ panel.pending_count }} élément{{ panel.pending_count|pluralize }} attend{{ panel.pending_count|pluralize:"ent" }} une décision : messages masqués par la vérification automatique ou signalés.</p>
+  {% else %}
+    <p>Aucun élément en attente : tous les messages ont été traités.</p>
+  {% endif %}
+  <a class="btn btn-outline-primary" href="{% url 'community:moderation_queue' %}">Ouvrir la file de modération</a>
+</section>

@@ -46,4 +46,10 @@
   {% csrf_token %}<button class="btn sf-btn-primary" type="submit">Marquer ce chapitre comme terminé</button>
 </form>
 {% endif %}
+{% if previous_chapter or next_chapter %}
+<nav class="sf-actions mt-4" aria-label="Autres chapitres du cours">
+  {% if previous_chapter %}<a class="btn btn-outline-primary" href="{% url 'courses:chapter' previous_chapter.pk %}">Chapitre précédent<span class="visually-hidden"> : {{ previous_chapter.title }}</span></a>{% endif %}
+  {% if next_chapter %}<a class="btn btn-outline-primary" href="{% url 'courses:chapter' next_chapter.pk %}">Chapitre suivant<span class="visually-hidden"> : {{ next_chapter.title }}</span></a>{% endif %}
+</nav>
+{% endif %}
 {% endblock %}

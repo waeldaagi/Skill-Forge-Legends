@@ -130,6 +130,9 @@ class ChapterDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["is_owner"] = self.object.course.trainer_id == self.request.user.pk
         context["is_learner"] = self.request.user.role == User.Role.APPRENANT
+        chapters = self.object.course.chapters.all()
+        context["previous_chapter"] = chapters.filter(order__lt=self.object.order).last()
+        context["next_chapter"] = chapters.filter(order__gt=self.object.order).first()
         return context
 
 

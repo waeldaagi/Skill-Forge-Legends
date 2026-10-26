@@ -19,7 +19,8 @@ from .models import Reply, Report, Thread
 Role = User.Role
 FORUM_ROLES = (Role.APPRENANT, Role.MENTOR, Role.FORMATEUR, Role.ADMIN)
 MODERATOR_ROLES = (Role.ADMIN, Role.MENTOR)
-PUBLISHED_MESSAGE = "Il sera visible par tous après la vérification automatique."
+# Formulation neutre : la même phrase suit « Votre sujet » et « Votre réponse ».
+PUBLISHED_MESSAGE = "Les autres membres y accéderont après la vérification automatique."
 
 
 def thread_url(thread, reply=None):

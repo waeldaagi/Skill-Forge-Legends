@@ -5,6 +5,7 @@ class CommunityConfig(AppConfig):
     name = "community"
     verbose_name = "Communauté"
     demo_seeder = "community.demo.seed"
+    dashboard_panel = "community.dashboard.panel"
 
     def ready(self):
         # Enregistrement au démarrage, comme admin.site.register : le socle IA saura exécuter

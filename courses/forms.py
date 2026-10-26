@@ -18,6 +18,8 @@ class CourseForm(forms.ModelForm):
     def __init__(self, *args, trainer, **kwargs):
         super().__init__(*args, **kwargs)
         self.trainer = trainer
+        self.fields["category"].empty_label = "Choisissez une catégorie"
+        self.fields["level"].choices = [("", "Choisissez un niveau"), *Course.Level.choices]
 
     def clean_status(self):
         status = self.cleaned_data["status"]
@@ -139,7 +141,10 @@ class QuestionForm(forms.ModelForm):
 class CourseFilterForm(forms.Form):
     query = forms.CharField(label="Rechercher", required=False)
     category = forms.ModelChoiceField(
-        label="Catégorie", queryset=Category.objects.all(), required=False
+        label="Catégorie",
+        queryset=Category.objects.all(),
+        required=False,
+        empty_label="Toutes les catégories",
     )
     level = forms.ChoiceField(
         label="Niveau", choices=[("", "Tous les niveaux"), *Course.Level.choices], required=False

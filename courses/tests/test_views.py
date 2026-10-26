@@ -746,3 +746,17 @@ class QuizPublicationRulesTests(TestCase):
         self.assertContains(response, "une seule bonne réponse")
         self.quiz.refresh_from_db()
         self.assertFalse(self.quiz.is_published)
+
+
+class ChapterNavigationTests(TestCase):
+    def test_chapter_links_to_its_neighbours(self):
+        first = ChapterFactory(order=1)
+        second = ChapterFactory(course=first.course, order=2)
+        third = ChapterFactory(course=first.course, order=3)
+        self.client.force_login(UserFactory(role=User.Role.APPRENANT))
+
+        response = self.client.get(reverse("courses:chapter", args=[second.pk]))
+
+        self.assertEqual(response.context["previous_chapter"], first)
+        self.assertEqual(response.context["next_chapter"], third)
+        self.assertContains(response, "Chapitre suivant")

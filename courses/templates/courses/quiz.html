@@ -11,8 +11,8 @@
 <form method="post">
   {% csrf_token %}
   {% for question in quiz.questions.all %}
-    <fieldset class="mb-4">
-      <legend class="h2">{{ forloop.counter }}. {{ question.statement }}</legend>
+    <fieldset class="sf-form-section">
+      <legend class="sf-question">{{ forloop.counter }}. {{ question.statement }}</legend>
       {% for choice in question.choices.all %}
         <div class="form-check">
           <input class="form-check-input" type="radio" name="question-{{ question.pk }}" value="{{ choice.pk }}" id="choice-{{ choice.pk }}" required>
@@ -32,14 +32,12 @@
     <h2 id="correction-title">Votre dernier corrigé</h2>
     <p>Score : {{ latest_attempt.score }} %</p>
     {% for question in quiz.questions.all %}
-      <h3>{{ forloop.counter }}. {{ question.statement }}</h3>
-      <p><strong>Explication :</strong> {{ question.explanation }}</p>
-      <p><strong>Extrait du chapitre :</strong> {{ question.evidence }}</p>
-      <ul>
-        {% for choice in question.choices.all %}
-          {% if choice.is_correct %}<li>{{ choice.text }}</li>{% endif %}
-        {% endfor %}
-      </ul>
+      <div class="sf-form-section">
+        <h3 class="sf-question">{{ forloop.counter }}. {{ question.statement }}</h3>
+        <p><strong>Bonne réponse&nbsp;:</strong> {% for choice in question.choices.all %}{% if choice.is_correct %}{{ choice.text }}{% endif %}{% endfor %}</p>
+        <p><strong>Explication&nbsp;:</strong> {{ question.explanation }}</p>
+        <p class="mb-0"><strong>Extrait du chapitre&nbsp;:</strong> {{ question.evidence }}</p>
+      </div>
     {% endfor %}
   </section>
 {% endif %}

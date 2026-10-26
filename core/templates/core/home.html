@@ -3,6 +3,17 @@
 {% block title %}SkillForge · Apprendre, être accompagné, prouver, partager{% endblock %}
 
 {% block content %}
+{% if user.is_authenticated %}
+  <h1>Bonjour {{ user.first_name|default:user.username }}</h1>
+  <p class="text-muted">Votre espace {{ user.get_role_display|lower }} : ce qui vous attend, et les accès directs.</p>
+  {% if panels %}
+    <div class="sf-dashboard">
+      {% for panel in panels %}{% include panel.template with panel=panel %}{% endfor %}
+    </div>
+  {% else %}
+    <p>Votre espace se complétera avec les modules de votre rôle. En attendant, renseignez <a href="{% url 'accounts:profile_edit' %}">votre profil</a>.</p>
+  {% endif %}
+{% else %}
 <section class="sf-intro" aria-labelledby="titre-accueil">
   <h1 id="titre-accueil">Apprendre, être accompagné, prouver, partager.</h1>
   <p class="sf-intro__lead">
@@ -11,7 +22,10 @@
     preuve évaluée par l'IA et validée par un mentor.
   </p>
   {% if not user.is_authenticated %}
-    <a class="btn btn-primary" href="{% url 'accounts:login' %}">Se connecter</a>
+    <div class="sf-actions">
+      <a class="btn btn-primary" href="{% url 'accounts:register' %}">Créer un compte</a>
+      <a class="btn btn-outline-primary" href="{% url 'courses:list' %}">Parcourir le catalogue</a>
+    </div>
   {% endif %}
 </section>
 
@@ -54,4 +68,5 @@
     <dd>Suit ses apprenants : progression, certificats et risque d'abandon.</dd>
   </dl>
 </section>
+{% endif %}
 {% endblock %}

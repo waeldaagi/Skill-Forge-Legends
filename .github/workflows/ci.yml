@@ -68,3 +68,18 @@ jobs:
         with:
           name: htmlcov
           path: htmlcov/
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Construire l'image de production
+        run: docker build -t skillforge:ci .
+
+      - name: Vérifier les réglages de production dans l'image
+        run: >
+          docker run --rm
+          -e SECRET_KEY=ci-cle-de-verification-longue-0123456789abcdefghijklmnop
+          -e ALLOWED_HOSTS=skillforge.example
+          skillforge:ci python manage.py check --deploy --fail-level WARNING

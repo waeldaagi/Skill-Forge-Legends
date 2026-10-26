@@ -11,6 +11,7 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 from community.ai.moderation import FEATURE, keyword_label
 from community.ai.prompts import PROMPT_VERSION, SYSTEM_PROMPT, build_prompt
 from community.ai.schemas import ModerationOutput
+from community.services import MIN_CONFIDENCE_TO_PUBLISH, is_published_automatically
 from core.ai import AIServiceError, complete_json
 from core.ai.providers import get_provider
 
@@ -45,8 +46,15 @@ class Command(BaseCommand):
         examples = json.loads(DATASET.read_text(encoding="utf-8"))[: options["limit"]]
         rows = []
         for number, example in enumerate(examples, start=1):
-            label, duration_ms = self.classify(example["text"], provider_name)
-            rows.append({**example, "predicted": label, "duration_ms": duration_ms})
+            label, confidence, duration_ms = self.classify(example["text"], provider_name)
+            rows.append(
+                {
+                    **example,
+                    "predicted": label,
+                    "confidence": confidence,
+                    "duration_ms": duration_ms,
+                }
+            )
             self.stderr.write(f"{number}/{len(examples)} {example['label']} -> {label}")
             time.sleep(options["pause"])
         report = render_report(rows, provider_name, get_provider(provider_name).model)
@@ -68,10 +76,11 @@ class Command(BaseCommand):
                 )
             except AIServiceError as exc:
                 if not exc.retryable or attempt == MAX_ATTEMPTS:
-                    return FAILED, None
+                    return FAILED, None, None
                 time.sleep(RETRY_WAIT_SECONDS * attempt)
             else:
-                return output.label, round((time.perf_counter() - started) * 1000)
+                duration_ms = round((time.perf_counter() - started) * 1000)
+                return output.label, output.confidence, duration_ms
 
 
 def render_report(rows, provider_name, model_name):
@@ -110,6 +119,14 @@ def render_report(rows, provider_name, model_name):
         f"| IA | {fr(accuracy_score(truth, predicted))} | {fr(macro_f1(truth, predicted))} |",
         f"| Mots-clés | {fr(accuracy_score(truth, baseline))} | {fr(macro_f1(truth, baseline))} |",
         "",
+        f"### Décision de publication (seuil de confiance {fr(MIN_CONFIDENCE_TO_PUBLISH, 1)})",
+        "",
+        "Même règle qu'en production : publié sans modérateur si l'étiquette est OK et la "
+        "confiance atteint le seuil ; sinon, relecture humaine. Un échec d'appel part aussi en "
+        "relecture.",
+        "",
+        *decision_table(rows),
+        "",
         "### Latence par message (appels réussis)",
         "",
         *latency_table(latencies),
@@ -126,6 +143,34 @@ def render_report(rows, provider_name, model_name):
         "",
     ]
     return "\n".join(lines)
+
+
+def decision_table(rows):
+    published = [
+        row
+        for row in rows
+        if row["predicted"] != FAILED
+        and is_published_automatically(row["predicted"], row["confidence"])
+    ]
+    compliant = [row for row in rows if row["label"] == "OK"]
+    wrongly_published = [row for row in published if row["label"] != "OK"]
+    compliant_reviewed = [row for row in compliant if row not in published]
+    total = len(rows)
+    return [
+        "| Indicateur | Nombre | Taux |",
+        "|---|---|---|",
+        f"| Publiés sans modérateur | {len(published)} | {percent(len(published), total)} |",
+        f"| Envoyés en relecture humaine | {total - len(published)} "
+        f"| {percent(total - len(published), total)} |",
+        f"| Messages conformes envoyés en relecture | {len(compliant_reviewed)} "
+        f"| {percent(len(compliant_reviewed), len(compliant))} des messages conformes |",
+        f"| Messages non conformes publiés à tort | {len(wrongly_published)} "
+        f"| {percent(len(wrongly_published), total - len(compliant))} des messages non conformes |",
+    ]
+
+
+def percent(part, whole):
+    return f"{fr(100 * part / whole, 1)} %" if whole else "—"
 
 
 def latency_table(latencies):

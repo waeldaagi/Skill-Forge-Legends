@@ -1,0 +1,15 @@
+<section class="sf-panel" aria-labelledby="panneau-formateur">
+  <h2 id="panneau-formateur">Mes cours</h2>
+  {% if not user.is_verified %}
+    <p class="sf-panel__warning">Votre profil n'est pas encore vérifié par un administrateur : vos cours et vos quiz restent en brouillon.</p>
+  {% endif %}
+  <dl class="sf-figures">
+    <div><dt>Cours publiés</dt><dd>{{ panel.published_count }}</dd></div>
+    <div><dt>Cours en brouillon</dt><dd>{{ panel.draft_count }}</dd></div>
+    <div><dt>Quiz à relire</dt><dd>{{ panel.draft_quiz_count }}</dd></div>
+  </dl>
+  <div class="sf-actions">
+    <a class="btn btn-primary" href="{% url 'courses:trainer_courses' %}">Gérer mes cours</a>
+    <a class="btn btn-outline-primary" href="{% url 'courses:create' %}">Créer un cours</a>
+  </div>
+</section>
