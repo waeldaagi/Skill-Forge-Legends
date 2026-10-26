@@ -29,9 +29,10 @@
                   <button class="btn btn-outline-danger" type="submit">Annuler l’abonnement<span class="visually-hidden"> {{ plan.name }}</span></button>
                 </form>
               {% else %}
-                <form method="post" action="{% url 'payments:checkout' plan.slug %}">
+                <form method="post" action="{% url 'payments:checkout' plan.slug %}" class="sf-actions mb-0">
                   {% csrf_token %}
                   <button class="btn btn-primary" type="submit">Payer (mode démo)<span class="visually-hidden"> l’offre {{ plan.name }}</span></button>
+                  <button class="btn btn-outline-secondary" type="submit" name="scenario" value="failure">Simuler un paiement refusé<span class="visually-hidden"> pour l’offre {{ plan.name }}</span></button>
                 </form>
               {% endif %}
             {% else %}
