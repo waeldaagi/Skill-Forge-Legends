@@ -157,6 +157,7 @@ python manage.py makemigrations --check --dry-run
 python manage.py evaluate_<feature> --provider <réel>
 python manage.py check --deploy --settings=config.settings.prod   # exige ALLOWED_HOSTS
 docker compose up -d                            # PostgreSQL 16 et Redis 7
+docker compose -f docker-compose.prod.yml up -d --build   # pile de production (DEPLOY.md, section 9)
 ```
 
 ## Pièges connus

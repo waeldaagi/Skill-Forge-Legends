@@ -87,3 +87,18 @@ Le déploiement a été simulé dans un conteneur `python:3.12-slim` relié à u
 | Requête en HTTP | 301 vers HTTPS |
 | Hôte inconnu | 400 |
 | Connexion, sujet de forum, réinitialisation du mot de passe, avatar | Sujet publié par la modération (`mock`), e-mail écrit dans le journal, avatar servi en 200 |
+
+## 9. Variante : pile Docker sur un serveur
+
+Pour un serveur avec Docker (machine virtuelle Azure for Students, par exemple), `docker-compose.prod.yml` démarre cinq services : `web` (gunicorn), `worker` et `beat` (Celery), `db` (PostgreSQL 16) et `redis` (Redis 7). Contrairement à l'offre gratuite de Render, les tâches IA passent par le worker et ne bloquent pas la requête.
+
+```
+docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml exec web python manage.py seed_demo
+```
+
+Le fichier `.env` du serveur fournit `SECRET_KEY`, `ALLOWED_HOSTS`, `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, et au besoin `DEMO_PASSWORD`, `AI_PROVIDER`, `AI_API_KEY`, `EMAIL_*`. Un autre fichier se désigne avec la variable `ENV_FILE`.
+
+L'image (`Dockerfile`) part de `python:3.12-slim`, collecte les fichiers statiques au build et tourne sous un utilisateur non root. Le service `web` applique les migrations à son démarrage (`docker/entrypoint.sh`), et Docker le déclare sain quand `/health/` répond 200. Le HTTPS est attendu d'un proxy placé devant (Caddy ou nginx), qui transmet `X-Forwarded-Proto`.
+
+Vérifié le 26/10/2026 : les cinq services démarrent, `web` passe à l'état sain, `/health/` répond avec la base et Redis à « ok », et un sujet de forum créé « En attente » est publié par le worker Celery en 73 ms (fournisseur `mock`). La CI construit l'image à chaque push et lance `check --deploy` dedans.
